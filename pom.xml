@@ -119,7 +119,12 @@
 
 
 
-
-
+<dependency>
+    <groupId>RunComparison</groupId>
+    <artifactId>RunComparison</artifactId>
+    <version>1.0</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/RunComparison.jar</systemPath>
+</dependency>
   </dependencies>
 </project>
