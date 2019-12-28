@@ -31,8 +31,8 @@ public class ClassificationPreparerWithOptimizeClasses {
 		
 		new Log().TxtInRectangle("Optimizing classes for classification");
 		
-		if(isValid(CSV,DataPath)==false)
-			System.exit(-1);
+		isValid(CSV,DataPath);
+			
 		
 		for(String Header : Parameters.MeasurementUnitsToPredict.split(",")) {
 			double val= BestValueToSpilt(DataPath,CSV, Header);
@@ -64,7 +64,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 		Vector<String> headers = new Vector<String>();
 		headers.add(Header);
 		
-		HashMap<String, Vector<HashMap<String, String>>> map=	new CSVReader().ReadIntoHashMapWithFilterdHeaders("ClassificationDatasets/"+new File(CSV).getName(), "PDB",headers);
+		HashMap<String, Vector<HashMap<String, String>>> map=	new CSVReader().ReadIntoHashMapWithFilterdHeaders(Parameters.ClassificationDatasetsFolderName+"/"+new File(CSV).getName(), "PDB",headers);
 		
 		HashMap<String,Integer> counted = CountInstanceInClasses(map);
 		
@@ -77,7 +77,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 				Best = PercentgeOfClassesInEqualSize(counted,counted.keySet().size());
 				BestLevel=Parameters.getClassLevel(Header);
 		}
-		FileUtils.deleteDirectory(new File("ClassificationDatasets"));
+		FileUtils.deleteDirectory(new File(Parameters.ClassificationDatasetsFolderName));
 		}
 		
 		
@@ -133,17 +133,17 @@ public class ClassificationPreparerWithOptimizeClasses {
 		return Math.abs(FirstClass - total);
 		
 	}
-boolean isValid(String CSV, String PathToDatasets) {
+void isValid(String CSV, String PathToDatasets) {
 		
 		if(!new File(CSV).exists()) {
 			new Log().Error(this,"CSV file is not found (Maybe it is wrong directory!)");
-           return false;
+           
 		}
 		if(!new File(PathToDatasets).exists()) {
 			new Log().Error(this,"Datasets directory is not found  (Maybe it is wrong directory!)");
-          return false;
+          
 		}
 		
-		return true;
+		
 	}
 }

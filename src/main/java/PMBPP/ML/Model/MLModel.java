@@ -7,15 +7,22 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.w3c.dom.Element;
 
+import PMBPP.Log.Log;
+import PMBPP.Utilities.CSVReader;
 import PMBPP.Utilities.CSVWriter;
 import weka.attributeSelection.ClassifierAttributeEval;
 import weka.attributeSelection.InfoGainAttributeEval;
@@ -105,6 +112,10 @@ public class MLModel {
 
 	void Split(double Percentage , String PipelineAndLabel) throws Exception {
 		
+		if(dataset.attribute(dataset.classIndex()).numValues()==1) { // this will cause "Cannot handle unary class" in Weka
+			new Log().Error(this, "Can not create a predictive model with only one value in the class that want to predict. This might happen when you have a small dataset. ");
+		}
+		
 		if(Parameters.SplitOnStructureLevel.equals("F")) {
 		dataset.randomize(rand);
 			
@@ -120,6 +131,9 @@ public class MLModel {
 		
 		if(Parameters.SplitOnStructureLevel.equals("T"))
 		SplitOnStructureLevel(Percentage);
+		
+		
+		
 		
 		//SaveToCSV
 		PMBPP.CheckDirAndFile("TrainAndTestData");
@@ -225,12 +239,12 @@ public class MLModel {
 	}
 	
 	Evaluation Evaluate () throws Exception {
-		//Evaluation evaluation = new Evaluation(dataset);
 		
-		Evaluation evaluation = new Evaluation(train); // no difference 
+		
+		Evaluation evaluation = new Evaluation(train); // it is only need train to get the instance structure not values
 		evaluation.evaluateModel(MLPredictor, test);
 		
-		//evaluation.evaluateModel(MLPredictor, test);
+		
 	
 		
 return evaluation;
@@ -277,7 +291,7 @@ return evaluation;
 		  DataSource source = new DataSource(Att);
 		  
 		  
-		   //double[] instanceValue1 = new double[]{20, 20, 200,10,2};
+		   
 		  Instances Tempdataset = source.getDataSet();
 		  Tempdataset.clear();// we just want the attributes
 		  Tempdataset.setClassIndex(Tempdataset.numAttributes()-1);
@@ -289,12 +303,29 @@ return evaluation;
 		  df.setRoundingMode(RoundingMode.HALF_UP);
 		  
 		  if(Prediction.isEmpty()) {
-			  //Prediction = df.format(new BigDecimal(Prediction));
+			 
 			  Prediction=df.format(BigDecimal.valueOf(MLPredictor.classifyInstance( Tempdataset.firstInstance())));
 		  }
 		  
+		  if(Prediction.contains("±")) {
+			  Parameters.Log="F";// no need to the log here only tables are needed
+			  HashMap <String,Boolean> MeasurementUnitsToPredict=  new CSVReader().FilterByFeatures(Parameters.AttCSV, false);
+			 Vector<String> Headers= new Vector<String>();
+			 Headers.add(String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]));
+			  HashMap<String, Vector<HashMap<String, String>>> map=	new CSVReader().ReadIntoHashMapWithFilterdHeaders(Parameters.AttCSV,  String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]), Headers);
+              if(map.keySet().size()==2) { // if it binary classification 
+            	  List <String>classes = new ArrayList<>(map.keySet());
+            	  Collections.sort(classes);
+            	  
+                if(Prediction.equals(classes.get(0)))
+                Prediction="Strong prediction";
+                if(Prediction.equals(classes.get(1)))
+                   Prediction="Weak prediction";
+              }
+              Parameters.Log="T";
+		  }
+		  
 		 
-		  //return  String.valueOf(MLPredictor.classifyInstance( Tempdataset.firstInstance()));
 		  return  Prediction;
 	        
 	        

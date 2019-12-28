@@ -21,7 +21,6 @@ import PMBPP.Utilities.XML;
 import PMBPP.Log.Log;
 import PMBPP.Utilities.CSVReader;
 import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Utilities.TableCreater;
 import me.tongfei.progressbar.ProgressBar;
 import table.draw.Block;
 import table.draw.Board;
@@ -43,12 +42,12 @@ public class CreateModels {
 		
 		
 		//Prediction
-		String[] args2= {"CSV"};
-		Parameters.ModelFolderName="PredictionModels/";
+		//String[] args2= {"CSV"};
+		//Parameters.ModelFolderName="PredictionModels/";
 		
 		//Classification
-		//String[] args2= {"PredictedDatasets"};
-		//Parameters.ModelFolderName="ClassificationModels/";
+		String[] args2= {"/Users/emadalharbi/Downloads/TestPreAcc/ClassificationDatasets"};
+		Parameters.ModelFolderName="ClassificationModels/";
 		
 		
 		/* MR
@@ -78,7 +77,7 @@ new CreateModels().Models(args2);
 		new Log().TxtInRectangle("Creating models");
 		String PathToCSV=args[0];
 		
-		if(isValid(PathToCSV)==false) System.exit(-1);
+		isValid(PathToCSV);
 		
 		
 		File [] files = new FilesUtilities().ReadFilesList(PathToCSV);
@@ -87,8 +86,8 @@ new CreateModels().Models(args2);
 				
 				if(new File(Parameters.ModelFolderName).exists())
 				{
-					new Log().Error(this, "Models folder is exists!. Can not create models folder. Remove models folder or change its name");
-					System.exit(-1);
+					new Log().Error(this, Parameters.ModelFolderName+" folder is exists!. Can not create models folder. Remove models folder or change its name");
+					
 					
 				}
 				
@@ -103,7 +102,7 @@ new CreateModels().Models(args2);
 					 PMBPP.CheckDirAndFile(Parameters.ModelFolderName);
 						PMBPP.CheckDirAndFile(Parameters.ModelFolderName+"/"+F);
 						for(File CSV : files) {
-						
+							new Log().Info(this, "Model: "+F+"-"+CSV.getName());
 							Set<String> temp=  new HashSet<String>(measurements.keySet());
 							temp.remove(F);
 							Vector<String> att = new Vector<String>(temp);
@@ -264,16 +263,16 @@ new CreateModels().Models(args2);
 
 	}
 	
-	boolean isValid(String PathToCSV) {
+	void isValid(String PathToCSV) {
 		if(!new File(PathToCSV).exists()) {
-			new Log().Error(this,"CSV folder is not found  (Maybe it is wrong directory!)");
-          return false;
+			new Log().Error(this,new File(PathToCSV).getName()+" folder is not found  (Maybe it is wrong directory!)");
+          
 		}
 		
 		if(new FilesUtilities().ReadFilesList(PathToCSV).length==0) {
-			new Log().Error(this,"CSV folder is empty!");
-			 return false;
+			new Log().Error(this,new File(PathToCSV).getName()+" folder is empty!");
+			 
 		}
-		return true;
+		
 	}
 }

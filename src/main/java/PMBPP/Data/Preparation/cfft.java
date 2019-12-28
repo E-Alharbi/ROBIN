@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
 
+import PMBPP.Log.Log;
 import PMBPP.ML.Model.Parameters;
 import PMBPP.Utilities.FilesUtilities;
 
@@ -36,7 +37,7 @@ new cfft().Cfft("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1o6a-1.
 	 String PathToCfft=System.getenv("CCP4")+"/share/python/CCP4Dispatchers/cfft.py";
 	 String[]callAndArgs= {"python",PathToCfft,
 	"-mtzin",mtzin,
-	"-colin-fo","FP,SIGFP",
+	"-colin-fo",Parameters.colinfo,
 	"-colin-hl",Parameters.Phases,
 	"-stats",
 	};
@@ -100,8 +101,8 @@ if(st.substring(st.indexOf("Max")).contains("-"))
 			                 
 			             }
 		             if(Error==true) {
-		            	 System.out.println("Cfft error: Please fix the above error. Probably, you are using wrong phases! ");
-		             System.exit(-1);
+		            	new Log().Error(this,"Cfft error: Please fix the above error. Probably, you are using wrong phases or wrong FP,SIGFP! (Example colinfo=FP,SIGFP Phases=HLA,HLB,HLC,HLD) ");
+		             
 		             }
 		           
 		         

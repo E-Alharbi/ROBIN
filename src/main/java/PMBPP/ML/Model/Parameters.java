@@ -2,6 +2,7 @@ package PMBPP.ML.Model;
 
 import java.util.Vector;
 
+import PMBPP.Log.Log;
 import PMBPP.Validation.CustomException;
 
 public class Parameters {
@@ -27,6 +28,12 @@ public class Parameters {
 		
 		throw new CustomException(Header+ " This header is not recognized");
 		
+	}
+public static String getClassificationDatasetsFolderName() {
+		return ClassificationDatasetsFolderName;
+	}
+	public static void setClassificationDatasetsFolderName(String classificationDatasetsFolderName) {
+		ClassificationDatasetsFolderName = classificationDatasetsFolderName;
 	}
 public static void setClassLevel(String Header, double val) {
 		
@@ -181,7 +188,10 @@ public static void setMinClassLevel(String Header, double val) {
 		return MR;
 	}
 	public static void setMR(String mR) {
+		if(mR.equals("T") || mR.equals("F"))
 		MR = mR;
+		else
+			new Log().Error(new Parameters(), "MR should be either T or F");
 	}
 	public static String getSequenceIdentity() {
 		return SequenceIdentity;
@@ -191,30 +201,31 @@ public static void setMinClassLevel(String Header, double val) {
 		SequenceIdentity = sequenceIdentity;
 		else
 		{
-			System.out.println("Sequence identity should be between 0 and 1. For example, if the sequence identity is 53, then must be typed in as 0.53 ");
-			System.exit(-1);
+			
+			new Log().Error(new Parameters(),"Sequence identity should be between 0 and 1. For example, if the sequence identity is 53, then must be typed in as 0.53 ");
+			
 		}
 		 
 	}
 	
 	public static void CheckDependency() {
 		if(!SequenceIdentity.equals("-1") && MR.equals("F")) {
-			System.out.println("If you are using sequence identity, then you have to set MR=T");
-			System.exit(-1);
+			new Log().Error(new Parameters(),"If you are using sequence identity, then you have to set MR=T");
+			
 		}
 		
 		if(MultipleModels.equals("T")) {
 			if(StartNumberOfTrees.equals("-1")) {
-				System.out.println("Please set StartNumberOfTrees");
-				System.exit(-1);
+				new Log().Error(new Parameters(),"Please set StartNumberOfTrees");
+				
 			}
 			if(IncreaseNumberOfTrees.equals("-1")) {
-				System.out.println("Please set IncreaseNumberOfTrees");
-				System.exit(-1);
+				new Log().Error(new Parameters(),"Please set IncreaseNumberOfTrees");
+				
 			}
 			if(MaxNumberOfTrees.equals("-1")) {
-				System.out.println("Please set MaxNumberOfTrees");
-				System.exit(-1);
+				new Log().Error(new Parameters(),"Please set MaxNumberOfTrees");
+				
 			}
 		}
 	}
@@ -307,11 +318,34 @@ public static void setSplitOnStructureLevel(String splitOnStructureLevel) {
 }
 
 
-public static String SequenceIdentity="-1";
+ public static String SequenceIdentity="-1";
  public static String MultipleModels="F";
  public static String StartNumberOfTrees="-1";
  public static String IncreaseNumberOfTrees="-1";
  public static String MaxNumberOfTrees="-1";
- public static String SplitOnStructureLevel="F";
+ public static String colinfo="FP,SIGFP";
+ public static String getColinfo() {
+	return colinfo;
+}
+public static void setColinfo(String colinfo) {
+	Parameters.colinfo = colinfo;
+}
+public static String getOptimizeClasses() {
+	return OptimizeClasses;
+}
+public static void setOptimizeClasses(String optimizeClasses) {
+	OptimizeClasses = optimizeClasses;
+}
+
+
+public static String SplitOnStructureLevel="F";
  public static String OptimizeClasses="T";
+ public static String Log="T";
+ public static String ClassificationDatasetsFolderName="ClassificationDatasets";
+public static String getLog() {
+	return Log;
+}
+public static void setLog(String log) {
+	Log = log;
+}
 }

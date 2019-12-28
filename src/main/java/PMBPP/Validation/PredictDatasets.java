@@ -45,8 +45,8 @@ public class PredictDatasets {
 String PathToExcelFolder=args[0];
 String PathToDatasets=args[1];
 
-if(isValid(PathToExcelFolder,PathToDatasets)==false)
-	System.exit(-1);
+isValid(PathToExcelFolder,PathToDatasets);
+	
 
 for(File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { //loop on all excel files 
 	
@@ -135,8 +135,8 @@ for(File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { //loop
 				FileUtils.deleteDirectory(new File("TempCSV")); 
 			}
 			else {// very rare to happen 
-				System.out.println("Can not continue because there is a change in the headers order!  ");
-			System.exit(-1);
+				new Log().Error(this,"Can not continue because there is a change in the headers order!  ");
+			
 			
 			}
 		}
@@ -162,17 +162,17 @@ for(File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { //loop
 		
 	}
 
-boolean isValid(String files, String PathToDatasets) {
+void isValid(String files, String PathToDatasets) {
 		
 		if(!new File(files).exists()) {
 			new Log().Error(this,"Excel files are not found (Maybe it is wrong directory!)");
-           return false;
+           
 		}
 		if(!new File(PathToDatasets).exists()) {
 			new Log().Error(this,"Datasets directory is not found  (Maybe it is wrong directory!)");
-          return false;
+          
 		}
 		
-		return true;
+		
 	}
 }

@@ -33,8 +33,8 @@ public class PMBPP {
 		new Log().TxtInRectangle("Parameters from commnad line");
 		
 		if(System.getenv("CCP4")==null) {
-			System.out.println("Error: CCP4 environment variables not set. Set up the environment variables by using CCP4  ccp4.setup-sh (Ex source ccp4.setup-sh)");
-		System.exit(-1);
+			new Log().Error(new PMBPP(),"Error: CCP4 environment variables not set. Set up the environment variables by using CCP4  ccp4.setup-sh (Ex source ccp4.setup-sh)");
+		
 		}
 		
 		 Vector <String> Parm = new Vector<String>();
@@ -61,7 +61,7 @@ public class PMBPP {
 			 }
 		 
 		 if(args[0].equals("Predict")){
-			 
+			
 			 if(new File("features.csv").exists())
 				 FileUtils.deleteQuietly(new File("features.csv")); // if not removed, then will cause to read the features from csv
 			
@@ -72,8 +72,8 @@ public class PMBPP {
 					String [] arg= {checkArg(Parm,"mtz")};
                     Predict Pre = new Predict();
 					if(!new File(Parameters.TrainedModelsPath).exists()) {
-						System.out.println("Models folder not found!");
-						System.exit(-1);
+						new Log().Error(new PMBPP(),"Models folder not found!");
+						
 					}
 					
 					Pre.PredictMultipleModles(arg);
@@ -82,19 +82,29 @@ public class PMBPP {
 				}
 				if(checkArg(Parm,"mtz")!=null && checkArg(Parm,"TrainedModelsPath")==null && checkArg(Parm,"Phases")!=null) {
 					
+					Parameters.TrainedModelsPath="PredictionModels";
+					Parameters.CompressedModelFolderName="PredictionModels.zip";
+					
+					if(Parameters.MR.equals("T")) {
+						Parameters.TrainedModelsPath="PredictionModelsMR";
+					   Parameters.CompressedModelFolderName="PredictionModelsMR.zip";
+					}
 					String [] arg= {checkArg(Parm,"mtz")};
 					Predict Pre = new Predict();
-                    Parameters.TrainedModelsPath="PredictionModels";
+                   
+					System.out.println("Predictions ");
 					Pre.PredictMultipleModles(arg);
 					Pre.Print(Pre.PipelinesPredictions);
 					
-					Parameters.Usecfft=false;
+					Parameters.CompressedModelFolderName="ClassificationModels.zip";
 					Parameters.TrainedModelsPath="ClassificationModels";
-					Pre.PredictMultipleModles(arg);
-					Pre.Print(Pre.PipelinesPredictions);
-					
+					if(Parameters.MR.equals("T")) {
+					Parameters.TrainedModelsPath="ClassificationModelsMR";
+					Parameters.CompressedModelFolderName="ClassificationModelsMR.zip";
+					}
 					Parameters.Usecfft=false;
-					Parameters.TrainedModelsPath="PredictionAccuracyModels";
+					
+					System.out.println("Predictions uncertainty:");
 					Pre.PredictMultipleModles(arg);
 					Pre.Print(Pre.PipelinesPredictions);
 					
@@ -142,8 +152,9 @@ public class PMBPP {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
-			System.out.println("Error: Unable to create "+Path);
-			System.exit(-1);
+			new Log().Error(new PMBPP(), "Error: Unable to create "+Path);
+			
+			
 			return false;
 			
 		}
@@ -155,6 +166,11 @@ public class PMBPP {
 			if(checkArg(Parm,"ExcelFolder")!=null && checkArg(Parm,"Datasets")!=null ) {
 				
 				String [] arg= {checkArg(Parm,"ExcelFolder"),new File(checkArg(Parm,"Datasets")).getAbsolutePath()+"/","CSV"};
+				
+				if(new File("CSV").exists()) {
+					 new Log().Warning(this, " CSV has deleted to create new folder");
+					 FileUtils.deleteDirectory(new File("CSV"));
+				 }
 				
 				new PrepareFeatures().Prepare(new File(checkArg(Parm,"Datasets")).getAbsolutePath());
 				new PredictionTrainingDataPreparer().Prepare(arg);
@@ -197,15 +213,17 @@ public class PMBPP {
 					
 					//String [] arg2= {new File(checkArg(Parm,"Datasets")).getAbsolutePath()+"/",csv.getAbsolutePath()};
 					
-					if(Parameters.OptimizeClasses.equals("T"))
+					if(Parameters.OptimizeClasses.equals("T")) {
+						Parameters.ClassificationDatasetsFolderName="ClassificationDatasetsToOptimize";
 					new ClassificationPreparerWithOptimizeClasses().Optimize(new File(checkArg(Parm,"Datasets")).getAbsolutePath()+"/", csv.getAbsolutePath());
-						
+					}
+					Parameters.ClassificationDatasetsFolderName="ClassificationDatasets";
 					new ClassificationPreparer().Prepare(new File(checkArg(Parm,"Datasets")).getAbsolutePath()+"/",csv.getAbsolutePath());
 					
 				}
 				
 				//new PMBPP().RemoveDSStoreFileForMac("ClassificationDatasets");
-				String [] arg2= {new File("ClassificationDatasets").getAbsolutePath()};
+				String [] arg2= {new File(Parameters.ClassificationDatasetsFolderName).getAbsolutePath()};
 				Parameters.ModelFolderName="ClassificationModels";
 				new CreateModels().Models(arg2);
 				

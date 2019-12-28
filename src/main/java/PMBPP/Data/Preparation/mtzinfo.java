@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
+import PMBPP.Log.Log;
+
 
 
 public class mtzinfo {
@@ -62,8 +64,8 @@ new mtzinfo().GetReso("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1
 		         
 		        
 if(Reso==-1) {
-	System.out.println("mtzinfo: unable to parse resolution");
-	System.exit(-1);
+	new Log().Error(this,"unable to parse resolution");
+	
 }   
 
 		return Reso;	 

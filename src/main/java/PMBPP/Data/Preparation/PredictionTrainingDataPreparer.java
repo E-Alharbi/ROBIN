@@ -42,8 +42,8 @@ public class PredictionTrainingDataPreparer {
 		
 		new Log().TxtInRectangle("Prediction training data preparer");
 		
-		if(isValid(args[0],args[1])==false)
-			System.exit(-1);
+		isValid(args[0],args[1]);
+			
 		
 		File [] files =  new FilesUtilities().ReadFilesList(args[0]);
 		String PathToDataset=args[1];
@@ -67,29 +67,24 @@ public class PredictionTrainingDataPreparer {
 		 CSVWriter CW = new CSVWriter();
 		 if(args.length>2) {
 		 CW.PathToSaveCSV=args[2];
-		 if(new File(CW.PathToSaveCSV).exists()) {
-			
-			
-			 new Log().Warning(this, CW.PathToSaveCSV+" has deleted to create new folder");
-			 FileUtils.deleteDirectory(new File(CW.PathToSaveCSV));
-		 }
+		 
 		 PMBPP.CheckDirAndFile(CW.PathToSaveCSV);
 		 }
 		 CW.WriteToCSV(Excel2,e.getName());
 	}
 		
 	}
-	boolean isValid(String files, String PathToDatasets) {
+	void isValid(String files, String PathToDatasets) {
 		
 		if(!new File(files).exists()) {
 			new Log().Error(this,"Excel files are not found (Maybe it is wrong directory!)");
-           return false;
+           
 		}
 		if(!new File(PathToDatasets).exists()) {
 			new Log().Error(this,"Datasets directory is not found  (Maybe it is wrong directory!)");
-          return false;
+          
 		}
 		
-		return true;
+		
 	}
 }

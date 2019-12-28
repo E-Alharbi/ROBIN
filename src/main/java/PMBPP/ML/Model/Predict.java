@@ -43,8 +43,8 @@ import PMBPP.Data.Preparation.GetFeatures;
 import PMBPP.Data.Preparation.PrepareFeatures;
 import PMBPP.Data.Preparation.cfft;
 import PMBPP.Data.Preparation.mtzinfo;
+import PMBPP.Log.Log;
 import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Utilities.TableCreater;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import table.draw.Block;
@@ -76,8 +76,11 @@ public class Predict {
 
 		
 		if(!new File(Parameters.TrainedModelsPath).exists()) { // if not found, then use models from resources
+			
+			
 			CopyModelsFromResources();
-			System.out.println("Models were copied from resources ");
+		//	System.out.println("Models were copied from resources ");
+			new Log().Info(this, "Models were copied from resources ");
 		}
 		
 		String Path=args[0];
@@ -197,7 +200,7 @@ public class Predict {
         }
 		
 
-        String tableString = new TableCreater().CreateTable(headersList, rowsList);
+        String tableString = new Log().CreateTable(headersList, rowsList);
 		 
 	System.out.println(tableString);
 	PredictionTable=tableString;
