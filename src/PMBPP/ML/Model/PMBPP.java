@@ -30,6 +30,12 @@ public class PMBPP {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 	
+		/*
+		 * To build the project in Eclipse 
+		 * 1- right click on the project > maven > build maven 
+		 * 2- A runnable JAR will be built in target folder 
+		 * 3- The build number will be increased in every time the project is built Ex PMBPP-Runnable-1.0.(10) is the built number     
+		 */
 		new Log().PseudoText("PMBPP");
 		new Log().TxtInRectangle("Parameters from commnad line");
 		
