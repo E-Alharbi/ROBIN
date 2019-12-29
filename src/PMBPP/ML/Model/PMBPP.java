@@ -20,6 +20,7 @@ import PMBPP.Data.Preparation.ClassificationPreparerWithOptimizeClasses;
 import PMBPP.Data.Preparation.GetFeatures;
 import PMBPP.Data.Preparation.PrepareFeatures;
 import PMBPP.Log.Log;
+import PMBPP.Updater.Update;
 import PMBPP.Data.Preparation.PredictionTrainingDataPreparer;
 import PMBPP.Utilities.FilesUtilities;
 import PMBPP.Validation.PredictDatasets;
@@ -130,6 +131,9 @@ public class PMBPP {
 			 new  PMBPP().PrepareDataForClassification(Temp); // Temp = ExcelFolder and Datasets
 		 }
 		 
+		 
+		 //Checking for updates 
+		 new Update().IsUpdateRequired();
 	}
 	static String checkArg(Vector<String> Args, String Keyword ){
 		for (int i=0 ; i< Args.size() ; ++i){
