@@ -136,10 +136,11 @@ public class MLModel {
 		
 		
 		//SaveToCSV
-		PMBPP.CheckDirAndFile("TrainAndTestData");
-		new CSVWriter().WriteInstancesToCSV(train, "TrainAndTestData/"+PipelineAndLabel+"-train");
-		new CSVWriter().WriteInstancesToCSV(test, "TrainAndTestData/"+PipelineAndLabel+"-test");
-		new CSVWriter().WriteInstancesToCSV(dataset, "TrainAndTestData/"+PipelineAndLabel+"-dataset");
+		String WhereToSave="TrainAndTestData"+Parameters.ModelFolderName;
+		PMBPP.CheckDirAndFile(WhereToSave);
+		new CSVWriter().WriteInstancesToCSV(train, WhereToSave+"/"+PipelineAndLabel+"-train");
+		new CSVWriter().WriteInstancesToCSV(test, WhereToSave+"/"+PipelineAndLabel+"-test");
+		new CSVWriter().WriteInstancesToCSV(dataset, WhereToSave+"/"+PipelineAndLabel+"-dataset");
 
 	}
 	

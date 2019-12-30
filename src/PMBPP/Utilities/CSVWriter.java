@@ -115,13 +115,20 @@ public class CSVWriter {
 			String Record="";
 			for(int i=0 ; i < dataset.numAttributes() ; ++i) {
 				String Val="";
-				if(dataset.attribute(i).name().equals("PDB")){
-					Val=dataset.get(n).stringValue(i);
-				}
-				else {
-					Val=String.valueOf(dataset.get(n).value(i));
-				}
+				//if(dataset.attribute(i).name().equals("PDB")){
+					//Val=dataset.get(n).stringValue(i);
+				//}
+				//else {
+					//Val=String.valueOf(dataset.get(n).value(i));
+					//Val=dataset.get(n).stringValue(i);
+					
+				//}
 				
+					if(dataset.get(n).attribute(i).isNominal())
+						Val=dataset.get(n).stringValue(i);
+					if(dataset.get(n).attribute(i).isNumeric())
+						Val=String.valueOf(dataset.get(n).value(i));
+					
 				if(i+1 < dataset.numAttributes()) {
 				Record+=Val+",";
 				}
