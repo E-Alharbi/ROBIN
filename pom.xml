@@ -195,14 +195,14 @@
 </dependency>
 
 
-
+<dependency>
+		  <groupId>RunComparison</groupId>
+		  <artifactId>Comparison</artifactId>
+		  <version>1.0</version>
+	 </dependency>
 
 
   </dependencies>
-  <repositories>
-    <repository>
-        <id>localrepository</id>
-        <url>file://${project.basedir}/RunComparison.jar</url>
-    </repository>
-</repositories>
+ 
+
 </project>

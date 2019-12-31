@@ -22,7 +22,7 @@ public class NumberOfTreesImpact {
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 		// TODO Auto-generated method stub
 	
-		new NumberOfTreesImpact().NumberOfTreesTable("/Users/emadalharbi/eclipse-workspace/ProteinModelBuildingPipelinePredictor/PredictionModelsPerformance.xml");
+		new NumberOfTreesImpact().NumberOfTreesTable("/Users/emadalharbi/Downloads/TestPreAcc/PredictionModelsPerformance.xml");
 	
 	}
 	

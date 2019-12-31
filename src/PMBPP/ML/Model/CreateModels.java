@@ -42,12 +42,12 @@ public class CreateModels {
 		
 		
 		//Prediction
-		//String[] args2= {"CSV"};
-		//Parameters.ModelFolderName="PredictionModels/";
+		String[] args2= {"CSV"};
+		Parameters.ModelFolderName="PredictionModels/";
 		
 		//Classification
-		String[] args2= {"/Users/emadalharbi/Downloads/TestPreAcc/ClassificationDatasets"};
-		Parameters.ModelFolderName="ClassificationModels/";
+		//String[] args2= {"/Users/emadalharbi/Downloads/TestPreAcc/ClassificationDatasets"};
+		//Parameters.ModelFolderName="ClassificationModels/";
 		
 		
 		/* MR

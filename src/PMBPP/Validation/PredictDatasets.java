@@ -26,7 +26,7 @@ public class PredictDatasets {
 	public static void main(String[] args) throws Exception{
 		
 		String [] arg= {"/Users/emadalharbi/Downloads/TestPreAcc/noncs",new File("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS").getAbsolutePath()+"/"};
-		Parameters.TrainedModelsPath="PredictionModels";
+		Parameters.TrainedModelsPath="/Users/emadalharbi/Downloads/TestPreAcc/PredictionModels";
 		new PredictDatasets().Predict(arg);
 		
 		/* MR
@@ -101,18 +101,24 @@ for(File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { //loop
 		
 	}
 	String CSV="PDB";
+	String CSVToUseInStatisticalTest="PDB";
 	for(int  i=0; i < MeasurementUnitsHeaders.size() ; ++i)// add all headers 
 		CSV+=","+MeasurementUnitsHeaders.get(i);
+	CSVToUseInStatisticalTest=CSV;
+	for(int  i=0; i < MeasurementUnitsHeaders.size() ; ++i)// add all headers 
+		CSVToUseInStatisticalTest+=",Achieved"+MeasurementUnitsHeaders.get(i);
 	CSV+=",Prediction,Pipeline\n";
-	
+	CSVToUseInStatisticalTest+=",";
 	for(String PDB : Results.keySet()) {
 		int HeaderIndex=0;
 		
 		String Record1=PDB; 
 		String Record2=PDB; 
+		String Record2ForCSVToUseInStatisticalTest="";
+		String FeaturesForCSVToUseInStatisticalTest="";
 		for(String Key : Results.get(PDB).keySet()) {
 			if(MeasurementUnitsHeaders.get(HeaderIndex).equals(Key)) { // check the headers order because hashmaps are unsorted  
-					
+				FeaturesForCSVToUseInStatisticalTest=""; // empty string
 				Record1+=","+Results.get(PDB).get(Key);	
 				HeaderIndex++;
 				Vector<ExcelContents> TempExcel = new Vector<ExcelContents>();
@@ -128,9 +134,23 @@ for(File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { //loop
 				PMBPP.CheckDirAndFile("TempCSV");
 				String [] arg= {"TempExcel",new File(PathToDatasets).getAbsolutePath()+"/","TempCSV"};
 				new PredictionTrainingDataPreparer().Prepare(arg); // create a csv that only contains this only PDB in the excel 
-				 String Val = new CSVReader().GetRecordByHeaderName("TempCSV/Temp.csv", Key, 0); // now get the value 
+				String Val = new CSVReader().GetRecordByHeaderName("TempCSV/Temp.csv", Key, 0); // now get the value 
 				
 				Record2+=","+Val;
+				Record2ForCSVToUseInStatisticalTest+=Val+",";
+				for(int p = 0 ; p < Parameters.Features.split(",").length ; ++p) { // Features will be updated from model's header CSV when we predict  
+					 Val = new CSVReader().GetRecordByHeaderName("TempCSV/Temp.csv", Parameters.Features.split(",")[p], 0); // now get the value 
+					 if(p+1 < Parameters.Features.split(",").length) {
+						 FeaturesForCSVToUseInStatisticalTest+=Val+",";
+					 if(CSVToUseInStatisticalTest.split("\n").length==1 && !CSVToUseInStatisticalTest.contains(Parameters.Features.split(",")[p])) // we cannot add the features headers until Parameters.Features got updated from the model CSV when first predict is done   
+						 CSVToUseInStatisticalTest+=Parameters.Features.split(",")[p]+",";
+					 }
+					 else {
+						 FeaturesForCSVToUseInStatisticalTest+=Val;
+						 if(CSVToUseInStatisticalTest.split("\n").length==1 && !CSVToUseInStatisticalTest.contains(Parameters.Features.split(",")[p]))
+							 CSVToUseInStatisticalTest+=Parameters.Features.split(",")[p]+",Pipeline\n";
+						 }
+				}
 				FileUtils.deleteDirectory(new File("TempExcel")); 
 				FileUtils.deleteDirectory(new File("TempCSV")); 
 			}
@@ -141,6 +161,8 @@ for(File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { //loop
 			}
 		}
 		
+		
+		CSVToUseInStatisticalTest+=Record1+","+Record2ForCSVToUseInStatisticalTest+FeaturesForCSVToUseInStatisticalTest+","+ExcelName+"\n";
 		Record1+=",T,"+ExcelName+"\n";
 		Record2+=",F,"+ExcelName+"\n";
 		
@@ -151,13 +173,22 @@ for(File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { //loop
 	}
 	
 	if(new File("PredictedDatasets/"+ExcelName+".csv").exists()) {
-		new Log().Warning(this,ExcelName+".csv has found and deleted to create a new ");
+		new Log().Warning(this,ExcelName+".csv has found in PredictedDatasets and deleted to create a new ");
 		FileUtils.deleteQuietly(new File("PredictedDatasets/"+ExcelName+".csv"));
+	}
+	if(new File("CSVToUseInStatisticalTest/"+ExcelName+".csv").exists()) {
+		new Log().Warning(this,ExcelName+".csv has found in CSVToUseInStatisticalTest and deleted to create a new ");
+		FileUtils.deleteQuietly(new File("CSVToUseInStatisticalTest/"+ExcelName+".csv"));
 	}
 	PMBPP.CheckDirAndFile("PredictedDatasets");
 	try(  PrintWriter out = new PrintWriter( "PredictedDatasets/"+ExcelName+".csv")){
 	    out.println( CSV );
 	}
+	PMBPP.CheckDirAndFile("CSVToUseInStatisticalTest");
+	try(  PrintWriter out = new PrintWriter( "CSVToUseInStatisticalTest/"+ExcelName+".csv")){
+	    out.println( CSVToUseInStatisticalTest );
+	}
+	
 }
 		
 	}

@@ -65,7 +65,7 @@ public class PrepareFeatures {
 			Features fea=	new GetFeatures().Get(F.getAbsolutePath());
 			LinkedHashMap<String,String> FeatureInMap= new LinkedHashMap<String,String>();
 			for (Field field : fea.getClass().getDeclaredFields()) {
-				if(Parameters.Featuers.contains(field.getName())) // if this feature is using 
+				if(Parameters.Features.contains(field.getName())) // if this feature is using 
 				FeatureInMap.put(field.getName(), String.valueOf((Double)field.get(fea)));
 				
 		    }

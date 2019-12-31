@@ -57,7 +57,7 @@ public class CSVReader {
 		
 		for(String h : a) {
 			if(Features.containsKey(h)==false) {
-				if(Parameters.Featuers.contains(h)) {
+				if(Parameters.Features.contains(h)) {
 					Features.put(h, true);
 				}
 				else

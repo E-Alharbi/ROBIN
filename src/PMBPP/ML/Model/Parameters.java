@@ -149,10 +149,10 @@ public static void setMinClassLevel(String Header, double val) {
 		ClassLevelForRwork = Double.parseDouble(classLevelForRFactors);
 	}
 	public static String getFeatuers() {
-		return Featuers;
+		return Features;
 	}
-	public static void setFeatuers(String featuers) {
-		Featuers = featuers;
+	public static void setFeatuers(String features) {
+		Features = features;
 	}
 	public static String getMeasurementUnitsToPredict() {
 		return MeasurementUnitsToPredict;
@@ -278,7 +278,7 @@ public static void setMinNumClassesLevel(String minNumClassesLevel) {
 }
 
 
-public static String Featuers="RMSD,Skew,Resolution,Max,Min"; // features used  
+public static String Features="RMSD,Skew,Resolution,Max,Min"; // features used  
 // public static String Featuers="Skew,Resolution,Max"; // features used  
  public static String MeasurementUnitsToPredict="Completeness,R-free,R-work";
  public static String ModelFolderName="PredictionModels";

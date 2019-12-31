@@ -121,11 +121,11 @@ boolean ReadFromCSV=true;
 				return FeaturesToarray(features);
 	}
 	double [] FeaturesToarray(Features features) throws IllegalArgumentException, IllegalAccessException {
-		double [] featuresToarray = new double [Parameters.Featuers.split(",").length];
-		for(int i=0 ; i < Parameters.Featuers.split(",").length;++i) {
+		double [] featuresToarray = new double [Parameters.Features.split(",").length];
+		for(int i=0 ; i < Parameters.Features.split(",").length;++i) {
 		  
-		    if(features.GetFeatureByName(Parameters.Featuers.split(",")[i])!=null)
-			featuresToarray[i]=(double)features.GetFeatureByName(Parameters.Featuers.split(",")[i]);
+		    if(features.GetFeatureByName(Parameters.Features.split(",")[i])!=null)
+			featuresToarray[i]=(double)features.GetFeatureByName(Parameters.Features.split(",")[i]);
 		}
 		return featuresToarray;
 	}
@@ -140,10 +140,10 @@ boolean ReadFromCSV=true;
 		updatefromAttCSV();
 		
 		LinkedHashMap<String,String>  map = new LinkedHashMap<String,String> ();
-		for(int i=0 ; i < Parameters.Featuers.split(",").length;++i) {
+		for(int i=0 ; i < Parameters.Features.split(",").length;++i) {
 		
-			if(features.GetFeatureByName(Parameters.Featuers.split(",")[i])!=null)
-			map.put(Parameters.Featuers.split(",")[i], String.valueOf(features.GetFeatureByName(Parameters.Featuers.split(",")[i])));
+			if(features.GetFeatureByName(Parameters.Features.split(",")[i])!=null)
+			map.put(Parameters.Features.split(",")[i], String.valueOf(features.GetFeatureByName(Parameters.Features.split(",")[i])));
 		}
 		
 		return map;
@@ -154,17 +154,17 @@ boolean ReadFromCSV=true;
 		
 		 att = new BufferedReader(new FileReader(Parameters.AttCSV));
 		
-		Parameters.Featuers=att.readLine();
+		Parameters.Features=att.readLine();
 		
 		//remove MeasurementUnitsToPredict from first line in CSV
-		String [] features=Parameters.Featuers.split(",");
-		Parameters.Featuers="";
+		String [] features=Parameters.Features.split(",");
+		Parameters.Features="";
 		for(String feature :  features) {
 			if(!Parameters.MeasurementUnitsToPredict.contains(feature)) {
-				Parameters.Featuers+=feature+",";
+				Parameters.Features+=feature+",";
 			}
 		}
-		Parameters.Featuers=Parameters.Featuers.substring(0,Parameters.Featuers.length()-1);//remove last comma		
+		Parameters.Features=Parameters.Features.substring(0,Parameters.Features.length()-1);//remove last comma		
 		
 		att.close();
 	}
