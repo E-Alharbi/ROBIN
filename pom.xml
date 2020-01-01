@@ -179,13 +179,7 @@
 
 
 
-<dependency>
-    <groupId>RunComparison</groupId>
-    <artifactId>RunComparison</artifactId>
-    <version>1.0</version>
-    <scope>system</scope>
-    <systemPath>${project.basedir}/RunComparison.jar</systemPath>
-</dependency>
+
 
 <!-- https://mvnrepository.com/artifact/org.kohsuke/github-api -->
 <dependency>
@@ -196,10 +190,10 @@
 
 
 <dependency>
-		  <groupId>RunComparison</groupId>
-		  <artifactId>Comparison</artifactId>
-		  <version>1.0</version>
-	 </dependency>
+  <groupId>com.github.e-alharbi</groupId>
+  <artifactId>crystallographic-model-building-pipelines-comparison-tool</artifactId>
+  <version>1.0</version>
+</dependency>
 
 
   </dependencies>
