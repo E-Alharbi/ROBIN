@@ -1,6 +1,9 @@
 package PMBPP.Log;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import com.indvd00m.ascii.render.Render;
 import com.indvd00m.ascii.render.api.ICanvas;
@@ -47,20 +50,44 @@ public String CreateTable(List<String> headersList,List<List<String>> rowsList )
 			if(c.length()>Totalwidth)
 			Totalwidth=c.length();
 		}
-		Totalwidth=Totalwidth*headersList.size();
-for(List<String> L : rowsList) {
-	int max=0;
-			for(String r : L) {
-				
-					max+=r.length();
-			}
-			if(max>Totalwidth)
-				Totalwidth=max;
+		
+		HashMap<Integer,Vector<Integer>> ColAndWidth= new HashMap<Integer,Vector<Integer>>();
+for(int h=0 ; h < headersList.size() ; ++h) {
+	
+	for(List<String> L : rowsList) {
+		
+		if(ColAndWidth.containsKey(h)) {
+			Vector<Integer> temp = ColAndWidth.get(h);
+			temp.add(L.get(h).length());
+			ColAndWidth.put(h, temp);
+		}
+		else {
+			Vector<Integer> temp = new Vector<Integer>();
+			temp.add(L.get(h).length());
+			ColAndWidth.put(h, temp);
 		}
 		
+	}
+	if(ColAndWidth.containsKey(h)) {
+		Vector<Integer> temp = ColAndWidth.get(h);
+		temp.add(headersList.get(h).length());
+		ColAndWidth.put(h, temp);
+	}
+	else {
+		Vector<Integer> temp = new Vector<Integer>();
+		temp.add(headersList.get(h).length());
+		ColAndWidth.put(h, temp);
+	}
+	
+}
+Totalwidth=0;
+for(Integer h : ColAndWidth.keySet()) {
+	Totalwidth+=Collections.max(ColAndWidth.get(h));
+	
+}
 		IRender render = new Render();
 		IContextBuilder builder = render.newBuilder();
-		builder.width(Totalwidth+20).height(12);
+		builder.width(Totalwidth+50).height(rowsList.size()*3); // increase the height if you got java.lang.IllegalArgumentException
 		Table table = new Table(headersList.size(), rowsList.size()+1);// +1 for column headers
 		//Adding columns
 		int col=1;
