@@ -19,6 +19,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.json.simple.parser.ParseException;
 
 import PMBPP.Utilities.JSONReader;
+import PMBPP.Utilities.MTZReader;
 import PMBPP.Log.Log;
 import PMBPP.ML.Model.Parameters;
 import PMBPP.Utilities.CSVReader;
@@ -66,7 +67,7 @@ boolean ReadFromCSV=true;
 			
 			 features= new cfft().Cfft(new File(mtz).getAbsolutePath());
 			 
-			features.Resolution=new mtzinfo().GetReso(new File(mtz).getAbsolutePath());
+			features.Resolution=new mtzdump().GetReso(new File(mtz).getAbsolutePath());
 			
 			if(Parameters.MR.equals("T") ) {
 				SetSequenceIdentity(features,mtz);
@@ -177,8 +178,9 @@ boolean ReadFromCSV=true;
 				features.SequenceIdentity=Double.parseDouble(new PMBPP.Utilities.JSONReader().JSONToHashMap(new File(mtz).getParent()+"/"+mtzName+".json").get("gesamt_seqid"));
 			}
 			else {
-				System.out.println("It seems that you do not type in the sequence identity and no json file was found. Please type in the sequence identity using SequenceIdentity=Val ");
-				System.exit(-1);
+				
+				new Log().Error(this,"It seems that you do not type in the sequence identity and no json file was found. Please type in the sequence identity using SequenceIdentity=Val ");
+				
 			}
 		}
 		else {
