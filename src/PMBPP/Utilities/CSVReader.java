@@ -96,7 +96,24 @@ public class CSVReader {
 		}
 		return null;
 	}
-	
+	public HashMap<String, HashMap<String,String>> ReadIntoHashMapWithnoIDHeader(String CSV) throws IOException{
+		
+		 Reader in = new FileReader(CSV);
+			
+		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(in);
+		HashMap <String,Boolean>  Headers = Headers(CSV);
+		HashMap<String, HashMap<String,String>> CSVInTable= new HashMap<String,HashMap<String,String>>();
+		int ID=1;
+		for (CSVRecord record : records) {
+			 HashMap <String,String> map = new HashMap <String,String>();
+			  for(String Key : Headers.keySet()) {
+			    	map.put(Key, record.get(Key));
+			    }
+			  CSVInTable.put(String.valueOf(ID), map);
+			  ID++;
+		}
+		return CSVInTable;
+	}
 	public HashMap<String, Vector<HashMap<String,String>>> ReadIntoHashMap(String CSV, String IDHeader) throws IOException{
         Reader in = new FileReader(CSV);
 		
