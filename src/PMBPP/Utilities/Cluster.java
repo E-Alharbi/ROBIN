@@ -61,7 +61,7 @@ public class Cluster {
 			//Create a folder for each 
 			PMBPP.CheckDirAndFile("ExcelFolder/"+ExcelName);
 			FileUtils.copyFileToDirectory(Excel, new File("ExcelFolder/"+ExcelName));
-			ExcelAndTheirFolders.put(ExcelName, "ExcelFolder/"+ExcelName);
+			ExcelAndTheirFolders.put(ExcelName, new File("ExcelFolder/"+ExcelName).getAbsolutePath());
 		}
 		
 		//Now create a shell script for each 
