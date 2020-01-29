@@ -22,12 +22,12 @@ public class NumberOfTreesImpact {
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 		// TODO Auto-generated method stub
 	
-		new NumberOfTreesImpact().NumberOfTreesTable("/Users/emadalharbi/Downloads/TestPreAcc/PredictionModelsPerformance.xml");
+		new NumberOfTreesImpact().NumberOfTreesTable("/Users/emadalharbi/Downloads/PredictionModelsPerformance.xml");
 	
 	}
 	
 	
-	void NumberOfTreesTable(String PathToXML) throws ParserConfigurationException, SAXException, IOException {
+	public void NumberOfTreesTable(String PathToXML) throws ParserConfigurationException, SAXException, IOException {
 		
 		String TestDataCSV="Pipeline,Structure evaluation,Value,Value type,Iteration\n";
 		File fXmlFile = new File(PathToXML);
@@ -66,7 +66,7 @@ public class NumberOfTreesImpact {
 			}
 			
 			for (int a =0 ; a < nodes.getLength() ; ++a) {
-				System.out.println(PipelineName);
+				
 				if(nodes.item(a).getNodeName().equals("NumberOfIteration")) {
 					int NumberOfIterationInThisModel=Integer.parseInt(nodes.item(a).getAttributes().getNamedItem("NumberOfIteration").getNodeValue());
 					numberofNumberOfIterations.put(NumberOfIterationInThisModel,NumberOfIterationInThisModel);;
@@ -189,9 +189,7 @@ public class NumberOfTreesImpact {
 		new TxtFiles().WrtieStringToTxtFile("EvaluationTablesAndPlots/Error.tex", Table);
 		new TxtFiles().WrtieStringToTxtFile("EvaluationTablesAndPlots/Error.csv", CSV);
 		new TxtFiles().WrtieStringToTxtFile("EvaluationTablesAndPlots/TestData.csv", TestDataCSV);
-		System.out.println(Table);
-		System.out.println(CSV);
-		System.out.println(TestDataCSV);
+		
 		
 	}
 	
