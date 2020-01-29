@@ -2,6 +2,7 @@ package PMBPP.Utilities;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,6 +14,7 @@ import Comparison.Analyser.ExcelContents;
 import Comparison.Analyser.ExcelSheet;
 import PMBPP.Data.Preparation.ExcelContentsWithFeatures;
 import PMBPP.Data.Preparation.PredictionTrainingDataPreparer;
+import PMBPP.Log.Log;
 import PMBPP.ML.Model.PMBPP;
 import PMBPP.ML.Model.Parameters;
 import weka.core.Instances;
@@ -65,6 +67,26 @@ public class CSVWriter {
 		try(  PrintWriter out = new PrintWriter(Name)){
 		    out.println( CSV );
 		}
+	}
+	public void WriteFromHashMapContainsRepatedRecord(HashMap<String, Vector<HashMap<String,String>>> CSVContents , String Name) throws IOException {
+		HashMap<String,LinkedHashMap<String,String>> CSV =ConvertToNoneReaptedRecord(CSVContents);
+		WriteFromHashMap(CSV,Name);
+	}
+	 HashMap<String,LinkedHashMap<String,String>> ConvertToNoneReaptedRecord(HashMap<String, Vector<HashMap<String,String>>> CSVContentswithMultipleRecords ) throws IOException {
+		HashMap<String,LinkedHashMap<String,String>> CSVContents = new HashMap<String,LinkedHashMap<String,String>>();
+		
+		for(String PDB : CSVContentswithMultipleRecords.keySet()) {
+			
+			LinkedHashMap<String,String> temp = new LinkedHashMap<String,String>();
+			if(CSVContentswithMultipleRecords.get(PDB).size()>1) {
+				new Log().Warning(this, "This CSV contains two records or more with same headr ID. Only one will be taken. Please check if this not effect your final results");
+			}
+			for(String key : CSVContentswithMultipleRecords.get(PDB).get(0).keySet()) {
+				temp.put(key, CSVContentswithMultipleRecords.get(PDB).get(0).get(key));
+			}
+			CSVContents.put(PDB, temp);
+		}
+		return CSVContents;
 	}
 	public void WriteToCSV(Vector<ExcelContentsWithFeatures> Excel , String Pipeline) throws FileNotFoundException, IllegalArgumentException, IllegalAccessException {
 		
