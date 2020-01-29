@@ -24,7 +24,7 @@ import PMBPP.Validation.CustomException;
 public class ClassificationPreparer {
 	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException, ParseException, CustomException {
 		String DataPath="/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS";
-		String CSVFile="/Users/emadalharbi/Downloads/PredictedDatasets/";
+		String CSVFile="/Users/emadalharbi/Downloads/TestPC/PredictedDatasets";
 		//String [] arg2= {DataPath,CSVFile};
 		//new ClassificationPreparer().Prepare(arg2);
 		//Parameters.Phases="model.HLA,model.HLB,model.HLC,model.HLD";
@@ -33,7 +33,7 @@ public class ClassificationPreparer {
 		for(File csv : new FilesUtilities().ReadFilesList(CSVFile)) {
 			
 			//String [] arg2= {new File(DataPath).getAbsolutePath()+"/",csv.getAbsolutePath()};
-			Parameters.AttCSV="/Users/emadalharbi/Downloads/TestPreAcc/PredictionModels/R-free/Buccaneeri1I5.csv";
+			Parameters.AttCSV="/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/PredictionModels/Completeness/Buccaneeri1I5.csv";
 			new ClassificationPreparer().Prepare(new File(DataPath).getAbsolutePath()+"/",csv.getAbsolutePath());
 			
 		}
