@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
@@ -24,7 +25,7 @@ public class PredictionTrainingDataPreparer {
 	public static void main(String[] args) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException, NumberFormatException, IllegalArgumentException, ParseException {
 		
 		//experimental phases 
-		String [] arg = {"/Users/emadalharbi/Downloads/TestPreAcc/noncs/","/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/", "CSV"};
+		String [] arg = {"/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/noncs","/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/", "CSV"};
 	
 		new PredictionTrainingDataPreparer().Prepare(arg);
 		
@@ -55,6 +56,7 @@ public class PredictionTrainingDataPreparer {
 		Excel =  f.ReadExcel(e.getAbsolutePath());
 		
 		Excel2=	new ExcelContentsWithFeatures().Addall(Excel);
+		Collections.sort(Excel2, ExcelContentsWithFeatures.SortingByPDB); // Sorting here to get the same test/train data across all pipelines. Because of using same seed to randomise the data, we will get same test/train every time we create a new model  
 		new Log().TxtInRectangle("Excel: "+e.getName());
 		
 		 for(ExcelContentsWithFeatures EE : Excel2) {
