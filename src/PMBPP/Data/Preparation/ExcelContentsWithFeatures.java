@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.Comparator;
 import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -23,7 +24,7 @@ public class ExcelContentsWithFeatures extends ExcelContents  {
 
 	public Features CM = new Features();
 	
-	Vector<ExcelContentsWithFeatures> Addall(Vector<ExcelContents> Excel) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException{
+	public Vector<ExcelContentsWithFeatures> Addall(Vector<ExcelContents> Excel) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException{
 		Vector<ExcelContentsWithFeatures> Temp = new Vector<ExcelContentsWithFeatures>();
 		
 		for(ExcelContents e : Excel) {
@@ -34,7 +35,7 @@ public class ExcelContentsWithFeatures extends ExcelContents  {
 			for(Field F : Fields) {
 				for(Field F2 : Fields2) {
 					if(F.getName().equals(F2.getName())) {
-						//F2=F.get(e);
+						
 						F2.set(temp, F.get(e));
 					}
 				}
@@ -43,10 +44,7 @@ public class ExcelContentsWithFeatures extends ExcelContents  {
 			}
 			
 			
-			//BeanUtils.copyProperties(temp, e);
 			
-			//System.out.println(temp.toString());
-			//System.out.println(temp.toString());
 			Temp.add(temp);
 		}
 		
@@ -55,5 +53,20 @@ public class ExcelContentsWithFeatures extends ExcelContents  {
 	}
 	
 
+	public static Comparator<ExcelContentsWithFeatures> SortingByPDB = new Comparator<ExcelContentsWithFeatures>() {
+
+		public int compare(ExcelContentsWithFeatures Ele1, ExcelContentsWithFeatures Ele2) {
+
+			String Ele11 = Ele1.PDB_ID;
+			String Ele22 = Ele2.PDB_ID;
+
+			// ascending order
+			return Ele11.compareTo(Ele22);
+
+			// descending order
+			// return Ele11.compareTo(Ele22);
+		}
+
+	};
 	
 }
