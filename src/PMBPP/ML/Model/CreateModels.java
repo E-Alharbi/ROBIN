@@ -42,13 +42,13 @@ public class CreateModels {
 		
 		
 		//Prediction
-		String[] args2= {"CSV"};
-		Parameters.ModelFolderName="PredictionModels/";
+		//String[] args2= {"CSV"};
+		//Parameters.ModelFolderName="PredictionModels/";
 		
 		//Classification
-		//String[] args2= {"/Users/emadalharbi/Downloads/TestPreAcc/ClassificationDatasets"};
-		//Parameters.ModelFolderName="ClassificationModels/";
-		
+		String[] args2= {"/Users/emadalharbi/Downloads/TestPMBPPAfterUniformData/ClassificationDatasets"};
+		Parameters.ModelFolderName="ClassificationModels/";
+		Parameters.NumberOfTrees="4096";
 		
 		/* MR
 		 * Parameters.MR="T";
@@ -104,7 +104,7 @@ new CreateModels().Models(args2);
 						for(File CSV : files) {
 							new Log().Info(this, "Model: "+F+"-"+CSV.getName());
 							Set<String> temp=  new HashSet<String>(measurements.keySet());
-							temp.remove(F);
+							temp.remove(F);// this means this label will not be deleted 
 							Vector<String> att = new Vector<String>(temp);
 						
 								CM.CreateModel("./"+Parameters.ModelFolderName+"/"+F+"/"+CSV.getName().substring(0,CSV.getName().indexOf(".")), CSV.getAbsolutePath(), F ,att,CSV.getName().substring(0,CSV.getName().indexOf(".")) );
@@ -126,7 +126,9 @@ new CreateModels().Models(args2);
 		Pre.LoadData(Data, Label); // Label id here starts from zero
 		Pre.RemoveAttribute(RemovedAtt , Label); // here starts from 1. First attribute is 1
 		Evaluation evaluation=null;
-		Pre.Split(0.66, Pipeline+"-"+Label);
+		//Pre.Split(0.66, Pipeline+"-"+Label);
+		Pre.Split(0.80, Pipeline+"-"+Label);
+		
 		
 		if(Parameters.MultipleModels.equals("F")) {
 		Pre.Train();
@@ -197,7 +199,6 @@ new CreateModels().Models(args2);
 	        	
 	      if(evaluations1.get(model).get(NumberOfTrees).get(i) instanceof Evaluation) 	{  
 	    	  
-	    	 
 	    	  
 	    	  Element Evaluationelm3 = xml.getDocument().createElement("Evaluation");  
 	    	  elm2.appendChild(Evaluationelm3);
