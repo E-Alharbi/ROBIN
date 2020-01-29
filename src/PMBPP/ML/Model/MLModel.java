@@ -3,45 +3,39 @@ package PMBPP.ML.Model;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Collections;
-import java.util.Enumeration;
+
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import java.util.Random;
-import java.util.TreeMap;
+
 import java.util.Vector;
 
-import org.apache.commons.lang3.math.NumberUtils;
-import org.w3c.dom.Element;
+
 
 import PMBPP.Log.Log;
 import PMBPP.Utilities.CSVReader;
 import PMBPP.Utilities.CSVWriter;
 import weka.attributeSelection.ClassifierAttributeEval;
-import weka.attributeSelection.InfoGainAttributeEval;
+
 import weka.attributeSelection.Ranker;
 import weka.attributeSelection.WrapperSubsetEval;
-import weka.classifiers.Classifier;
+
 import weka.classifiers.Evaluation;
-import weka.classifiers.functions.SimpleLinearRegression;
-import weka.classifiers.functions.LinearRegression;
-import weka.classifiers.functions.SMO;
-import weka.classifiers.meta.Bagging;
-import weka.classifiers.meta.FilteredClassifier;
-import weka.classifiers.trees.J48;
+
 import weka.classifiers.trees.RandomForest;
-import weka.core.Attribute;
+
 import weka.core.DenseInstance;
 import weka.core.Instances;
 import weka.core.SelectedTag;
-import weka.core.Utils;
+
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.unsupervised.attribute.Remove;
 import weka.filters.Filter;
@@ -319,9 +313,9 @@ return evaluation;
             	  Collections.sort(classes);
             	  
                 if(Prediction.equals(classes.get(0)))
-                Prediction="Strong prediction";
+                Prediction="High";
                 if(Prediction.equals(classes.get(1)))
-                   Prediction="Weak prediction";
+                  Prediction="Low";
               }
               Parameters.Log="T";
 		  }
