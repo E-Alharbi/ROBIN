@@ -65,9 +65,16 @@ public class Predict {
 		String [] arg= {Path};
 		
 		Predict Pre = new Predict();
-        Parameters.TrainedModelsPath="/Volumes/PhDHardDrive/PredictionModels";
+        Parameters.TrainedModelsPath="/Volumes/PhDHardDrive/FinalTraining/Experimental/Predict/PredictionModels";
 		Pre.PredictMultipleModles(arg);
 		Pre.Print(Pre.PipelinesPredictions);
+		
+		
+		Parameters.TrainedModelsPath="/Volumes/PhDHardDrive/FinalTraining/Experimental/Predict/ClassificationModels";
+		Pre.PredictMultipleModles(arg);
+		Pre.Print(Pre.PipelinesPredictions);
+		
+		
 		
 	}
 	
@@ -200,7 +207,7 @@ public class Predict {
         }
 		
 
-        String tableString = new Log().CreateTable(headersList, rowsList);
+    String tableString = new Log().CreateTable(headersList, rowsList);
 		 
 	System.out.println(tableString);
 	PredictionTable=tableString;
