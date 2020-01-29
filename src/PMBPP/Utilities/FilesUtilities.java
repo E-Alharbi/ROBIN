@@ -8,6 +8,7 @@ import java.util.Vector;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import PMBPP.Log.Log;
 import PMBPP.ML.Model.Parameters;
 
 public class FilesUtilities {
@@ -23,6 +24,9 @@ public class FilesUtilities {
 	
 	public File [] ReadFilesList(String Dir) {
 		//https://stackoverflow.com/questions/30486404/java-list-files-in-a-folder-avoiding-ds-store/30486678
+		if(!new File(Dir).isDirectory())
+			new Log().Error(this, Dir + " not found or not a directory");
+		
 		File[] files = new File(Dir).listFiles(new FilenameFilter() {
 	        @Override
 	        public boolean accept(File dir, String name) {
