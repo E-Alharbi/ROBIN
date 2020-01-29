@@ -11,24 +11,27 @@ import PMBPP.ML.Model.Parameters;
 import PMBPP.Utilities.FilesUtilities;
 
 
-
+// Class to run cfft tool from ccp4
 public class cfft {
-String Phases="";
+
 	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-		String Path="/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/";
+		
+		//Example to run multiple data sets 
+		String Path="/NO-NCS/"; // Path to data sets
 		/*
 		for(File M : new FilesUtilities().ReadFilesList(Path)) {
 			if(M.getName().contains(".mtz")) {
 			cfft c = new cfft();
-			c.Phases="HLA,HLB,HLC,HLD";
+			Parameters.colinfo="HLA,HLB,HLC,HLD";
 			
 			System.out.print(M+"\t"+c.Cfft(M.getAbsolutePath()).Max+"\t");
-			c.Phases="parrot.ABCD.A,parrot.ABCD.B,parrot.ABCD.C,parrot.ABCD.D";
+			Parameters.colinfo="parrot.ABCD.A,parrot.ABCD.B,parrot.ABCD.C,parrot.ABCD.D";
 			System.out.println(c.Cfft(M.getAbsolutePath()).Max+"\t");}
 		}
 		*/
-new cfft().Cfft("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1o6a-1.9-parrot-noncs.mtz");
+		
+		// Example: single data set 
+         new cfft().Cfft("1o6a-1.9-parrot-noncs.mtz");
 	}
 
 	public Features Cfft(String mtzin) throws IOException {
@@ -43,7 +46,7 @@ new cfft().Cfft("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1o6a-1.
 	};
 	 
 	Process p = Runtime.getRuntime().exec(callAndArgs);
-	//Process p = new ProcessBuilder(callAndArgs).start();
+	
 		             
 
 	BufferedReader stdInput = new BufferedReader(new 
@@ -61,9 +64,9 @@ new cfft().Cfft("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1o6a-1.
 		             Features CM= new Features();
 		            
 		             while ((st = stdInput.readLine()) != null) {
-		            	// System.out.println(st);
+		            	
 		            	 if(st.contains("About mean (rmsd)")) {
-		            		// System.out.println(st.substring(st.indexOf("About mean (rmsd)")).replaceAll("[^0-9\\\\.]+", ""));
+		            		
 		            	
 		            		 CM.RMSD=Double.parseDouble(st.substring(st.indexOf("About mean (rmsd)")).replaceAll("[^0-9\\\\.]+", ""));
 		            		 if(st.substring(st.indexOf("About mean (rmsd)")).contains("-")) // Parsing statement removes negative sign  
@@ -79,8 +82,7 @@ new cfft().Cfft("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1o6a-1.
 		            	 
 		            	 }
 		            	 if(st.contains("Range:")) {
-		            		// System.out.println(st.substring(st.indexOf("Min"),st.indexOf("Max")).replaceAll("[^0-9\\\\.]+", ""));
-		            		// System.out.println(st.substring(st.indexOf("Max")).replaceAll("[^0-9\\\\.]+", ""));
+		            		
 		            		
 CM.Min=Double.parseDouble(st.substring(st.indexOf("Min"),st.indexOf("Max")).replaceAll("[^0-9\\\\.]+", ""));
 CM.Max=Double.parseDouble(st.substring(st.indexOf("Max")).replaceAll("[^0-9\\\\.]+", ""));
@@ -92,7 +94,7 @@ if(st.substring(st.indexOf("Max")).contains("-"))
 		            	 }
 		             }
 		            
-		             //System.out.println(CM);
+		            
 		             boolean Error=false;
 		             while ((st = stdError.readLine()) != null) {
 
