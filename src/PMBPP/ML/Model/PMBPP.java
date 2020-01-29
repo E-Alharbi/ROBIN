@@ -20,9 +20,13 @@ import PMBPP.Data.Preparation.ClassificationPreparerWithOptimizeClasses;
 import PMBPP.Data.Preparation.GetFeatures;
 import PMBPP.Data.Preparation.PrepareFeatures;
 import PMBPP.Log.Log;
+import PMBPP.Prediction.Analysis.NumberOfTreesImpact;
+import PMBPP.Prediction.Analysis.ModelPerformance;
 import PMBPP.Updater.Update;
 import PMBPP.Data.Preparation.PredictionTrainingDataPreparer;
+import PMBPP.Utilities.Cluster;
 import PMBPP.Utilities.FilesUtilities;
+import PMBPP.Validation.ClassifyDatasets;
 import PMBPP.Validation.PredictDatasets;
 
 public class PMBPP {
@@ -111,7 +115,7 @@ public class PMBPP {
 					}
 					Parameters.Usecfft=false;
 					
-					System.out.println("Predictions uncertainty:");
+					System.out.println("Predictions confidence:");
 					Pre.PredictMultipleModles(arg);
 					Pre.Print(Pre.PipelinesPredictions);
 					
@@ -127,14 +131,28 @@ public class PMBPP {
 		 }
 		 
 		 if(args[0].equals("FullTraining")){
-			 new  PMBPP().PrepareDataForPredictionModels(Parm);
-			 Vector <String> Temp = new   Vector <String>(Parm);
-			 Parm.clear();
-			 Parm.add("CSV");// keyword
-			 Parm.add("CSV");// Path
-			 new  PMBPP().PredictionModels(Parm);
-			 Parm.clear();
-			 new  PMBPP().PrepareDataForClassification(Temp); // Temp = ExcelFolder and Datasets
+			
+			 if(Parameters.Cluster.equals("T") && new FilesUtilities().ReadFilesList(checkArg(Parm,"ExcelFolder")).length>1) {
+				 new Cluster().Jobs();
+				 System.exit(-1);
+			 }
+			 
+			new  PMBPP().PrepareDataForPredictionModels(Parm);
+			Vector <String> Temp = new   Vector <String>(Parm);
+			Parm.clear();
+			Parm.add("CSV");// keyword
+			Parm.add("CSV");// Path
+			new  PMBPP().PredictionModels(Parm);
+			Parm.clear();
+			new  PMBPP().PrepareDataForClassification(Temp); // Temp = ExcelFolder and Datasets
+			new ModelPerformance().SplitOnMeasurementUnitsLevel("CSVToUseInStatisticalTest");
+			new ModelPerformance().OmitTrainingdata("CSVToUseInStatisticalTestSplitted","TrainAndTestDataPredictionModels");
+			new ModelPerformance().GroupedByResolution("CSVToUseInStatisticalTestFiltered");
+			new NumberOfTreesImpact().NumberOfTreesTable("PredictionModelsPerformance.xml");
+			
+			Parameters.TrainedModelsPath="ClassificationModels";
+			new ClassifyDatasets().Classify("CSVToUseInStatisticalTest",new File(checkArg(Temp,"Datasets")).getAbsolutePath());
+			new ClassifyDatasets().OmitTrainingData("ClassifedDatasets","TrainAndTestDataClassificationModels");
 		 }
 		 
 		 
@@ -257,10 +275,12 @@ public class PMBPP {
 				 
 				
 				 setter.invoke(this, checkArg(Parm,setterName));
-				
+				 
 			 }
 			 
 		 }
 		 Parameters.CheckDependency();
+		 
+		 
 	}
 }
