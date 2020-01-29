@@ -58,10 +58,9 @@ public class PrepareFeatures {
 			mtz=new FilesUtilities().ReadMtzList(PathToDatasets);
 		}
 		HashMap<String,LinkedHashMap<String,String>> PDB= new HashMap<String,LinkedHashMap<String,String>>();
-		//ProgressBar pb = new ProgressBar("Preparing features:",new FilesUtilities().ReadMtzList(PathToDatasets).length); 
-		//pb.start();
+		
 		for(File F :  mtz) {
-			//pb.step();
+			
 			Features fea=	new GetFeatures().Get(F.getAbsolutePath());
 			LinkedHashMap<String,String> FeatureInMap= new LinkedHashMap<String,String>();
 			for (Field field : fea.getClass().getDeclaredFields()) {
@@ -75,7 +74,7 @@ public class PrepareFeatures {
 			PDB.put(MTZ, FeatureInMap);
 		
 		}
-		//pb.stop();
+		
 		if(!new File(PathToDatasets).isFile())
 		new CSVWriter().WriteFromHashMap(PDB, "features.csv");
 		else
