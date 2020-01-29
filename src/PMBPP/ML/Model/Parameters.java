@@ -14,6 +14,12 @@ public class Parameters {
 	public static double getClassLevelForRfree() {
 		return ClassLevelForRfree;
 	}
+	public static String getCluster() {
+		return Cluster;
+	}
+	public static void setCluster(String cluster) {
+		Cluster = cluster;
+	}
 	public static void setClassLevelForRfree(String classLevelForRfree) {
 		ClassLevelForRfree = Double.parseDouble(classLevelForRfree);
 	}
@@ -148,10 +154,10 @@ public static void setMinClassLevel(String Header, double val) {
 	public static void setClassLevelForRFactors(String classLevelForRFactors) {
 		ClassLevelForRwork = Double.parseDouble(classLevelForRFactors);
 	}
-	public static String getFeatuers() {
+	public static String getFeatures() {
 		return Features;
 	}
-	public static void setFeatuers(String features) {
+	public static void setFeatures(String features) {
 		Features = features;
 	}
 	public static String getMeasurementUnitsToPredict() {
@@ -176,6 +182,9 @@ public static void setMinClassLevel(String Header, double val) {
 		return Phases;
 	}
 	public static void setPhases(String phases) {
+		if(phases.split(",").length!=4)
+			new Log().Error(new Parameters(), "Phases are wrong! (for Example Phases=HLA,HLB,HLC,HLD)");
+		
 		Phases = phases;
 	}
 	public static String getNumberOfTrees() {
@@ -342,6 +351,21 @@ public static String SplitOnStructureLevel="F";
  public static String OptimizeClasses="T";
  public static String Log="T";
  public static String ClassificationDatasetsFolderName="ClassificationDatasets";
+public static String PearsonsCorrelation="F";
+public static String AnovaForClassification="F";
+public static String Cluster="F";
+public static String getAnovaForClassification() {
+	return AnovaForClassification;
+}
+public static void setAnovaForClassification(String anovaForClassification) {
+	AnovaForClassification = anovaForClassification;
+}
+public static String getPearsonsCorrelation() {
+	return PearsonsCorrelation;
+}
+public static void setPearsonsCorrelation(String pearsonsCorrelation) {
+	PearsonsCorrelation = pearsonsCorrelation;
+}
 public static String getLog() {
 	return Log;
 }
