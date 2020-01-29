@@ -25,8 +25,11 @@ public class PredictDatasets {
 
 	public static void main(String[] args) throws Exception{
 		
-		String [] arg= {"/Users/emadalharbi/Downloads/TestPreAcc/noncs",new File("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS").getAbsolutePath()+"/"};
-		Parameters.TrainedModelsPath="/Users/emadalharbi/Downloads/TestPreAcc/PredictionModels";
+		//String [] arg= {"/Users/emadalharbi/Downloads/TestPreAcc/noncs",new File("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS").getAbsolutePath()+"/"};
+		//Parameters.TrainedModelsPath="/Users/emadalharbi/Downloads/TestPreAcc/PredictionModels";
+		String [] arg= {"/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/noncs",new File("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS").getAbsolutePath()+"/"};
+
+		Parameters.TrainedModelsPath="/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/ClassificationModels";
 		new PredictDatasets().Predict(arg);
 		
 		/* MR
@@ -72,7 +75,7 @@ for(File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { //loop
 		Parameters.Usecfft=true;
 		Predict Pre = new Predict();
 		Parameters.FilterModels="T";
-		Parameters.FilteredModels.add(ExcelName); // remove the others models. Only keep the model that mathc this excel 
+		Parameters.FilteredModels.add(ExcelName); // remove the others models. Only keep the model that match this excel 
 		
 		Pre.PredictMultipleModles(arg);
 		//Pre.Print(Pre.PipelinesPredictions);
