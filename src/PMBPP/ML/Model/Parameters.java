@@ -352,14 +352,9 @@ public static String SplitOnStructureLevel="F";
  public static String Log="T";
  public static String ClassificationDatasetsFolderName="ClassificationDatasets";
 public static String PearsonsCorrelation="F";
-public static String AnovaForClassification="F";
+
 public static String Cluster="F";
-public static String getAnovaForClassification() {
-	return AnovaForClassification;
-}
-public static void setAnovaForClassification(String anovaForClassification) {
-	AnovaForClassification = anovaForClassification;
-}
+
 public static String getPearsonsCorrelation() {
 	return PearsonsCorrelation;
 }
