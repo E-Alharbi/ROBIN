@@ -18,8 +18,7 @@ import java.util.Random;
 
 import java.util.Vector;
 
-
-
+import PMBPP.Data.Preparation.ClassificationPreparerWithOptimizeClasses.SortedByIntKeys;
 import PMBPP.Log.Log;
 import PMBPP.Utilities.CSVReader;
 import PMBPP.Utilities.CSVWriter;
@@ -303,14 +302,14 @@ return evaluation;
 		  }
 		  
 		  if(Prediction.contains("±")) {
-			  Parameters.Log="F";// no need to the log here only tables are needed
+			  Parameters.Log="F";// no need for the log here only tables are needed
 			  HashMap <String,Boolean> MeasurementUnitsToPredict=  new CSVReader().FilterByFeatures(Parameters.AttCSV, false);
 			 Vector<String> Headers= new Vector<String>();
 			 Headers.add(String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]));
 			  HashMap<String, Vector<HashMap<String, String>>> map=	new CSVReader().ReadIntoHashMapWithFilterdHeaders(Parameters.AttCSV,  String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]), Headers);
               if(map.keySet().size()==2) { // if it binary classification 
-            	  List <String>classes = new ArrayList<>(map.keySet());
-            	  Collections.sort(classes);
+               List <String>classes = new ArrayList<>(map.keySet());
+               Collections.sort(classes,new SortedByIntKeys());
             	  
                 if(Prediction.equals(classes.get(0)))
                 Prediction="High";
