@@ -28,7 +28,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException, ParseException, CustomException {
 		// TODO Auto-generated method stub
 		Parameters.Log="F";
-		Parameters.PearsonsCorrelation="T";
+		//Parameters.PearsonsCorrelation="T";
 		String DataPath="/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/";
 		Parameters.AttCSV="/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/PredictionModels/Completeness/Buccaneeri1I5.csv";
 		new ClassificationPreparerWithOptimizeClasses().Optimize(DataPath, "/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/PredictedDatasets/Buccaneeri1I5.csv");
@@ -47,7 +47,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 			double val= BestValueToSpilt(DataPath,CSV, Header);
 			Parameters.setClassLevel(Header, val);
 			Parameters.setMaxClassLevel(Header, val);// any class above this value then it will set to this value/class
-			System.out.println("Best Class level "+Parameters.getClassLevel(Header));
+			//System.out.println("Best Class level "+Parameters.getClassLevel(Header));
 	
 		}
 		
@@ -58,6 +58,9 @@ public class ClassificationPreparerWithOptimizeClasses {
 	double BestValueToSpilt(String DataPath , String CSV , String Header) throws IllegalArgumentException, IllegalAccessException, IOException, ParseException, CustomException {
 		
 		double Best=Integer.MAX_VALUE;
+		if(Parameters.PearsonsCorrelation.equals("T"))
+			Best=0;
+		
 		double BestLevel=-1;
 		double i=1;
 		double increaseBy=1;
@@ -81,20 +84,40 @@ public class ClassificationPreparerWithOptimizeClasses {
 		HashMap<String,Integer> counted = CountInstanceInClasses(map);
 		
 		
-		
-		if(Parameters.PearsonsCorrelation.equals("F") && Parameters.AnovaForClassification.equals("F"))
-		if(PercentgeOfClassesInEqualSize(counted , counted.keySet().size()) < Best) {
-				Best = PercentgeOfClassesInEqualSize(counted,counted.keySet().size());
+		Vector<Double> NumberofDatasetsInFirstAndRest=PercentgeOfClassesInEqualSize(counted , counted.keySet().size());
+		if(Parameters.PearsonsCorrelation.equals("F") ) {
+			double CurrentBest=Math.abs(NumberofDatasetsInFirstAndRest.get(0)-NumberofDatasetsInFirstAndRest.get(1)); // 0 is the first class and 1 is the rest of classes
+		if(CurrentBest < Best) {
+				Best = CurrentBest;
 				BestLevel=Parameters.getClassLevel(Header);
 		}
-		
-		if(Parameters.PearsonsCorrelation.equals("T") || Parameters.AnovaForClassification.equals("T"))
-		if(CalculateStatisticalTest(counted.keySet().toArray(new String[counted.keySet().size()]),CSV,map,Header)==true) {
-			if(PercentgeOfClassesInEqualSize(counted , counted.keySet().size()) < Best) {
-					Best = PercentgeOfClassesInEqualSize(counted,counted.keySet().size());
-					BestLevel=Parameters.getClassLevel(Header);
-			}
 		}
+		if(Parameters.PearsonsCorrelation.equals("T")) {
+			double PercentgeOfFirstClass=(NumberofDatasetsInFirstAndRest.get(0)*100)/(NumberofDatasetsInFirstAndRest.get(1)+NumberofDatasetsInFirstAndRest.get(0));
+			double PercentgeRestOfClasses=(NumberofDatasetsInFirstAndRest.get(1)*100)/(NumberofDatasetsInFirstAndRest.get(1)+NumberofDatasetsInFirstAndRest.get(0));
+			boolean AllowedRange=false;
+			if(PercentgeOfFirstClass>=50 && PercentgeOfFirstClass <= 60 && PercentgeRestOfClasses>=40 && PercentgeRestOfClasses<=50)
+			{
+				AllowedRange=true;
+			}
+			if(PercentgeOfFirstClass>=40 && PercentgeOfFirstClass <= 50 && PercentgeRestOfClasses>=50 && PercentgeRestOfClasses<=60)
+			{
+				AllowedRange=true;
+			}
+			
+			if(AllowedRange==true) {
+				
+			
+			
+			if(CalculateStatisticalTest(counted.keySet().toArray(new String[counted.keySet().size()]),CSV,map,Header) > Best) {
+			
+					Best = CalculateStatisticalTest(counted.keySet().toArray(new String[counted.keySet().size()]),CSV,map,Header);
+					BestLevel=Parameters.getClassLevel(Header);
+			
+		}}
+		}
+		
+		
 		
 		FileUtils.deleteDirectory(new File(Parameters.ClassificationDatasetsFolderName));
 		}
@@ -124,38 +147,26 @@ public class ClassificationPreparerWithOptimizeClasses {
 		return counted;
 	}
 	
-	double PercentgeOfClassesInEqualSize(HashMap<String,Integer>  Diff , int NumOfClasses) {
+	Vector<Double> PercentgeOfClassesInEqualSize(HashMap<String,Integer>  Diff , int NumOfClasses) {
 	
-		Map<String,Integer> SortedMap = new TreeMap<>(new SortedByIntKeys());
+		TreeMap<String,Integer> SortedMap = new TreeMap<>(new SortedByIntKeys());
 		
 		for(String ID : Diff.keySet()) { // to sort the map
 			SortedMap.put(ID, Diff.get(ID));
 		}
 		
-		
-		boolean GetFirstClass=false;
-		double FirstClass = Collections.max(Diff.values());
-		for(String ID : SortedMap.keySet()) {
-			if(GetFirstClass==false) {
-				GetFirstClass=true;
-				FirstClass=SortedMap.get(ID);
-				break;
-			}
-			
+		double FirstClass = SortedMap.get(SortedMap.firstKey());
+		SortedMap.remove(SortedMap.firstKey());
+		double RestOfClasses=0;
+		for (String Class : SortedMap.keySet()) {
+				RestOfClasses+=SortedMap.get(Class);
 		}
+		Vector<Double> Temp = new Vector<Double>();
+		Temp.add(FirstClass);
+		Temp.add(RestOfClasses);
+		return Temp;
 		
 		
-		
-		
-		//sum the rest of classes 
-		int total=0;
-		for (String Class : Diff.keySet()) {
-			if(FirstClass != Diff.get(Class)) {
-				total+=Diff.get(Class);
-			}
-		}
-		
-		return Math.abs(FirstClass - total);
 		
 	}
 void isValid(String CSV, String PathToDatasets) {
@@ -172,7 +183,7 @@ void isValid(String CSV, String PathToDatasets) {
 		
 	}
 
-boolean CalculateStatisticalTest(String [] Calsses, String PredcitedDatasetsCSV,HashMap<String, Vector<HashMap<String, String>>> ClassifedDatasetsForTraning, String Header ) throws IOException {
+double CalculateStatisticalTest(String [] Calsses, String PredcitedDatasetsCSV,HashMap<String, Vector<HashMap<String, String>>> ClassifedDatasetsForTraning, String Header ) throws IOException {
 	TreeMap<String,Vector<String>> GroupedPDBbyClass= new TreeMap<String,Vector<String>>(new SortedByIntKeys());
 	
 	// Getting PDB and grouped them depending on their classes 
@@ -206,7 +217,7 @@ boolean CalculateStatisticalTest(String [] Calsses, String PredcitedDatasetsCSV,
 			Actual.add(ActualAndPredicted.get(1).get(Header));
 	}
 	if(Actual.size()<2 || Predicted.size()<2) // can not calculate PC
-		return false;
+		return 0;
 	
 	double ClassOnePC=new StatisticalTests().PC(Actual,Predicted);
 	Vector<Double> TempActual = new Vector<Double>();
@@ -216,7 +227,7 @@ boolean CalculateStatisticalTest(String [] Calsses, String PredcitedDatasetsCSV,
 	for(String s : Predicted)
 		TempPredicted.add(Double.parseDouble(s));
 	
-	double anovaForForstClass=Double.parseDouble(new StatisticalTests().anova(TempActual, TempPredicted));
+	//double anovaForForstClass=Double.parseDouble(new StatisticalTests().anova(TempActual, TempPredicted));
 	Actual.clear();
 	Predicted.clear();
 	GroupedPDBbyClass.remove(GroupedPDBbyClass.firstKey()); // remove first class we do not need it
@@ -232,7 +243,7 @@ boolean CalculateStatisticalTest(String [] Calsses, String PredcitedDatasetsCSV,
 		}
 	}
 	if(Actual.size()<2 || Predicted.size()<2) // can not calculate PC  
-		return false;
+		return 0;
 	
 	double RestofClassesPC=new StatisticalTests().PC(Actual,Predicted);
 	
@@ -244,6 +255,7 @@ boolean CalculateStatisticalTest(String [] Calsses, String PredcitedDatasetsCSV,
 	for(String s : Predicted)
 		TempPredicted.add(Double.parseDouble(s));
 	
+	/*
 	double anovaForRestClasses=Double.parseDouble(new StatisticalTests().anova(TempActual, TempPredicted));
 	
 	if(Parameters.AnovaForClassification.equals("T")) {
@@ -252,19 +264,22 @@ boolean CalculateStatisticalTest(String [] Calsses, String PredcitedDatasetsCSV,
 	else
 	return false;
 	}
+	*/
 	
 	// Or PC
-	if((((ClassOnePC-RestofClassesPC)*100)/ClassOnePC) >=5)
-	//if(Math.abs(ClassOnePC-RestofClassesPC) >= 0.05)
+	/*
+	if((((ClassOnePC-RestofClassesPC)*100)/ClassOnePC) >=20)
+	
 		return true;
 	else
 		return false;
-	
+	*/
+	return (((ClassOnePC-RestofClassesPC)*100)/ClassOnePC);
 	
 	
 }
 
-class SortedByIntKeys implements Comparator<String>
+public static class SortedByIntKeys implements Comparator<String>
 {
     public int compare(String o1,String o2)
     {
