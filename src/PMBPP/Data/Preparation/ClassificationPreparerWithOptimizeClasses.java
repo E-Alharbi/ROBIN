@@ -3,6 +3,7 @@ package PMBPP.Data.Preparation;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,12 +28,13 @@ public class ClassificationPreparerWithOptimizeClasses {
 
 	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException, ParseException, CustomException {
 		// TODO Auto-generated method stub
+		
 		Parameters.Log="F";
 		//Parameters.PearsonsCorrelation="T";
 		String DataPath="/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/";
-		Parameters.AttCSV="/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/PredictionModels/Completeness/Buccaneeri1I5.csv";
-		new ClassificationPreparerWithOptimizeClasses().Optimize(DataPath, "/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/PredictedDatasets/Buccaneeri1I5.csv");
-		new ClassificationPreparer().Prepare(new File(DataPath).getAbsolutePath()+"/","/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/PredictedDatasets/Buccaneeri1I5.csv");
+		Parameters.AttCSV="/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/PredictionModels/Completeness/Phenix.csv";
+		new ClassificationPreparerWithOptimizeClasses().Optimize(DataPath, "/Users/emadalharbi/Downloads/PhenixHAL.csv");
+		new ClassificationPreparer().Prepare(new File(DataPath).getAbsolutePath()+"/","/Users/emadalharbi/Downloads/PhenixHAL.csv");
 
 	}
 
@@ -44,10 +46,20 @@ public class ClassificationPreparerWithOptimizeClasses {
 			
 		
 		for(String Header : Parameters.MeasurementUnitsToPredict.split(",")) {
-			double val= BestValueToSpilt(DataPath,CSV, Header);
+			double val= BestValueToSpilt(DataPath,CSV, Header,1);// try 1 
+			
+			new Log().Info(this, new File (CSV).getName()+"-"+Header+" best value to spilt "+val+" ShannonValToAccept "+1);
+			
+			if(val==-1)
+			{
+				
+				 val= BestValueToSpilt(DataPath,CSV, Header,0.9);// if we are unable to get 1, then go to the second best
+				 new Log().Info(this, new File (CSV).getName()+"-"+Header+" best value to spilt "+val+" ShannonValToAccept "+0.9);
+				 
+			}
 			Parameters.setClassLevel(Header, val);
 			Parameters.setMaxClassLevel(Header, val);// any class above this value then it will set to this value/class
-			//System.out.println("Best Class level "+Parameters.getClassLevel(Header));
+			
 	
 		}
 		
@@ -55,7 +67,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 	}
 	// Dot not pass Header as direct string. Use a variable instead. Very strange error happens because an extra char is added which cause mismatch    
 	
-	double BestValueToSpilt(String DataPath , String CSV , String Header) throws IllegalArgumentException, IllegalAccessException, IOException, ParseException, CustomException {
+	double BestValueToSpilt(String DataPath , String CSV , String Header , double ShannonValToAccept) throws IllegalArgumentException, IllegalAccessException, IOException, ParseException, CustomException {
 		
 		double Best=Integer.MAX_VALUE;
 		if(Parameters.PearsonsCorrelation.equals("T"))
@@ -72,7 +84,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 			max=1;
 		}
 		for(; i<= max ; i=i+increaseBy) {
-		
+		//System.out.println("i "+i);
 		Parameters.setClassLevel(Header,i);
 		new ClassificationPreparer().Prepare(DataPath, CSV);
 		
@@ -85,6 +97,8 @@ public class ClassificationPreparerWithOptimizeClasses {
 		
 		
 		Vector<Double> NumberofDatasetsInFirstAndRest=PercentgeOfClassesInEqualSize(counted , counted.keySet().size());
+		
+		
 		if(Parameters.PearsonsCorrelation.equals("F") ) {
 			double CurrentBest=Math.abs(NumberofDatasetsInFirstAndRest.get(0)-NumberofDatasetsInFirstAndRest.get(1)); // 0 is the first class and 1 is the rest of classes
 		if(CurrentBest < Best) {
@@ -93,22 +107,11 @@ public class ClassificationPreparerWithOptimizeClasses {
 		}
 		}
 		if(Parameters.PearsonsCorrelation.equals("T")) {
-			double PercentgeOfFirstClass=(NumberofDatasetsInFirstAndRest.get(0)*100)/(NumberofDatasetsInFirstAndRest.get(1)+NumberofDatasetsInFirstAndRest.get(0));
-			double PercentgeRestOfClasses=(NumberofDatasetsInFirstAndRest.get(1)*100)/(NumberofDatasetsInFirstAndRest.get(1)+NumberofDatasetsInFirstAndRest.get(0));
-			boolean AllowedRange=false;
-			if(PercentgeOfFirstClass>=50 && PercentgeOfFirstClass <= 60 && PercentgeRestOfClasses>=40 && PercentgeRestOfClasses<=50)
-			{
-				AllowedRange=true;
-			}
-			if(PercentgeOfFirstClass>=40 && PercentgeOfFirstClass <= 50 && PercentgeRestOfClasses>=50 && PercentgeRestOfClasses<=60)
-			{
-				AllowedRange=true;
-			}
+		
 			
-			if(AllowedRange==true) {
+			if(Shannon(NumberofDatasetsInFirstAndRest)==ShannonValToAccept) {
 				
-			
-			
+				
 			if(CalculateStatisticalTest(counted.keySet().toArray(new String[counted.keySet().size()]),CSV,map,Header) > Best) {
 			
 					Best = CalculateStatisticalTest(counted.keySet().toArray(new String[counted.keySet().size()]),CSV,map,Header);
@@ -279,6 +282,30 @@ double CalculateStatisticalTest(String [] Calsses, String PredcitedDatasetsCSV,H
 	
 }
 
+double Shannon(Vector<Double> NumberofDatasetsInFirstAndRest) {
+	//Shannon entropy
+	//https://stats.stackexchange.com/questions/239973/a-general-measure-of-data-set-imbalance
+	double n=NumberofDatasetsInFirstAndRest.get(0)+NumberofDatasetsInFirstAndRest.get(1);
+	
+	
+	
+	double k=NumberofDatasetsInFirstAndRest.size();
+	double H=0;
+	
+		H+=(NumberofDatasetsInFirstAndRest.get(0)/n)* Math.log(NumberofDatasetsInFirstAndRest.get(0)/n);
+		H+=(NumberofDatasetsInFirstAndRest.get(1)/n)* Math.log(NumberofDatasetsInFirstAndRest.get(1)/n);
+
+	
+	
+	H=-H;
+	
+	if (!Double.isNaN(H/Math.log(k))) {
+		
+return new BigDecimal(H/Math.log(k)).setScale(1, RoundingMode.HALF_UP).doubleValue();
+	}
+	return 0;
+	
+}
 public static class SortedByIntKeys implements Comparator<String>
 {
     public int compare(String o1,String o2)
