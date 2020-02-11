@@ -14,6 +14,7 @@ import com.indvd00m.ascii.render.elements.PseudoText;
 import com.indvd00m.ascii.render.elements.Rectangle;
 import com.indvd00m.ascii.render.elements.Table;
 import com.indvd00m.ascii.render.elements.Text;
+import com.jakewharton.fliptables.FlipTable;
 
 import PMBPP.ML.Model.Parameters;
 
@@ -45,77 +46,15 @@ public class Log {
 	
 public String CreateTable(List<String> headersList,List<List<String>> rowsList ) {
 		
-		int Totalwidth=0;
-		for(String c : headersList) {
-			if(c.length()>Totalwidth)
-			Totalwidth=c.length();
-		}
-		
-		HashMap<Integer,Vector<Integer>> ColAndWidth= new HashMap<Integer,Vector<Integer>>();
-for(int h=0 ; h < headersList.size() ; ++h) {
-	
-	for(List<String> L : rowsList) {
-		
-		if(ColAndWidth.containsKey(h)) {
-			Vector<Integer> temp = ColAndWidth.get(h);
-			temp.add(L.get(h).length());
-			ColAndWidth.put(h, temp);
-		}
-		else {
-			Vector<Integer> temp = new Vector<Integer>();
-			temp.add(L.get(h).length());
-			ColAndWidth.put(h, temp);
-		}
-		
-	}
-	if(ColAndWidth.containsKey(h)) {
-		Vector<Integer> temp = ColAndWidth.get(h);
-		temp.add(headersList.get(h).length());
-		ColAndWidth.put(h, temp);
-	}
-	else {
-		Vector<Integer> temp = new Vector<Integer>();
-		temp.add(headersList.get(h).length());
-		ColAndWidth.put(h, temp);
+	String[] headers = new String[headersList.size()];
+	headers = headersList.toArray(headers);
+	String[][] data = new String[rowsList.size()][];
+	String[] blankArray = new String[0];
+	for(int i=0; i < rowsList.size(); i++) {
+		data[i] = rowsList.get(i).toArray(blankArray);
 	}
 	
-}
-Totalwidth=0;
-for(Integer h : ColAndWidth.keySet()) {
-	Totalwidth+=Collections.max(ColAndWidth.get(h));
-	
-}
-		IRender render = new Render();
-		IContextBuilder builder = render.newBuilder();
-		builder.width(Totalwidth+50).height(rowsList.size()*3); // increase the height if you got java.lang.IllegalArgumentException
-		Table table = new Table(headersList.size(), rowsList.size()+1);// +1 for column headers
-		//Adding columns
-		int col=1;
-		int row=1;
-		for(String c : headersList) {
-			
-			table.setElement(col, row, new Label(c));
-			++col;
-		}
-		col=1;
-		row=2;
-		
-		for(List<String> L : rowsList) {
-			
-			for(String r : L) {
-				
-				table.setElement(col, row, new Label(r));
-				col++;
-			}
-			row++;
-			col=1;
-		}
-	
-		builder.element(table);
-		ICanvas canvas = render.render(builder.build());
-		String s = canvas.getText();
-		
-		return s;
+		return FlipTable.of(headers, data);
 	
 	}
 	public void Error(Object obj, String msg) {
