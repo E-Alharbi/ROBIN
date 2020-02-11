@@ -72,7 +72,7 @@ public class mtzdump {
 		new Log().Error(this,"unable to parse resolution");
 		
 	}   
-
+	new Log().Info(this, "Resolution "+Reso);
 			return Reso;	 
 				 
 		}
