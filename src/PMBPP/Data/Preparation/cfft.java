@@ -109,7 +109,7 @@ if(st.substring(st.indexOf("Max")).contains("-"))
 		           
 		         
 		        
-
+new Log().Info(this, "RMSD "+CM.RMSD+" Skew "+CM.Skew+" Max "+CM.Max +" Min "+CM.Min);
 		          
 		return CM;	 
 			 
