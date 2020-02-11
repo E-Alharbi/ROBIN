@@ -38,6 +38,8 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import com.jakewharton.fliptables.FlipTable;
+
 import PMBPP.Data.Preparation.Features;
 import PMBPP.Data.Preparation.GetFeatures;
 import PMBPP.Data.Preparation.PrepareFeatures;
@@ -58,19 +60,20 @@ public class Predict {
 	
 	public HashMap<String , HashMap<String,String>> PipelinesPredictions;
 	public  static void main(String[] args) throws Exception{
-	
+		
 		String Path="/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1o6a-1.9-parrot-noncs.mtz";
 	
 		
 		String [] arg= {Path};
 		
 		Predict Pre = new Predict();
-        Parameters.TrainedModelsPath="/Volumes/PhDHardDrive/FinalTraining/Experimental/Predict/PredictionModels";
-		Pre.PredictMultipleModles(arg);
+       // Parameters.TrainedModelsPath="/Volumes/PhDHardDrive/FinalTraining/FinalTraining/Experimental/Prediction/PredictionModels";
+        Parameters.Phases="HLA,HLB,HLC,HLD";
+        Pre.PredictMultipleModles(arg);
 		Pre.Print(Pre.PipelinesPredictions);
 		
 		
-		Parameters.TrainedModelsPath="/Volumes/PhDHardDrive/FinalTraining/Experimental/Predict/ClassificationModels";
+		//Parameters.TrainedModelsPath="/Volumes/PhDHardDrive/FinalTraining/FinalTraining/Experimental/Prediction/ClassificationModels";
 		Pre.PredictMultipleModles(arg);
 		Pre.Print(Pre.PipelinesPredictions);
 		
@@ -174,7 +177,7 @@ public class Predict {
 		//List<String> headersList = Arrays.asList("Pipeline");
 		List<String> headersList = new ArrayList<String>();
         List<List<String>> rowsList = new ArrayList<List<String>>();
-        headersList.add("Pipeline");
+        headersList.add("Pipeline variant");
         for(String Key : Measures.keySet())
         headersList.add(Key);
 		
@@ -228,10 +231,11 @@ public class Predict {
 
 		FileUtils.deleteDirectory(new File(Parameters.TrainedModelsPath));
 		PMBPP.CheckDirAndFile(Parameters.TrainedModelsPath);
+		
 		 InputStream in = this.getClass().getResourceAsStream("/"+Parameters.CompressedModelFolderName);
          Files.copy(in, Paths.get(System.getProperty("user.dir")+"/"+Parameters.TrainedModelsPath+"/"+Parameters.CompressedModelFolderName), StandardCopyOption.REPLACE_EXISTING);
 
-		try {
+try {
 			
 			
 		    ZipFile zipFile = new ZipFile(Parameters.TrainedModelsPath+"/"+Parameters.CompressedModelFolderName);
