@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,7 +43,7 @@ public class PMBPP {
 		 * 3- The build number will be increased in every time the project is built Ex PMBPP-Runnable-1.0.(10) is the built number     
 		 */
 		new Log().PseudoText("PMBPP");
-		new Log().TxtInRectangle("Parameters from commnad line");
+		
 		
 		if(System.getenv("CCP4")==null) {
 			new Log().Error(new PMBPP(),"Error: CCP4 environment variables not set. Set up the environment variables by using CCP4  ccp4.setup-sh (Ex source ccp4.setup-sh)");
@@ -72,13 +74,13 @@ public class PMBPP {
 			 }
 		 
 		 if(args[0].equals("Predict")){
-			
+			 Instant start = Instant.now();
 			 if(new File("features.csv").exists())
 				 FileUtils.deleteQuietly(new File("features.csv")); // if not removed, then will cause to read the features from csv
 			
 			 
 			
-			    //saving to Models folder are done from the Predictor
+			    //saving to Models folder is done from the Predictor
 				if(checkArg(Parm,"mtz")!=null  && checkArg(Parm,"TrainedModelsPath")!=null && checkArg(Parm,"Phases")!=null) {
 					String [] arg= {checkArg(Parm,"mtz")};
                     Predict Pre = new Predict();
@@ -91,7 +93,7 @@ public class PMBPP {
 					Pre.Print(Pre.PipelinesPredictions);
 					
 				}
-				if(checkArg(Parm,"mtz")!=null && checkArg(Parm,"TrainedModelsPath")==null && checkArg(Parm,"Phases")!=null) {
+				else if(checkArg(Parm,"mtz")!=null && checkArg(Parm,"TrainedModelsPath")==null && checkArg(Parm,"Phases")!=null) {
 					
 					Parameters.TrainedModelsPath="PredictionModels";
 					Parameters.CompressedModelFolderName="PredictionModels.zip";
@@ -103,8 +105,10 @@ public class PMBPP {
 					String [] arg= {checkArg(Parm,"mtz")};
 					Predict Pre = new Predict();
                    
-					System.out.println("Predictions ");
+					
 					Pre.PredictMultipleModles(arg);
+					
+					new Log().Info(new PMBPP(), "Predictions");
 					Pre.Print(Pre.PipelinesPredictions);
 					
 					Parameters.CompressedModelFolderName="ClassificationModels.zip";
@@ -115,12 +119,20 @@ public class PMBPP {
 					}
 					Parameters.Usecfft=false;
 					
-					System.out.println("Predictions confidence:");
+					
 					Pre.PredictMultipleModles(arg);
+					new Log().Info(new PMBPP(), "Predictions confidence"); 
 					Pre.Print(Pre.PipelinesPredictions);
 					
 					
 				}
+				else {
+					new Log().Info(new PMBPP(), "Please type in the phases.  \n Examples: \n -To start from experimental phasing \n java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP \n - For MR  \n java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP MR=T SequenceIdentity=0.85 \n");
+				}
+				Instant finish = Instant.now();
+				 long timeElapsed = Duration.between(start, finish).toMillis(); 
+				
+				 new Log().Info(new PMBPP(), "Execution time "+ (timeElapsed/1000) + " seconds");
 			 }
 		 
 		 
