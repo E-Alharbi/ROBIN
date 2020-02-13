@@ -2,91 +2,96 @@ package PMBPP.Data.Preparation;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
 import org.json.simple.parser.ParseException;
 
 import Comparison.Analyser.ExcelContents;
 import Comparison.Analyser.ExcelLoader;
 import PMBPP.Log.Log;
 import PMBPP.ML.Model.PMBPP;
-import PMBPP.ML.Model.Parameters;
 import PMBPP.Utilities.CSVWriter;
 import PMBPP.Utilities.FilesUtilities;
-import me.tongfei.progressbar.ProgressBar;
 
+/*
+ * Reading the data from excel and save what we need in CSV
+ */
 
 public class PredictionTrainingDataPreparer {
 
-	public static void main(String[] args) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException, NumberFormatException, IllegalArgumentException, ParseException {
-		
-		//experimental phases 
-		String [] arg = {"/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/noncs","/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/", "CSV"};
-	
+	public static void main(String[] args) throws IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException, IOException, NumberFormatException, IllegalArgumentException, ParseException {
+
+		// Example
+
+		// experimental phases
+		String[] arg = { "/noncs", "/Datasets/NO-NCS/", "CSV" };
+
 		new PredictionTrainingDataPreparer().Prepare(arg);
-		
-		
-		//MR
-		/* Parameters.Phases="model.HLA,model.HLB,model.HLC,model.HLD";
+
+		// MR
+		/*
+		 * Parameters.Phases="model.HLA,model.HLB,model.HLC,model.HLD";
 		 * Parameters.Featuers="RMSD,Skew,Resolution,Max,Min,SequenceIdentity";
-		 * Parameters.MR="T";
-		 * 		String [] arg = {"ExcelFolder/","Dataset/"};
-		 * new TrainingDataPreparer().Prepare(arg);
+		 * Parameters.MR="T"; String [] arg = {"ExcelFolder/","Dataset/"}; new
+		 * TrainingDataPreparer().Prepare(arg);
 		 */
 	}
-	public  void Prepare (String[] args) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException, NumberFormatException, IllegalArgumentException, ParseException {
+
+	public void Prepare(String[] args) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException,
+			IOException, NumberFormatException, IllegalArgumentException, ParseException {
 		// TODO Auto-generated method stub
-		
+
 		new Log().TxtInRectangle("Prediction training data preparer");
-		
-		isValid(args[0],args[1]);
-			
-		
-		File [] files =  new FilesUtilities().ReadFilesList(args[0]);
-		String PathToDataset=args[1];
+
+		isValid(args[0], args[1]);
+
+		File[] files = new FilesUtilities().ReadFilesList(args[0]);
+		String PathToDataset = args[1];
 		Vector<ExcelContentsWithFeatures> Excel2 = new Vector<ExcelContentsWithFeatures>();
-		for(File e :files ) {
-		ExcelLoader f = new ExcelLoader();
-		Vector<ExcelContents> Excel = new Vector<ExcelContents>();
-		
-		Excel =  f.ReadExcel(e.getAbsolutePath());
-		
-		Excel2=	new ExcelContentsWithFeatures().Addall(Excel);
-		Collections.sort(Excel2, ExcelContentsWithFeatures.SortingByPDB); // Sorting here to get the same test/train data across all pipelines. Because of using same seed to randomise the data, we will get same test/train every time we create a new model  
-		new Log().TxtInRectangle("Excel: "+e.getName());
-		
-		 for(ExcelContentsWithFeatures EE : Excel2) {
-			 EE.CM= new GetFeatures().Get(PathToDataset+EE.PDB_ID+".mtz");
-			
-			 new Log().Info(this, "Get data from the excel file: "+EE.PDB_ID);
-		 }
-		
-		
-		 CSVWriter CW = new CSVWriter();
-		 if(args.length>2) {
-		 CW.PathToSaveCSV=args[2];
-		 
-		 PMBPP.CheckDirAndFile(CW.PathToSaveCSV);
-		 }
-		 CW.WriteToCSV(Excel2,e.getName());
+		for (File e : files) {
+			ExcelLoader f = new ExcelLoader();
+			Vector<ExcelContents> Excel = new Vector<ExcelContents>();
+
+			Excel = f.ReadExcel(e.getAbsolutePath());
+
+			Excel2 = new ExcelContentsWithFeatures().Addall(Excel);
+			Collections.sort(Excel2, ExcelContentsWithFeatures.SortingByPDB); // Sorting here to get the same test/train
+																				// data across all pipelines. Because of
+																				// using same seed to randomise the
+																				// data, we will get same test/train
+																				// every time we create a new model
+			new Log().TxtInRectangle("Excel: " + e.getName());
+
+			for (ExcelContentsWithFeatures EE : Excel2) {
+				EE.CM = new GetFeatures().Get(PathToDataset + EE.PDB_ID + ".mtz");
+
+				new Log().Info(this, "Get data from the excel file: " + EE.PDB_ID);
+			}
+
+			CSVWriter CW = new CSVWriter();
+			if (args.length > 2) {
+				CW.PathToSaveCSV = args[2];
+
+				PMBPP.CheckDirAndFile(CW.PathToSaveCSV);
+			}
+			CW.WriteToCSV(Excel2, e.getName());
+		}
+
 	}
-		
-	}
+
 	void isValid(String files, String PathToDatasets) {
-		
-		if(!new File(files).exists()) {
-			new Log().Error(this,"Excel files are not found (Maybe it is wrong directory!)");
-           
+
+		if (!new File(files).exists()) {
+			new Log().Error(this, "Excel files are not found (Maybe it is wrong directory!)");
+
 		}
-		if(!new File(PathToDatasets).exists()) {
-			new Log().Error(this,"Datasets directory is not found  (Maybe it is wrong directory!)");
-          
+		if (!new File(PathToDatasets).exists()) {
+			new Log().Error(this, "Datasets directory is not found  (Maybe it is wrong directory!)");
+
 		}
-		
-		
+
 	}
 }

@@ -34,19 +34,12 @@
       </resource>
       <resource>
         <directory>resources</directory>
-        <filtering>true</filtering>
+        <filtering>false</filtering> <!-- turn this to true, cause zip file corrupted -->
         <excludes>
           <exclude>**/*.java</exclude>
         </excludes>
       </resource>
-      <resource>
-        <directory>resources/Models</directory>
-        
-      </resource>
-      <resource>
-        <directory>Models</directory>
-        
-      </resource>
+      
       
     </resources>
     <plugins>
@@ -193,11 +186,8 @@
 
 
 
- <dependency>
-      <groupId>com.github.haifengl</groupId>
-      <artifactId>smile-core</artifactId>
-      <version>2.0.0</version>
-    </dependency>
+
+ 
 
 
 <!-- https://mvnrepository.com/artifact/com.jakewharton.fliptables/fliptables -->
