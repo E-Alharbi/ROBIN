@@ -48,7 +48,7 @@ public class LoadMLModel {
 
 	}
 
-	public HashMap<String, RandomForest> LoadBlockOfModels(File[] models) throws Exception {
+	public HashMap<String, RandomForest> LoadSetOfModels(File[] models) throws Exception {
 
 		for (File m : models) {
 			if (m.getName().contains(".model")) {
