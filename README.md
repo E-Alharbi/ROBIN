@@ -9,7 +9,7 @@ A tool to predict the performance of three crystallographic model building pipel
 ## Prerequisites
 
 - CCP4 <br />
-You need a CCP4 installed in your machine. You need to set up the CCP4 environment variables before using this tool. To set up the CCP4 environment variables, from the command line, run this command from the CCP4 installation directory 
+You need the CCP4 installed in your machine. You need to set up the CCP4 environment variables before using this tool. To set up the CCP4 environment variables, from the command line, run this command from the CCP4 installation directory 
 
 source ccp4.setup-sh   
 
@@ -19,11 +19,13 @@ source ccp4.setup-sh
 You need to download the jar file from here <a href="https://github.com/E-Alharbi/ProteinModelBuildingPipelinePredictor/releases"> PMBPP </a> 
 
 -To start from experimental phasing <br />
+```
 java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP
-
+```
 -For MR <br />
+```
 java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP MR=T SequenceIdentity=0.85
-
+```
 
 
 ## Authors
