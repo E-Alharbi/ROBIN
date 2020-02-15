@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/E-Alharbi/ProteinModelBuildingPipelinePredictor.svg?token=z92wc12inrqPgG6Faxv2&branch=master)](https://travis-ci.com/E-Alharbi/ProteinModelBuildingPipelinePredictor)
 
-# Performance prediction of automated crystallographic model building pipelines
+# Performance prediction of automated crystallographic model-building pipelines
 
 A tool to predict the performance of three crystallographic model building pipelines (ARP/wARP, Buccaneer and  PHENIX AutoBuild) as well as their combinations. Structure completeness and R-work/R-free are the measures that the tool can predict.       
 
