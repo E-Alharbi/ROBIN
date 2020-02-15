@@ -21,7 +21,7 @@ You need to download the jar file from here <a href="https://github.com/E-Alharb
 -To start from experimental phasing <br />
 java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP
 
-- For MR <br />
+-For MR <br />
 java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP MR=T SequenceIdentity=0.85
 
 
