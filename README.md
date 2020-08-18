@@ -18,11 +18,11 @@ source ccp4.setup-sh
 
 You need to download the jar file from here <a href="https://github.com/E-Alharbi/ProteinModelBuildingPipelinePredictor/releases"> PMBPP </a> 
 
--To start from experimental phasing <br />
+- To start from experimental phasing <br />
 ```
 java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP
 ```
--For MR <br />
+- For MR <br />
 ```
 java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP MR=T SequenceIdentity=0.85
 ```
@@ -34,15 +34,15 @@ java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,H
 java -jar PMBPP-Runnable-(version).jar UncompressMLModel
 ```  
 
-The above command will uncompress the predictive models. When the predictive models are uncompressed, this should speed up the PMBPP. Please note that use the above command once and then you can run the PMBMM using the commands that explained earlier.  
+The above command will uncompress the predictive models. When the predictive models are uncompressed, this should speed up the PMBPP. Please note that use the above command once and then you can run the PMBPP using the commands that explained earlier.  
 
-- An alternative solution is to predict the performance of the pipeline that you want instead of all the pipelines. The following command predict only the performance of ARP/wARP 
+- An alternative solution is to predict the performance of a specific pipeline. The following command predict only the performance of ARP/wARP 
 
-- To start from experimental phasing <br />
+  - To start from experimental phasing <br />
 ```
 java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP FilteredModels=ARPwARP FilterModels=T 
 ```
-- For MR <br />
+  - For MR <br />
 ```
 java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP MR=T SequenceIdentity=0.85 FilteredModels=ARPwARP FilterModels=T
 ```             
