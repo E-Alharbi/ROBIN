@@ -4,6 +4,8 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,13 +36,15 @@ public class CreateModels {
 		// examples
 
 		// Prediction
-		// String[] args2= {"CSV"};
-		// Parameters.ModelFolderName="PredictionModels/";
+		String[] args2= {"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/ExperimentalParrotSecondRun/HLA/CSV"};
+		//Parameters.NumberOfTrees="1024";
+		Parameters.setModelFolderName("PredictionModels/");
 
+		
 		// Classification
-		String[] args2 = { "/ClassificationDatasets" };
-		Parameters.ModelFolderName = "ClassificationModels/";
-		Parameters.NumberOfTrees = "4096";
+		//String[] args2 = { "/ClassificationDatasets" };
+		//Parameters.ModelFolderName = "ClassificationModels/";
+		//Parameters.NumberOfTrees = "4096";
 
 		/*
 		 * MR Parameters.MR="T";
@@ -72,8 +76,8 @@ public class CreateModels {
 
 		File[] files = new FilesUtilities().ReadFilesList(PathToCSV);
 
-		if (new File(Parameters.ModelFolderName).exists()) {
-			new Log().Error(this, Parameters.ModelFolderName
+		if (new File(Parameters.getModelFolderName()).exists()) {
+			new Log().Error(this, Parameters.getModelFolderName()
 					+ " folder is exists!. Can not create models folder. Remove models folder or change its name");
 
 		}
@@ -83,18 +87,18 @@ public class CreateModels {
 		CreateModels CM = new CreateModels();
 		for (String F : measurements.keySet()) {
 
-			if (Parameters.MeasurementUnitsToPredict.contains(F)) {
+			if (Parameters.getMeasurementUnitsToPredict().contains(F)) {
 
-				PMBPP.CheckDirAndFile(Parameters.ModelFolderName);
-				PMBPP.CheckDirAndFile(Parameters.ModelFolderName + "/" + F);
+				PMBPP.CheckDirAndFile(Parameters.getModelFolderName());
+				PMBPP.CheckDirAndFile(Parameters.getModelFolderName() + "/" + F);
 				for (File CSV : files) {
 					new Log().Info(this, "Model: " + F + "-" + CSV.getName());
 					Set<String> temp = new HashSet<String>(measurements.keySet());
-					temp.remove(F);// this means this label will not be deleted
+					temp.remove(F);// meaning, this label will not be deleted
 					Vector<String> att = new Vector<String>(temp);
 
 					CM.CreateModel(
-							"./" + Parameters.ModelFolderName + "/" + F + "/"
+							"./" + Parameters.getModelFolderName() + "/" + F + "/"
 									+ CSV.getName().substring(0, CSV.getName().indexOf(".")),
 							CSV.getAbsolutePath(), F, att, CSV.getName().substring(0, CSV.getName().indexOf(".")));
 
@@ -119,26 +123,28 @@ public class CreateModels {
 		// Pre.Split(0.66, Pipeline+"-"+Label);
 		Pre.Split(0.80, Pipeline + "-" + Label);
 
-		if (Parameters.MultipleModels.equals("F")) {
+		if (Parameters.getMultipleModels().equals("F")) {
 			Pre.Train();
 
 			evaluation = Pre.Evaluate();
 
-			Pre.SaveModel(ModelName);
+			Pre.SaveModel(ModelName,true);
+			new Log().Info(this, "Model saved to "+ModelName);
 			Ranker AttributeEval = Pre.RankAttributes();
 			SaveEvaluation(evaluation, ModelName, Pre, AttributeEval);
 		}
-		if (Parameters.MultipleModels.equals("T")) {
-			for (int I = Integer.valueOf(Parameters.StartNumberOfTrees); I < Integer
-					.valueOf(Parameters.MaxNumberOfTrees); I = I * Integer.valueOf(Parameters.IncreaseNumberOfTrees)) {
-				Parameters.NumberOfTrees = String.valueOf(I);
+		if (Parameters.getMultipleModels().equals("T")) {
+			for (int I = Integer.valueOf(Parameters.getStartNumberOfTrees()); I < Integer
+					.valueOf(Parameters.getMaxNumberOfTrees()); I = I * Integer.valueOf(Parameters.getIncreaseNumberOfTrees())) {
+				Parameters.setNumberOfTrees ( String.valueOf(I));
 
 				Pre.ModelReset();
 				Pre.Train();
 
 				evaluation = Pre.Evaluate();
 
-				Pre.SaveModel(ModelName);
+				Pre.SaveModel(ModelName,true);
+				
 				Ranker AttributeEval = Pre.RankAttributes();
 				SaveEvaluation(evaluation, ModelName, Pre, AttributeEval);
 			}
@@ -160,7 +166,7 @@ public class CreateModels {
 		Evaluations.add(AttributeEval);
 		Evaluations.add(Pre.getTest());
 		Evaluations.add(Pre.getTrain());
-		Temp.put(Parameters.NumberOfTrees, Evaluations);
+		Temp.put(Parameters.getNumberOfTrees(), Evaluations);
 		evaluations.put(Name, Temp);
 	}
 
@@ -247,7 +253,7 @@ public class CreateModels {
 			}
 		}
 
-		String XMLName = new File(Parameters.ModelFolderName).getName() + "Performance.xml";
+		String XMLName = new File(Parameters.getModelFolderName()).getName() + "Performance.xml";
 		if (new File(XMLName).exists())
 			FileUtils.deleteQuietly(new File(XMLName));
 

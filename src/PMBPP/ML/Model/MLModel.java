@@ -1,22 +1,34 @@
 package PMBPP.ML.Model;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Vector;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import org.apache.commons.io.FilenameUtils;
 
 import PMBPP.Data.Preparation.ClassificationPreparerWithOptimizeClasses.SortedByIntKeys;
 import PMBPP.Log.Log;
 import PMBPP.Utilities.CSVReader;
 import PMBPP.Utilities.CSVWriter;
+import PMBPP.Utilities.FilesUtilities;
+import PMBPP.Utilities.TxtFiles;
 import weka.attributeSelection.ClassifierAttributeEval;
 import weka.attributeSelection.Ranker;
 import weka.attributeSelection.WrapperSubsetEval;
@@ -35,7 +47,7 @@ import weka.filters.unsupervised.attribute.Remove;
  */
 public class MLModel {
 
-	private RandomForest MLPredictor;
+	public RandomForest MLPredictor;
 	private Instances train;
 
 	public Instances getTrain() {
@@ -69,7 +81,7 @@ public class MLModel {
 
 	void init() {
 		MLPredictor = new RandomForest();
-		MLPredictor.setNumIterations(Integer.parseInt(Parameters.NumberOfTrees));
+		MLPredictor.setNumIterations(Integer.parseInt(Parameters.getNumberOfTrees()));
 		MLPredictor.setNumExecutionSlots(Runtime.getRuntime().availableProcessors());
 	}
 
@@ -111,7 +123,7 @@ public class MLModel {
 					"Can not create a predictive model with only one value in the class that want to predict. This might happen when you have a small dataset. ");
 		}
 
-		if (Parameters.SplitOnStructureLevel.equals("F")) {
+		if (Parameters.getSplitOnStructureLevel().equals("F")) {
 			dataset.randomize(rand);
 
 			// https://stackoverflow.com/questions/14682057/java-weka-how-to-specify-split-percentage
@@ -122,11 +134,13 @@ public class MLModel {
 
 		}
 
-		if (Parameters.SplitOnStructureLevel.equals("T"))
+		if (Parameters.getSplitOnStructureLevel().equals("T"))
 			SplitOnStructureLevel(Percentage);
+		
+		
 
 		// SaveToCSV
-		String WhereToSave = "TrainAndTestData" + Parameters.ModelFolderName;
+		String WhereToSave = "TrainAndTestData" + Parameters.getModelFolderName();
 		PMBPP.CheckDirAndFile(WhereToSave);
 		new CSVWriter().WriteInstancesToCSV(train, WhereToSave + "/" + PipelineAndLabel + "-train");
 		new CSVWriter().WriteInstancesToCSV(test, WhereToSave + "/" + PipelineAndLabel + "-test");
@@ -153,7 +167,20 @@ public class MLModel {
 		Vector<String> PDBtest = new Vector<String>();
 		PDBtrain.addAll(PDB.subList(0, trainSize)); // split unique PDB entities
 		PDBtest.addAll(PDB.subList(trainSize, PDB.size()));
-
+if(!new File("Train.list").exists()) {// if this list exists, then use the list of the PDB as in this list. This to avoid using different PDB by different pipelines models and begin not be able to analysis the results  
+	
+	new TxtFiles().WriteVectorToTxtFile("Train.list", PDBtrain);
+	
+	new TxtFiles().WriteVectorToTxtFile("Test.list", PDBtest);
+}
+else {
+	PDBtrain.clear();
+	PDBtest.clear();
+	PDBtrain=new TxtFiles().ReadIntoVec("Train.list");
+	PDBtest=new TxtFiles().ReadIntoVec("Test.list");
+	
+}
+		
 		Instances traindataset = FillIn(Unfiltereddataset, PDBtrain); // add all PDB original and synthetic that for
 																		// same PDB
 		Instances testdataset = FillIn(Unfiltereddataset, PDBtest);
@@ -254,29 +281,69 @@ public class MLModel {
 		return evaluation;
 
 	}
-
-	void SaveModel(String Name) throws Exception {
-
+//https://stackoverflow.com/questions/44177149/weka-serialized-model-file-too-big
+	public void SaveModel(String Name, boolean SaveAtt) throws Exception {
 		if (new File(Name + ".model").exists()) {
-			weka.core.SerializationHelper.write(Name + Parameters.NumberOfTrees + ".model", MLPredictor);
+			Name=Name + Parameters.getNumberOfTrees()+ ".model";
+		}
+		else {
+			Name=Name + ".model";
+		}
+		
+		if(Parameters.getCompressModel().equals("F")) {
+			weka.core.SerializationHelper.write(Name, MLPredictor);
+			Name=Name.replaceAll(FilenameUtils.getExtension(Name), "");
 
-			SaveAttributes(Name + Parameters.NumberOfTrees);
-		} else {
-			weka.core.SerializationHelper.write(Name + ".model", MLPredictor);
-
+		}
+		
+		
+		if(Parameters.getCompressModel().equals("T")) {
+		File f = new File(Name);
+        FileOutputStream fileOutputStream = new FileOutputStream(f);
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(gzipOutputStream);
+        objectOutputStream.writeObject(MLPredictor);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        gzipOutputStream.close();
+        fileOutputStream.close();
+        Name=Name.replaceAll(FilenameUtils.getExtension(Name), "");
+       
+	}
+		if(SaveAtt==true) {
 			SaveAttributes(Name);
+		}
+		 
+	}
+
+	public void ReadModel(String Name) throws Exception {
+		
+		if (!Name.contains(".model"))
+			Name = Name + ".model";
+		
+		
+		if(Parameters.getPreloadedMLModels().containsKey(Name)) {
+			MLPredictor = (RandomForest)Parameters.getPreloadedMLModels().get(Name);
+			
+			return;// stop here
+		}
+		if(new FilesUtilities().isGZipped(new File(Name)) ==false) {
+				MLPredictor = (RandomForest) weka.core.SerializationHelper.read(Name);
+		}
+		
+		if(new FilesUtilities().isGZipped(new File(Name)) ==true) {
+		File f = new File(Name);
+        FileInputStream fileInputStream = new FileInputStream(f);
+        GZIPInputStream gzipInputStream = new GZIPInputStream(fileInputStream);
+        ObjectInputStream objectOutputStream = new ObjectInputStream(gzipInputStream);
+        MLPredictor = (RandomForest) objectOutputStream.readObject();
+        objectOutputStream.close();
+        gzipInputStream.close();
+        fileInputStream.close();
 		}
 	}
 
-	void ReadModel(String Name) throws Exception {
-
-		if (Name.contains(".model"))
-			MLPredictor = (RandomForest) weka.core.SerializationHelper.read(Name);
-		else
-			MLPredictor = (RandomForest) weka.core.SerializationHelper.read(Name + ".model");
-
-	}
-
+	
 	void Normalize() throws Exception {
 		int Class = dataset.classIndex();
 		Normalize normalize = new Normalize();
@@ -287,32 +354,33 @@ public class MLModel {
 
 	}
 
-	String Predicte(double[] instanceValue1, String Att) throws Exception {
+	public String Predicte(double[] instanceValue1, String Att) throws Exception {
+		
 		DataSource source = new DataSource(Att);
-
+		
 		Instances Tempdataset = source.getDataSet();
 		Tempdataset.clear();// we just want the attributes
 		Tempdataset.setClassIndex(Tempdataset.numAttributes() - 1);
 		Tempdataset.add(new DenseInstance(1.0, instanceValue1));
-
+		
 		String Prediction = Tempdataset.classAttribute()
 				.value((int) MLPredictor.classifyInstance(Tempdataset.firstInstance()));
 		DecimalFormat df = new DecimalFormat("#.##");
 		df.setRoundingMode(RoundingMode.HALF_UP);
-
+		
 		if (Prediction.isEmpty()) {
 
 			Prediction = df.format(BigDecimal.valueOf(MLPredictor.classifyInstance(Tempdataset.firstInstance())));
 		}
-
+		
 		if (Prediction.contains("±")) {
-			Parameters.Log = "F";// no need for the log here only tables are needed
-			HashMap<String, Boolean> MeasurementUnitsToPredict = new CSVReader().FilterByFeatures(Parameters.AttCSV,
+			Parameters.setLog ( "F");// no need for the log here only tables are needed
+			HashMap<String, Boolean> MeasurementUnitsToPredict = new CSVReader().FilterByFeatures(Parameters.getAttCSV(),
 					false);
 			Vector<String> Headers = new Vector<String>();
 			Headers.add(String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]));
 			HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader().ReadIntoHashMapWithFilterdHeaders(
-					Parameters.AttCSV, String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]), Headers);
+					Parameters.getAttCSV(), String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]), Headers);
 			if (map.keySet().size() == 2) { // if it binary classification
 				List<String> classes = new ArrayList<>(map.keySet());
 				Collections.sort(classes, new SortedByIntKeys());
@@ -322,9 +390,9 @@ public class MLModel {
 				if (Prediction.equals(classes.get(1)))
 					Prediction = "Low";
 			}
-			Parameters.Log = "T";
+			Parameters.setLog ("T");
 		}
-
+		
 		return Prediction;
 
 	}
@@ -385,7 +453,7 @@ public class MLModel {
 			}
 		}
 
-		try (PrintWriter out = new PrintWriter(Name + ".csv")) {
+		try (PrintWriter out = new PrintWriter(Name + "csv")) {
 			out.println(CSV);
 		}
 	}
@@ -411,4 +479,5 @@ public class MLModel {
 		return ranker;
 	}
 
+	
 }

@@ -22,7 +22,7 @@ public class ClassifyDatasets {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		Parameters.TrainedModelsPath = "ClassificationModels";
+		Parameters.setTrainedModelsPath ( "ClassificationModels");
 		// new
 		// ClassifyDatasets().Classify("/Volumes/PhDHardDrive/FinalTraining/Experimental/ParrotPhases/CSVToUseInStatisticalTest","/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS");
 		new ClassifyDatasets().OmitTrainingData("ClassifedDatasets", "TrainAndTestDataClassificationModels");
@@ -36,14 +36,14 @@ public class ClassifyDatasets {
 
 			for (String PDB : CSV.keySet()) {
 
-				for (File mtz : new FilesUtilities().ReadMtzList(Datasets)) {
+				for (File mtz : new FilesUtilities().FilesByExtension(Datasets,".mtz")) {
 					String MTZName = mtz.getName().replaceAll("." + FilenameUtils.getExtension(mtz.getName()), "");
 					if (PDB.equals(MTZName)) {
 						String[] arg = { mtz.getAbsolutePath() };
-						Parameters.Usecfft = true;
+						Parameters.setUsecfft ( true);
 						Predict Pre = new Predict();
-						Parameters.FilterModels = "T";
-						Parameters.FilteredModels
+						Parameters.setFilterModels ( "T");
+						Parameters.getFilteredModels()
 								.add(csv.getName().replaceAll("." + FilenameUtils.getExtension(csv.getName()), ""));
 						Pre.PredictMultipleModles(arg);
 						HashMap<String, String> temp = CSV.get(PDB).get(0);

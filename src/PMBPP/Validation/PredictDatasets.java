@@ -25,10 +25,10 @@ import PMBPP.Utilities.FilesUtilities;
 public class PredictDatasets {
 
 	public static void main(String[] args) throws Exception {
-
-		// String [] arg= {"/noncs",new File("/Datasets/NO-NCS").getAbsolutePath()+"/"};
-		// Parameters.TrainedModelsPath="PredictionModels";
-		// new PredictDatasets().Predict(arg);
+		
+		 String [] arg= {"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/noncs3",new File("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS").getAbsolutePath()+"/"};
+		 Parameters.setTrainedModelsPath("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/Parrot/PredictionModels");
+		 new PredictDatasets().Predict(arg);
 
 		/*
 		 * MR String [] arg= {"/Users/emadalharbi/Downloads/PMBPP/noncsMR2",new
@@ -48,6 +48,8 @@ public class PredictDatasets {
 
 		isValid(PathToExcelFolder, PathToDatasets);
 
+		//Parameters.setPreloadedMLModels( Parameters.getTrainedModelsPath());
+		
 		for (File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { // loop on all excel files
 
 			String ExcelName = Excel.getName().replaceAll("." + FilenameUtils.getExtension(Excel.getName()), "");
@@ -65,10 +67,10 @@ public class PredictDatasets {
 					if (MTZName.equals(excel.get(i).PDB_ID) && MTZEx.equals("mtz")) {
 						String[] arg = { mtz.getAbsolutePath() };
 
-						Parameters.Usecfft = true;
+						Parameters.setUsecfft ( true);
 						Predict Pre = new Predict();
-						Parameters.FilterModels = "T";
-						Parameters.FilteredModels.add(ExcelName); // remove the others models. Only keep the model that
+						Parameters.setFilterModels ( "T");
+						Parameters.getFilteredModels().add(ExcelName); // remove the others models. Only keep the model that
 																	// match this excel
 
 						Pre.PredictMultipleModles(arg);
@@ -138,15 +140,15 @@ public class PredictDatasets {
 
 						Record2 += "," + Val;
 						Record2ForCSVToUseInStatisticalTest += Val + ",";
-						for (int p = 0; p < Parameters.Features.split(",").length; ++p) { // Features will be updated
+						for (int p = 0; p < Parameters.getFeatures().split(",").length; ++p) { // Features will be updated
 																							// from model's header CSV
 																							// when we predict
 							Val = new CSVReader().GetRecordByHeaderName("TempCSV/Temp.csv",
-									Parameters.Features.split(",")[p], 0); // now get the value
-							if (p + 1 < Parameters.Features.split(",").length) {
+									Parameters.getFeatures().split(",")[p], 0); // now get the value
+							if (p + 1 < Parameters.getFeatures().split(",").length) {
 								FeaturesForCSVToUseInStatisticalTest += Val + ",";
 								if (CSVToUseInStatisticalTest.split("\n").length == 1
-										&& !CSVToUseInStatisticalTest.contains(Parameters.Features.split(",")[p])) // we
+										&& !CSVToUseInStatisticalTest.contains(Parameters.getFeatures().split(",")[p])) // we
 																													// cannot
 																													// add
 																													// the
@@ -162,15 +164,15 @@ public class PredictDatasets {
 																													// CSV
 																													// when
 																													// first
-																													// predict
+																													// prediction
 																													// is
 																													// done
-									CSVToUseInStatisticalTest += Parameters.Features.split(",")[p] + ",";
+									CSVToUseInStatisticalTest += Parameters.getFeatures().split(",")[p] + ",";
 							} else {
 								FeaturesForCSVToUseInStatisticalTest += Val;
 								if (CSVToUseInStatisticalTest.split("\n").length == 1
-										&& !CSVToUseInStatisticalTest.contains(Parameters.Features.split(",")[p]))
-									CSVToUseInStatisticalTest += Parameters.Features.split(",")[p] + ",Pipeline\n";
+										&& !CSVToUseInStatisticalTest.contains(Parameters.getFeatures().split(",")[p]))
+									CSVToUseInStatisticalTest += Parameters.getFeatures().split(",")[p] + ",Pipeline\n";
 							}
 						}
 						FileUtils.deleteDirectory(new File("TempExcel"));

@@ -27,11 +27,10 @@ public class ClassificationPreparerWithOptimizeClasses {
 			throws IllegalArgumentException, IllegalAccessException, IOException, ParseException, CustomException {
 		// TODO Auto-generated method stub
 
-		Parameters.Log = "F";
+		Parameters.setLog ( "F");
 		// Parameters.PearsonsCorrelation="T";
 		String DataPath = "/Datasets/NO-NCS/";
-		Parameters.AttCSV = "/PredictionModels/Completeness/Phenix.csv"; // not effect if all pipelines use same
-																			// features
+		Parameters.setAttCSV("/PredictionModels/Completeness/Phenix.csv");			 // not effect if all pipelines use same													// features
 		new ClassificationPreparerWithOptimizeClasses().Optimize(DataPath, "PredictedDatasets/PhenixHAL.csv");
 		new ClassificationPreparer().Prepare(new File(DataPath).getAbsolutePath() + "/",
 				"PredictedDatasets/PhenixHAL.csv");
@@ -45,7 +44,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 
 		isValid(CSV, DataPath);
 
-		for (String Header : Parameters.MeasurementUnitsToPredict.split(",")) {
+		for (String Header : Parameters.getMeasurementUnitsToPredict().split(",")) {
 			double val = BestValueToSpilt(DataPath, CSV, Header, 1);// try 1
 
 			new Log().Info(this, new File(CSV).getName() + "-" + Header + " best value to spilt " + val
@@ -72,7 +71,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 			throws IllegalArgumentException, IllegalAccessException, IOException, ParseException, CustomException {
 
 		double Best = Integer.MAX_VALUE;
-		if (Parameters.PearsonsCorrelation.equals("T"))
+		if (Parameters.getPearsonsCorrelation().equals("T"))
 			Best = 0;
 
 		double BestLevel = -1;
@@ -94,14 +93,14 @@ public class ClassificationPreparerWithOptimizeClasses {
 			headers.add(Header);
 
 			HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader().ReadIntoHashMapWithFilterdHeaders(
-					Parameters.ClassificationDatasetsFolderName + "/" + new File(CSV).getName(), "PDB", headers);
+					Parameters.getClassificationDatasetsFolderName() + "/" + new File(CSV).getName(), "PDB", headers);
 
 			HashMap<String, Integer> counted = CountInstanceInClasses(map);
 
 			Vector<Double> NumberofDatasetsInFirstAndRest = PercentgeOfClassesInEqualSize(counted,
 					counted.keySet().size());
 
-			if (Parameters.PearsonsCorrelation.equals("F")) {
+			if (Parameters.getPearsonsCorrelation().equals("F")) {
 				double CurrentBest = Math
 						.abs(NumberofDatasetsInFirstAndRest.get(0) - NumberofDatasetsInFirstAndRest.get(1)); // 0 is the
 																												// first
@@ -117,7 +116,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 					BestLevel = Parameters.getClassLevel(Header);
 				}
 			}
-			if (Parameters.PearsonsCorrelation.equals("T")) {
+			if (Parameters.getPearsonsCorrelation().equals("T")) {
 
 				if (Shannon(NumberofDatasetsInFirstAndRest) == ShannonValToAccept) {
 
@@ -132,7 +131,7 @@ public class ClassificationPreparerWithOptimizeClasses {
 				}
 			}
 
-			FileUtils.deleteDirectory(new File(Parameters.ClassificationDatasetsFolderName));
+			FileUtils.deleteDirectory(new File(Parameters.getClassificationDatasetsFolderName()));
 		}
 
 		return BestLevel;

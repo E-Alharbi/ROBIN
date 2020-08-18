@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -35,9 +36,29 @@ public class CSVReader {
 		 */
 	}
 
-	public HashMap<String, Boolean> Headers(String CSV) throws IOException {
-		// True if the column is a feature
+	public HashMap<String, Boolean> IdentifyFeatures(Reader in) throws IOException {
 		HashMap<String, Boolean> Features = new HashMap<String, Boolean>();
+		
+		CSVParser csvParser = CSVFormat.DEFAULT.withHeader().parse(in);
+		List<String> a = csvParser.getHeaderNames();
+
+		for (String h : a) {
+			if (Features.containsKey(h) == false) {
+				if (Parameters.getFeatures().contains(h)) {
+					Features.put(h, true);
+				} else
+					Features.put(h, false);
+			}
+		}
+		return Features;
+	}
+	public HashMap<String, Boolean> Headers(String CSV) throws IOException {
+		
+		if(!new File(CSV).exists()) { //if not exists, meaning it is the CSV contents in a string 
+			return IdentifyFeatures(new StringReader(CSV));
+		}
+		// True if the column is a feature
+		
 		File[] files = new File[0];
 		if (new File(CSV).isFile()) {
 			File[] temp = { new File(CSV) };
@@ -46,20 +67,9 @@ public class CSVReader {
 			files = new FilesUtilities().ReadFilesList(CSV);
 
 		}
+		HashMap<String, Boolean> Features = new HashMap<String, Boolean>();
 		for (File csv : files) {
-			Reader in = new FileReader(csv);
-			CSVParser csvParser = CSVFormat.DEFAULT.withHeader().parse(in);
-			List<String> a = csvParser.getHeaderNames();
-
-			for (String h : a) {
-				if (Features.containsKey(h) == false) {
-					if (Parameters.Features.contains(h)) {
-						Features.put(h, true);
-					} else
-						Features.put(h, false);
-				}
-			}
-
+			Features.putAll(IdentifyFeatures(new FileReader(csv)));
 		}
 
 		return Features;
@@ -112,8 +122,13 @@ public class CSVReader {
 
 	public HashMap<String, Vector<HashMap<String, String>>> ReadIntoHashMap(String CSV, String IDHeader)
 			throws IOException {
-		Reader in = new FileReader(CSV);
-
+		Reader in;
+		if(new File(CSV).exists())
+		in = new FileReader(CSV);
+		else
+			in=new StringReader(CSV);
+		
+		
 		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(in);
 		HashMap<String, Boolean> Headers = Headers(CSV);
 		HashMap<String, Vector<HashMap<String, String>>> CSVInTable = new HashMap<String, Vector<HashMap<String, String>>>();

@@ -1,7 +1,12 @@
 package PMBPP.Prediction.Analysis;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -9,14 +14,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import PMBPP.Log.Log;
 import PMBPP.ML.Model.PMBPP;
 import PMBPP.Utilities.TxtFiles;
-
+import PMBPP.ML.Model.Parameters;
 /*
  * Generating latex tables for ML evaluation metrics. MAE, RMSD and others
  */
@@ -25,12 +32,26 @@ public class NumberOfTreesImpact {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 		// TODO Auto-generated method stub
+	
+		
+		Vector<String> EvaluationMatrices = new Vector<String>();
+				EvaluationMatrices.add("rootMeanSquaredError");
+				EvaluationMatrices.add("meanAbsoluteError");
+				//EvaluationMatrices.add("correlationCoefficient");
+		new NumberOfTreesImpact().NumberOfTreesTable("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/Parrot/PredictionModelsPerformance.xml",EvaluationMatrices);
 
-		new NumberOfTreesImpact().NumberOfTreesTable("PredictionModelsPerformance.xml");
-
+		
+		/*
+		Vector<String> EvaluationMatrices = new Vector<String>();
+		EvaluationMatrices.add("weightedPrecision");
+		EvaluationMatrices.add("weightedRecall");
+		EvaluationMatrices.add("weightedFMeasure");
+new NumberOfTreesImpact().NumberOfTreesTable("ClassificationModelsPerformance.xml",EvaluationMatrices);
+*/
+		
 	}
 
-	public void NumberOfTreesTable(String PathToXML) throws ParserConfigurationException, SAXException, IOException {
+	public void NumberOfTreesTable(String PathToXML , Vector<String> EvaluationMatrices) throws ParserConfigurationException, SAXException, IOException {
 
 		String TestDataCSV = "Pipeline,Structure evaluation,Value,Value type,Iteration\n";
 		File fXmlFile = new File(PathToXML);
@@ -43,11 +64,11 @@ public class NumberOfTreesImpact {
 		// http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
 		doc.getDocumentElement().normalize();
 
-		Vector<String> EvaluationMatrices = new Vector<String>();
-		EvaluationMatrices.add("rootMeanSquaredError");
-		EvaluationMatrices.add("meanAbsoluteError");
-		// EvaluationMatrices.add("correlationCoefficient");
-		EvaluationMatrices.add("errorRate");
+		//Vector<String> EvaluationMatrices = new Vector<String>();
+		//EvaluationMatrices.add("rootMeanSquaredError");
+		//EvaluationMatrices.add("meanAbsoluteError");
+		//EvaluationMatrices.add("correlationCoefficient");
+		//EvaluationMatrices.add("errorRate");
 		TreeMap<Integer, Integer> numberofNumberOfIterations = new TreeMap<Integer, Integer>();
 		TreeMap<String, TreeMap<String, TreeMap<String, String>>> Pipelines = new TreeMap<String, TreeMap<String, TreeMap<String, String>>>();
 		NodeList nList = doc.getElementsByTagName("Model");
@@ -143,7 +164,7 @@ public class NumberOfTreesImpact {
 			numofIterations += key + "&";
 		}
 
-		String Table = "\\begin{table} \\resizebox{\\textwidth}{!}{\n"
+		String Table = "\\begin{table} \\resizebox{\\textwidth}{!}{\n \\tiny \n"
 				+ "\\begin{tabular}{lcccccccccccccccccccccc}  Pipeline variant & Evaluation matrix & Structure evaluation & \\multicolumn{7}{c}{Number of trees}  \\\\ \\hline "
 				+ numofIterations + "\\\\ \\hline \n";
 		Vector<String> PrintedPipelines = new Vector<String>();
@@ -199,11 +220,103 @@ public class NumberOfTreesImpact {
 		Table += "\\end{tabular}}\n" + "\n" + "\n" + "\\end{table}";
 
 		PMBPP.CheckDirAndFile("EvaluationTablesAndPlots");
+		String XMLName = new File(PathToXML).getName().replaceAll("." + FilenameUtils.getExtension(new File(PathToXML).getName()), "");
 
-		new TxtFiles().WrtieStringToTxtFile("EvaluationTablesAndPlots/Error.tex", Table);
-		new TxtFiles().WrtieStringToTxtFile("EvaluationTablesAndPlots/Error.csv", CSV);
-		new TxtFiles().WrtieStringToTxtFile("EvaluationTablesAndPlots/TestData.csv", TestDataCSV);
-
+		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/"+XMLName+"ErrorTableByNumberOfTrees.tex", Table);
+		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/"+XMLName+"Error.csv", CSV);
+		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/"+XMLName+"TestData.csv", TestDataCSV);
+		
+		if(numberofNumberOfIterations.size()==1) // only for one time training 
+		ErrorTable(Pipelines,XMLName);
+		
 	}
 
+	void ErrorTable(TreeMap<String, TreeMap<String, TreeMap<String, String>>> Pipelines, String XMLName) throws FileNotFoundException {
+		
+		
+		String ErrorMeasuresRow="&";
+		String StructureEvaluationRow="&";
+		String ModelsType="";
+		Vector<String> ErrorMeasures = new Vector<String>();
+		for(String Measure : Pipelines.get(Pipelines.firstKey()).keySet()) {// Error measures are repeated for all pipelines
+			
+			
+			ErrorMeasures.add(Measure);
+		}
+		Vector<String> PipelineNames = new Vector<String>();
+		Vector<String> StructureEvaluation = new Vector<String>();
+		
+		for(String Pipe : Pipelines.keySet()) {
+			
+			ModelsType=Pipe.split("/")[Pipe.split("/").length-3];
+			if(!PipelineNames.contains(Pipe.split("/")[Pipe.split("/").length-1]))
+				PipelineNames.add(Pipe.split("/")[Pipe.split("/").length-1]);
+			
+			if(!StructureEvaluation.contains(Pipe.split("/")[Pipe.split("/").length-2]))
+				StructureEvaluation.add(Pipe.split("/")[Pipe.split("/").length-2]);
+		}
+		for(String Measure : ErrorMeasures) {
+			ErrorMeasuresRow+="\\multicolumn{3}{c}{"+Measure+"}&";
+		}
+		ErrorMeasuresRow+="\\\\  ";
+		
+		for(int i=0 ; i < ErrorMeasures.size() ; ++i)
+		for(String Measure : StructureEvaluation) {
+			StructureEvaluationRow+=Measure+"&";
+		}
+		StructureEvaluationRow+="\\\\ \\hline ";
+		
+		String Table="\\begin{table*}[t] \n \\center \n" + 
+				" \\scriptsize \n" + 
+				"\\begin{tabular}{lcccccccccccccccccccccc} \n" + 
+				"Pipeline variant &\\multicolumn{6}{c}{Evaluation matrix}    \\\\ \\hline\n" + 
+				"";
+		Table+=ErrorMeasuresRow+"\n";
+		Table+=StructureEvaluationRow+"\n";
+		HashMap<String,String> ChoseColors=SetColor(ErrorMeasures);
+		String NormalizationNote=""; 
+		for(int i=0 ; i <PipelineNames.size();++i ) {
+			String Row=PipelineNames.get(i)+"&";
+			for(int e=0; e < ErrorMeasures.size();++e) {
+				for(int ev=0;ev<StructureEvaluation.size();++ev) {
+					//System.out.println(Pipelines.get("./"+ModelsType+"/"+StructureEvaluation.get(ev)+"/"+PipelineNames.get(i)).get(ErrorMeasures.get(0)).firstKey());
+					String Val= new BigDecimal(Pipelines.get("./"+ModelsType+"/"+StructureEvaluation.get(ev)+"/"+PipelineNames.get(i)).get(ErrorMeasures.get(e)).get(Pipelines.get("./"+ModelsType+"/"+StructureEvaluation.get(ev)+"/"+PipelineNames.get(i)).get(ErrorMeasures.get(e)).firstKey())).toString();
+
+					if(Parameters.getNormalizeStructureEvaluationInErrorTable().equals("T")) {
+						if(Parameters.getStructureEvaluationToBeNormalized().contains(StructureEvaluation.get(ev))) {
+							 Val= new BigDecimal(Val).divide(new BigDecimal("100")).setScale(2,  RoundingMode.HALF_UP).toString();
+							 NormalizationNote="* "+Parameters.getStructureEvaluationToBeNormalized()+" was normalized.";
+						}
+					}
+					Row+="\\cellcolor{"+ChoseColors.get(ErrorMeasures.get(e))+"!25}"+ Val;
+
+					//Row+="\\cellcolor{"+ChoseColors.get(ErrorMeasures.get(e))+"!25}"+ Pipelines.get("./"+ModelsType+"/"+StructureEvaluation.get(ev)+"/"+PipelineNames.get(i)).get(ErrorMeasures.get(e)).get(Pipelines.get("./"+ModelsType+"/"+StructureEvaluation.get(ev)+"/"+PipelineNames.get(i)).get(ErrorMeasures.get(e)).firstKey());
+					Row+="&";
+				}
+			}
+			
+			Table+=Row+"\\\\ \n";
+		}
+		Table+="\\hline\n" + 
+				"\n" + 
+				"\\end{tabular}\n" + 
+				"\n" + 
+				"\n" + NormalizationNote+ "\n"+
+				"\\end{table*}";
+		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/"+XMLName+"ErrorTable.tex", Table);
+
+	}
+	
+	HashMap<String,String> SetColor(Vector<String> ErrorMeasures){
+		
+		
+		HashMap<String,String> ChoseColors= new HashMap<String,String>();
+		String[] colors = {"red","brown","gray","green","orange","blue","yellow"};
+		if(ErrorMeasures.size()>colors.length)
+			new Log().Error(this, "Can not  set cell colors for more than 7 columns");
+		for(int i=0 ; i < ErrorMeasures.size();++i) {
+			ChoseColors.put(ErrorMeasures.get(i), colors[i]);
+		}
+		return ChoseColors;
+	}
 }

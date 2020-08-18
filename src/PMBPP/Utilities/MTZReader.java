@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Vector;
 
 import org.json.simple.parser.ParseException;
 
@@ -22,6 +24,14 @@ public class MTZReader {
 			IllegalAccessException, ParseException {
 		// TODO Auto-generated method stub
 
+		
+		  MTZReader mtz= new MTZReader("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1o6a-1.9-parrot-noncs.mtz");
+		  mtz.GetColLabels();
+		
+		
+		
+		
+		
 		/*
 		 * long startTime = System.currentTimeMillis();
 		 * 
@@ -57,9 +67,9 @@ public class MTZReader {
 	void ValidateResoForMR(String MRDatasets) throws IOException, NumberFormatException, ParseException { // use to test
 																											// GetResolution()
 		int count = 0;
-		Parameters.Phases = "model.HLA,model.HLB,model.HLC,model.HLD";
-		Parameters.Log = "F";
-		for (File m : new FilesUtilities().ReadMtzList("/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding")) {
+		Parameters.setPhases ( "model.HLA,model.HLB,model.HLC,model.HLD");
+		Parameters.setLog ( "F");
+		for (File m : new FilesUtilities().FilesByExtension("/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding",".mtz")) {
 
 			MTZReader mtz = new MTZReader(m.getAbsolutePath());
 
@@ -118,4 +128,82 @@ public class MTZReader {
 		return BigDecimal.valueOf(pomAsInt).setScale(2, RoundingMode.HALF_UP).toString();
 
 	}
+	
+	public HashMap<String,Vector<String >> GetColLabels() {
+		
+		int StartByte=0;
+		for (int b = StartOfHeaderRecord; b<mtzbytes.length; b++) {
+			byte[] subarray = Arrays.copyOfRange(mtzbytes, b,b + 3);
+			String str = new String(subarray, StandardCharsets.UTF_8);
+			if (str.equals("COL")) {
+				StartByte=b;
+				//System.out.println("StartByte "+StartByte);
+				break;
+			}
+		}
+		
+		String Label="";
+		
+		int CountDependentCol=0;
+		int NumberOfDependentCol=1;
+		HashMap<String,Vector<String >> ColLabels= new HashMap<String, Vector<String> >();
+		for (int b = StartByte; b < mtzbytes.length; b=b+80) {
+			byte[] subarray = Arrays.copyOfRange(mtzbytes, b,b + 30);
+			String str = new String(subarray, StandardCharsets.UTF_8);
+			
+			if(str.contains("COLUMN")) {
+				
+			
+			
+			
+			byte[] COLType = Arrays.copyOfRange(mtzbytes, b + 30, b+40);
+			String COLTypeSTR = new String(COLType, StandardCharsets.UTF_8);
+			
+			
+			if(COLTypeSTR.trim().equals("A") && CountDependentCol==0) {
+				NumberOfDependentCol=4;
+			}
+			if(COLTypeSTR.trim().equals("H") && CountDependentCol==0) {
+				NumberOfDependentCol=3;
+			}
+			if(!COLTypeSTR.trim().equals("H")&& !COLTypeSTR.trim().equals("A") && CountDependentCol==0) {
+				NumberOfDependentCol=1;
+			}
+			
+	
+			
+			
+		
+				if(Label.trim().length()!=0)
+					Label+=","+str.trim();
+				else
+				Label=str.trim();
+				CountDependentCol++;
+				
+				
+				if(NumberOfDependentCol==CountDependentCol) {
+					Vector<String>  temp = new Vector<String>();
+					
+					if(ColLabels.containsKey(COLTypeSTR.trim()))
+				    temp=ColLabels.get(COLTypeSTR.trim());
+					Label=Label.replaceAll("COLUMN", "").trim();
+					temp.add(Label.trim());
+					
+					ColLabels.put(COLTypeSTR.trim(), temp);
+					
+					Label="";
+					CountDependentCol=0;
+				}
+				
+				
+				
+				
+				
+				
+		}
+		}
+		//System.out.println(ColLabels);
+		return ColLabels;
+	}
+	
 }

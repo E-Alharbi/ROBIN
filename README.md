@@ -9,7 +9,7 @@ A tool to predict the performance of three crystallographic model building pipel
 ## Prerequisites
 
 - CCP4 <br />
-You need the CCP4 installed in your machine. You need to set up the CCP4 environment variables before using this tool. To set up the CCP4 environment variables, from the command line, run this command from the CCP4 installation directory 
+You need the CCP4 installed in your machine. You need to set up the CCP4 environment variables before using this tool. To set up the CCP4 environment variables, from the command line, run this command from the CCP4 installation directory. 
 ```
 source ccp4.setup-sh   
 ```
@@ -27,12 +27,31 @@ java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,H
 java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP MR=T SequenceIdentity=0.85
 ```
 
+## How to speed up PMBPP? 
+
+- The use of PMBPP with default options might take around 4 mins. To predict large data sets, this might be slow. So, to speed up the PMBPP use the following command
+```
+java -jar PMBPP-Runnable-(version).jar UncompressMLModel
+```  
+
+The above command will uncompress the predictive models. When the predictive models are uncompressed, this should speed up the PMBPP. Please note that use the above command once and then you can run the PMBMM using the commands that explained earlier.  
+
+- An alternative solution is to predict the performance of the pipeline that you want instead of all the pipelines. The following command predict only the performance of ARP/wARP 
+
+- To start from experimental phasing <br />
+```
+java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP FilteredModels=ARPwARP FilterModels=T 
+```
+- For MR <br />
+```
+java -jar PMBPP-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP MR=T SequenceIdentity=0.85 FilteredModels=ARPwARP FilterModels=T
+```             
 
 ## Authors
 
-Emad Alharbi, Radu Calinescu and Kevin Cowtan
-
+Emad Alharbi, Kevin Cowtan and Radu Calinescu
 
 
 ## Acknowledgments
+
 

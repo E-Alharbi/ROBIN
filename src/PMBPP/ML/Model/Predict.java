@@ -38,15 +38,15 @@ public class Predict {
 		String[] arg = { Path };
 
 		Predict Pre = new Predict();
-		Parameters.TrainedModelsPath = "PredictionModels";
-		Parameters.CompressedModelFolderName = "PredictionModels.zip";
-		Parameters.Phases = "HLA,HLB,HLC,HLD";
+		Parameters.setTrainedModelsPath ( "PredictionModels");
+		Parameters.setCompressedModelFolderName ( "PredictionModels.zip");
+		Parameters.setPhases ("HLA,HLB,HLC,HLD");
 
 		Pre.PredictMultipleModles(arg);
 		Pre.Print(Pre.PipelinesPredictions);
 
-		Parameters.TrainedModelsPath = "ClassificationModels";
-		Parameters.CompressedModelFolderName = "ClassificationModels.zip";
+		Parameters.setTrainedModelsPath ( "ClassificationModels");
+		Parameters.setCompressedModelFolderName ( "ClassificationModels.zip");
 
 		Pre.PredictMultipleModles(arg);
 
@@ -57,13 +57,16 @@ public class Predict {
 	public void PredictMultipleModles(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 
-		if (!new File(Parameters.TrainedModelsPath).exists()) { // if not found, then use models from resources
+		if (!new File(Parameters.getTrainedModelsPath()).exists()) { // if not found, then use models from resources
 
 			CopyModelsFromResources();
 			
 			new Log().Info(this, "Models were copied from resources ");
 		}
-
+		if(Parameters.getLoadAllMLModelsAtOnce().equals("T")) {
+			Parameters.setPreloadedMLModels( Parameters.getTrainedModelsPath());
+			Parameters.setLoadAllMLModelsAtOnce("F");// to avoid multiple reading 
+		}
 		String Path = args[0];
 
 		MLModel Pre = new MLModel();
@@ -74,7 +77,7 @@ public class Predict {
 																												// ,
 																												// 0.20}
 
-		for (File Folder : new FilesUtilities().ReadFilesList(Parameters.TrainedModelsPath)) {
+		for (File Folder : new FilesUtilities().ReadFilesList(Parameters.getTrainedModelsPath())) {
 			Predictions.put(Folder.getName(), null);
 		}
 
@@ -82,14 +85,15 @@ public class Predict {
 		double[] instanceValue1 = null;
 		for (String Folder : Predictions.keySet()) {
 			HashMap<String, String> PipelinesPredictions = new HashMap<String, String>();
-			File[] models = new FilesUtilities().ReadFilesList(Parameters.TrainedModelsPath + "/" + Folder);
-			if (Parameters.FilterModels.equals("T"))
-				models = new FilesUtilities().ReadFilteredModels(Parameters.TrainedModelsPath + "/" + Folder);
-
+			File[] models = new FilesUtilities().FilesByExtension(Parameters.getTrainedModelsPath() + "/" + Folder,".model");
+			if (Parameters.getFilterModels().equals("T"))
+				models = new FilesUtilities().ReadFilteredModels(Parameters.getTrainedModelsPath() + "/" + Folder);
+//new Log().Info(this, Folder,false);
+//int count=1;
 			for (File m : models) {
-				if (m.getName().contains(".model")) {
-					Parameters.AttCSV = m.getParent() + "/"
-							+ m.getName().replaceAll("." + FilenameUtils.getExtension(m.getName()), "") + ".csv";
+				//new Log().Info(this, count+" out of "+models.length,true); count++;
+					Parameters.setAttCSV(  m.getParent() + "/"
+							+ m.getName().replaceAll("." + FilenameUtils.getExtension(m.getName()), "") + ".csv");
 
 					Pre.ReadModel(m.getAbsolutePath());
 
@@ -97,22 +101,22 @@ public class Predict {
 					df.setRoundingMode(RoundingMode.HALF_UP);
 					String modelName = m.getName().replaceAll("." + FilenameUtils.getExtension(m.getName()), "");
 
-					if (Parameters.Usecfft == true) {
+					if (Parameters.isUsecfft() == true) {
 						if (instanceValue1 == null) { // no need to re-run cfft because all models use same features in
 														// same order. Only we need to update AttCSV because are differ
 														// in each model
 							instanceValue1 = new GetFeatures().GetUsingFeatures(Path);
-							Parameters.instanceValue1 = instanceValue1;// to speed up when read
+							Parameters.setInstanceValue1 ( instanceValue1);// to speed up when read
 																		// classification/Prediction model in PMBPP.java
 						}
 					} else
-						instanceValue1 = Parameters.instanceValue1;
+						instanceValue1 = Parameters.getInstanceValue1();
 
-					PipelinesPredictions.put(modelName, Pre.Predicte(instanceValue1, Parameters.AttCSV));
+					PipelinesPredictions.put(modelName, Pre.Predicte(instanceValue1, Parameters.getAttCSV()));
 
 					ThereisAmodel = true;
 
-				}
+				
 			}
 			Predictions.put(Folder, PipelinesPredictions);
 
@@ -127,14 +131,15 @@ public class Predict {
 		if (ThereisAmodel == false)
 			System.out.println("No models are found!");
 
-		Parameters.FilteredModels.clear();// return to default
-		Parameters.FilterModels = "F";// return to default
+		Parameters.getFilteredModels().clear();// return to default
+		Parameters.setFilterModels ( "F");// return to default
 	}
 
 	public void Print(HashMap<String, HashMap<String, String>> Measures) {
 		
 		List<String> headersList = new ArrayList<String>();
 		List<List<String>> rowsList = new ArrayList<List<String>>();
+		
 		headersList.add("Pipeline variant");
 		for (String Key : Measures.keySet())
 			headersList.add(Key);
@@ -172,6 +177,10 @@ public class Predict {
 
 		System.out.println(tableString);
 		PredictionTable = tableString;
+		if(Parameters.getHTMLTable().equals("T")) {
+			String html = new Log().CreateHTMLTable(headersList, rowsList);
+			System.out.println("HTML: \n"+html);
+		}
 
 		// convert to array for GUI
 		// https://stackoverflow.com/questions/371839/java-nested-list-to-array-conversion
@@ -183,41 +192,41 @@ public class Predict {
 		RowData = array;
 	}
 
-	void CopyModelsFromResources() throws Exception {
+	public void CopyModelsFromResources() throws Exception {
 		new Log().Info(this, "Uncompressing the models (it takes a bit longer and only needed at the first time of using this tool)");
-		// Files must compress without the main folder (Models) itself for example zip
-		// -r ../zipped_dir.zip *
-		Parameters.TrainedModelsPath = new File(Parameters.CompressedModelFolderName).getName().replaceAll(
-				"." + FilenameUtils.getExtension(new File(Parameters.CompressedModelFolderName).getName()), "");
-		FileUtils.deleteDirectory(new File(Parameters.TrainedModelsPath));
-		PMBPP.CheckDirAndFile(Parameters.TrainedModelsPath);
+		// Files must compress without the main folder (Models) itself for example 
+		// zip -r ../zipped_dir.zip *
+		Parameters.setTrainedModelsPath ( new File(Parameters.getCompressedModelFolderName()).getName().replaceAll(
+				"." + FilenameUtils.getExtension(new File(Parameters.getCompressedModelFolderName()).getName()), ""));
+		FileUtils.deleteDirectory(new File(Parameters.getTrainedModelsPath()));
+		PMBPP.CheckDirAndFile(Parameters.getTrainedModelsPath());
 
-		InputStream in = this.getClass().getResourceAsStream("/" + Parameters.CompressedModelFolderName);
-		Files.copy(in, Paths.get(System.getProperty("user.dir") + "/" + Parameters.TrainedModelsPath + "/"
-				+ Parameters.CompressedModelFolderName), StandardCopyOption.REPLACE_EXISTING);
+		InputStream in = this.getClass().getResourceAsStream("/" + Parameters.getCompressedModelFolderName());
+		Files.copy(in, Paths.get(System.getProperty("user.dir") + "/" + Parameters.getTrainedModelsPath() + "/"
+				+ Parameters.getCompressedModelFolderName()), StandardCopyOption.REPLACE_EXISTING);
 
 		try {
 
 			ZipFile zipFile = new ZipFile(
-					"./" + Parameters.TrainedModelsPath + "/" + Parameters.CompressedModelFolderName);
-			zipFile.extractAll("./" + Parameters.TrainedModelsPath);
+					"./" + Parameters.getTrainedModelsPath() + "/" + Parameters.getCompressedModelFolderName());
+			zipFile.extractAll("./" + Parameters.getTrainedModelsPath());
 
 		} catch (ZipException e) {
 			e.printStackTrace();
 		}
 		FileUtils.deleteQuietly(
-				new File("./" + Parameters.TrainedModelsPath + "/" + Parameters.CompressedModelFolderName));
+				new File("./" + Parameters.getTrainedModelsPath() + "/" + Parameters.getCompressedModelFolderName()));
 
 	}
 
 	void RemoveModels() {
 
-		for (File m : new FilesUtilities().ReadFilesList(Parameters.TrainedModelsPath)) {
+		for (File m : new FilesUtilities().ReadFilesList(Parameters.getTrainedModelsPath())) {
 			for (File model : new FilesUtilities().ReadFilesList(m.getAbsolutePath())) {
 
 				String modelName = model.getName().replaceAll("." + FilenameUtils.getExtension(model.getName()), "");
 
-				if (!Parameters.FilteredModels.contains(modelName)) {
+				if (!Parameters.getFilteredModels().contains(modelName)) {
 
 					FileUtils.deleteQuietly(model);
 				}

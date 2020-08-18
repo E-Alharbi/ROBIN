@@ -3,7 +3,9 @@ package PMBPP.Utilities;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
+import java.io.RandomAccessFile;
 import java.util.Vector;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -38,26 +40,32 @@ public class FilesUtilities {
 		return files;
 	}
 
-	public File[] ReadMtzList(String Dir) {
+	public File[] FilesByExtension(String Dir, String Extension) {
 		// https://stackoverflow.com/questions/30486404/java-list-files-in-a-folder-avoiding-ds-store/30486678
 		File[] files = new File(Dir).listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File dir) {
-				return dir.getName().endsWith(".mtz");
+				return dir.getName().endsWith(Extension);
 			}
 		});
 		return files;
 	}
+	
+	
 
+	
+	
+	
 	public File[] ReadFilteredModels(String Dir) {
 
-		File[] AllModels = ReadFilesList(Dir);
+		//File[] AllModels = ReadFilesList(Dir);
+		File[] AllModels = FilesByExtension(Dir,".model");
 		Vector<File> FilteredModels = new Vector<File>();
 		for (File m : AllModels) {
 
 			String modelName = m.getName().replaceAll("." + FilenameUtils.getExtension(m.getName()), "");
 
-			if (Parameters.FilteredModels.contains(modelName)) {
+			if (Parameters.getFilteredModels().contains(modelName)) {
 
 				FilteredModels.add(m);
 			}
@@ -66,4 +74,17 @@ public class FilesUtilities {
 		return FilteredModels.toArray(new File[FilteredModels.size()]);
 	}
 
+	//https://stackoverflow.com/questions/30507653/how-to-check-whether-file-is-gzip-or-not-in-java
+		public  boolean isGZipped(File f) {
+			  int magic = 0;
+			  try {
+			   RandomAccessFile raf = new RandomAccessFile(f, "r");
+			   magic = raf.read() & 0xff | ((raf.read() << 8) & 0xff00);
+			   raf.close();
+			  } catch (Throwable e) {
+			   e.printStackTrace(System.err);
+			  }
+			  return magic == GZIPInputStream.GZIP_MAGIC;
+			 }
+	
 }

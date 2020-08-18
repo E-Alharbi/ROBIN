@@ -24,14 +24,16 @@ public class PrepareFeatures {
 		// Example
 
 		// experimental phases
-		new PrepareFeatures().Prepare("/Datasets/NO-NCS/");
-
 		/*
-		 * MR Parameters.Phases="model.HLA,model.HLB,model.HLC,model.HLD";
-		 * Parameters.Featuers="RMSD,Skew,Resolution,Max,Min,SequenceIdentity";
-		 * Parameters.MR="T"; new PrepareFeatures().Prepare(
-		 * "/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding2/");
-		 */
+		Parameters.Phases="HLA,HLB,HLC,HLD";
+		new PrepareFeatures().Prepare("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS");
+*/
+		
+		  Parameters.setPhases("model.HLA,model.HLB,model.HLC,model.HLD");
+		  Parameters.setFeatures("RMSD,Skew,Resolution,Max,Min,SequenceIdentity");
+		  Parameters.setMR("T"); new PrepareFeatures().Prepare(
+		  "/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding/");
+		 
 	}
 
 	public void Prepare(String PathToDatasets)
@@ -59,7 +61,7 @@ public class PrepareFeatures {
 		if (new File(PathToDatasets).isFile()) {
 			mtz[0] = new File(PathToDatasets);
 		} else {
-			mtz = new FilesUtilities().ReadMtzList(PathToDatasets);
+			mtz = new FilesUtilities().FilesByExtension(PathToDatasets,".mtz");
 		}
 		HashMap<String, LinkedHashMap<String, String>> PDB = new HashMap<String, LinkedHashMap<String, String>>();
 
@@ -68,7 +70,7 @@ public class PrepareFeatures {
 			Features fea = new GetFeatures().Get(F.getAbsolutePath());
 			LinkedHashMap<String, String> FeatureInMap = new LinkedHashMap<String, String>();
 			for (Field field : fea.getClass().getDeclaredFields()) {
-				if (Parameters.Features.contains(field.getName())) // if this feature is using
+				if (Parameters.getFeatures().contains(field.getName())) // if this feature is using
 					FeatureInMap.put(field.getName(), String.valueOf((Double) field.get(fea)));
 
 			}
@@ -103,7 +105,7 @@ public class PrepareFeatures {
 
 				return false;
 			}
-			if (new FilesUtilities().ReadMtzList(PathToDatasets).length == 0) {
+			if (new FilesUtilities().FilesByExtension(PathToDatasets,".mtz").length == 0) {
 				new Log().Error(this,
 						" No mtz files are found in " + PathToDatasets + " (Maybe it is wrong directory!)");
 

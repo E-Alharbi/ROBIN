@@ -91,10 +91,10 @@ public class CSVWriter {
 	public void WriteToCSV(Vector<ExcelContentsWithFeatures> Excel, String Pipeline)
 			throws FileNotFoundException, IllegalArgumentException, IllegalAccessException {
 
-		String[] features = Parameters.Features.split(",");
-		String[] MeasurementUnitsToPredict = Parameters.MeasurementUnitsToPredict.split(",");
+		String[] features = Parameters.getFeatures().split(",");
+		String[] MeasurementUnitsToPredict = Parameters.getMeasurementUnitsToPredict().split(",");
 
-		String CSV = Parameters.Features + "," + Parameters.MeasurementUnitsToPredict + ",PDB\n";// headers
+		String CSV = Parameters.getFeatures() + "," + Parameters.getMeasurementUnitsToPredict() + ",PDB\n";// headers
 
 		for (ExcelContentsWithFeatures E : Excel) {
 

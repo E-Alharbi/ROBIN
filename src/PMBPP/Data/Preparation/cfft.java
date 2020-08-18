@@ -3,6 +3,8 @@ package PMBPP.Data.Preparation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Duration;
+import java.time.Instant;
 
 import PMBPP.Log.Log;
 import PMBPP.ML.Model.Parameters;
@@ -17,7 +19,7 @@ public class cfft {
 		/*
 		 * for(File M : new FilesUtilities().ReadFilesList(Path)) {
 		 * if(M.getName().contains(".mtz")) { cfft c = new cfft();
-		 * Parameters.colinfo="HLA,HLB,HLC,HLD";
+		 * Parameters.Phases="HLA,HLB,HLC,HLD";
 		 * 
 		 * System.out.print(M+"\t"+c.Cfft(M.getAbsolutePath()).Max+"\t");
 		 * Parameters.colinfo="parrot.ABCD.A,parrot.ABCD.B,parrot.ABCD.C,parrot.ABCD.D";
@@ -25,15 +27,29 @@ public class cfft {
 		 */
 
 		// Example: single data set
-		new cfft().Cfft("1o6a-1.9-parrot-noncs.mtz");
+		/*
+		for(int i=0 ; i < 10 ; ++i) {
+		Instant start = Instant.now();
+		Parameters.colinfo="SIGFP.F_sigF.F,SIGFP.F_sigF.sigF";
+		Parameters.Phases="HLA,HLB,HLC,HLD";
+		new cfft().Cfft("/Users/emadalharbi/eclipse-workspaceC++Ph/TestJNI/Debug/final.mtz");
+		Instant finish = Instant.now();
+		long timeElapsed = Duration.between(start, finish).toMillis();
+		System.out.println(timeElapsed);
+		}
+		*/
+		Parameters.setPhases("model.HLA,model.HLB,model,HLC,model.HLD");
+		new cfft().Cfft("/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding/1BD9-2.1-parrot-noncs.mtz");
+
 	}
 
 	public Features Cfft(String mtzin) throws IOException {
 
+		
 		String st = null;
 		String PathToCfft = System.getenv("CCP4") + "/share/python/CCP4Dispatchers/cfft.py";
-		String[] callAndArgs = { "python", PathToCfft, "-mtzin", mtzin, "-colin-fo", Parameters.colinfo, "-colin-hl",
-				Parameters.Phases, "-stats", };
+		String[] callAndArgs = { "python", PathToCfft, "-mtzin", mtzin, "-colin-fo", Parameters.getColinfo(), "-colin-hl",
+				Parameters.getPhases(), "-stats", };
 
 		Process p = Runtime.getRuntime().exec(callAndArgs);
 
@@ -48,7 +64,7 @@ public class cfft {
 		Features CM = new Features();
 
 		while ((st = stdInput.readLine()) != null) {
-
+			
 			if (st.contains("About mean (rmsd)")) {
 
 				CM.RMSD = Double
@@ -79,6 +95,10 @@ public class cfft {
 					CM.Min = -CM.Min;
 				if (st.substring(st.indexOf("Max")).contains("-"))
 					CM.Max = -CM.Max;
+			}
+			if (st.contains("Number of points in cell:")) {
+				
+				CM.PointsInCell=Double.parseDouble(st.split(":")[1].trim());
 			}
 		}
 

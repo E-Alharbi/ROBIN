@@ -12,6 +12,7 @@ import Comparison.Analyser.ExcelContents;
 import Comparison.Analyser.ExcelLoader;
 import PMBPP.Log.Log;
 import PMBPP.ML.Model.PMBPP;
+import PMBPP.ML.Model.Parameters;
 import PMBPP.Utilities.CSVWriter;
 import PMBPP.Utilities.FilesUtilities;
 
@@ -27,17 +28,18 @@ public class PredictionTrainingDataPreparer {
 		// Example
 
 		// experimental phases
+		/*
 		String[] arg = { "/noncs", "/Datasets/NO-NCS/", "CSV" };
 
 		new PredictionTrainingDataPreparer().Prepare(arg);
-
+*/
 		// MR
-		/*
-		 * Parameters.Phases="model.HLA,model.HLB,model.HLC,model.HLD";
-		 * Parameters.Featuers="RMSD,Skew,Resolution,Max,Min,SequenceIdentity";
-		 * Parameters.MR="T"; String [] arg = {"ExcelFolder/","Dataset/"}; new
-		 * TrainingDataPreparer().Prepare(arg);
-		 */
+		
+		Parameters.setPhases("model.HLA,model.HLB,model.HLC,model.HLD");
+		Parameters.setFeatures("RMSD,Skew,Resolution,Max,Min,SequenceIdentity,Fmap");
+		Parameters.setMR("T"); String [] arg = {"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR/noncs/","/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding/"}; new
+		PredictionTrainingDataPreparer().Prepare(arg);
+		 
 	}
 
 	public void Prepare(String[] args) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException,

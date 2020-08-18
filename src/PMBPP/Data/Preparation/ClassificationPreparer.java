@@ -24,6 +24,7 @@ import PMBPP.Validation.CustomException;
 public class ClassificationPreparer {
 	public static void main(String[] args)
 			throws IllegalArgumentException, IllegalAccessException, IOException, ParseException, CustomException {
+		
 		String DataPath = "/Datasets/NO-NCS";
 		String CSVFile = "/PredictedDatasets";
 
@@ -36,8 +37,7 @@ public class ClassificationPreparer {
 
 		for (File csv : new FilesUtilities().ReadFilesList(CSVFile)) {
 
-			Parameters.AttCSV = "/PredictionModels/Completeness/Buccaneeri1I5.csv"; // not effect if all pipelines use
-																					// same features
+			Parameters.setAttCSV("/PredictionModels/Completeness/Buccaneeri1I5.csv");			// not effect if all pipelines use														// same features
 			new ClassificationPreparer().Prepare(new File(DataPath).getAbsolutePath() + "/", csv.getAbsolutePath());
 
 		}
@@ -74,8 +74,8 @@ public class ClassificationPreparer {
 
 							} else {
 
-								group = String.valueOf(Parameters.ClassLevelForCompleteness
-										* (Math.round(Diff / Parameters.ClassLevelForCompleteness)));
+								group = String.valueOf(Parameters.getClassLevelForCompleteness()
+										* (Math.round(Diff / Parameters.getClassLevelForCompleteness())));
 
 							}
 							if (Parameters.getMaxClassLevel(Key2) != -1)
@@ -104,10 +104,10 @@ public class ClassificationPreparer {
 			CSVContents.put(CSVID, SortedMap);
 
 		}
-
-		PMBPP.CheckDirAndFile(Parameters.ClassificationDatasetsFolderName);
+		
+		PMBPP.CheckDirAndFile(Parameters.getClassificationDatasetsFolderName());
 		new CSVWriter().WriteFromHashMap(CSVContents,
-				Parameters.ClassificationDatasetsFolderName + "/" + new File(CSVFile).getName()
+				Parameters.getClassificationDatasetsFolderName() + "/" + new File(CSVFile).getName()
 						.replaceAll("." + FilenameUtils.getExtension(new File(CSVFile).getName()), "") + ".csv");
 	}
 

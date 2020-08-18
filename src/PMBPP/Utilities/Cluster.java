@@ -65,7 +65,7 @@ public class Cluster {
 		for (String Excel : ExcelAndTheirFolders.keySet()) {
 			PMBPP.CheckDirAndFile(Excel);
 
-			new TxtFiles().WrtieStringToTxtFile(Excel + "/" + Excel + ".sh",
+			new TxtFiles().WriteStringToTxtFile(Excel + "/" + Excel + ".sh",
 					shcontent.replace("ExcelFolder=" + ExcelFolder, "ExcelFolder=" + ExcelAndTheirFolders.get(Excel)));
 			FileUtils.copyFileToDirectory(Jar, new File(Excel));
 

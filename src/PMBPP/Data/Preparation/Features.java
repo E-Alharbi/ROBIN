@@ -2,11 +2,17 @@ package PMBPP.Data.Preparation;
 
 import java.lang.reflect.Field;
 
+/*
+ * A class contains features use in predicting the pipelines performance  
+ */
 public class Features {
+
+	
 
 	@Override
 	public String toString() {
-		return "CfftMeasures [RMSD=" + RMSD + ", Skew=" + Skew + ", Min=" + Min + ", Max=" + Max + "]";
+		return "Features [RMSD=" + RMSD + ", Skew=" + Skew + ", Min=" + Min + ", Max=" + Max + ", Resolution="
+				+ Resolution + ", SequenceIdentity=" + SequenceIdentity + ", PointsInCell=" + PointsInCell + "]";
 	}
 
 	public double RMSD;
@@ -15,7 +21,7 @@ public class Features {
 	public double Max;
 	public double Resolution;
 	public double SequenceIdentity; // MR
-
+	public double PointsInCell;
 	public Object GetFeatureByName(String Name) throws IllegalArgumentException, IllegalAccessException {
 		for (Field field : this.getClass().getDeclaredFields()) {
 			if (Name.equals(field.getName()))
