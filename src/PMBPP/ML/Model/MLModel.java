@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -354,7 +355,7 @@ else {
 
 	}
 
-	public String Predicte(double[] instanceValue1, String Att) throws Exception {
+	public String Predict(double[] instanceValue1, String Att) throws Exception {
 		
 		DataSource source = new DataSource(Att);
 		

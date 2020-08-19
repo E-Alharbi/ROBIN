@@ -3,11 +3,18 @@ package PMBPP.Utilities;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 
 import PMBPP.Log.Log;
 import PMBPP.ML.Model.Parameters;
@@ -17,12 +24,12 @@ import PMBPP.ML.Model.Parameters;
  */
 public class FilesUtilities {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
-		File[] files = new FilesUtilities().ReadFilesList("/PredictionModels");
+		File[] files = new FilesUtilities().FilesByExtensionRecursively("/Users/emadalharbi/Downloads/PMBPP/PredictionModelsMR",".csv");
 		for (File f : files) {
-			System.out.println(f.getName());
+			System.out.println(f.getAbsolutePath());
 		}
 	}
 
@@ -74,6 +81,15 @@ public class FilesUtilities {
 		return FilteredModels.toArray(new File[FilteredModels.size()]);
 	}
 
+	public File[] FilesByExtensionRecursively(String Dir, String Extension) throws IOException {
+		Collection<File> files= FileUtils.listFiles(
+				new File(Dir), 
+				  new RegexFileFilter("^(.*?)"+Extension), 
+				  DirectoryFileFilter.DIRECTORY
+				);
+		return files.toArray(new File[files.size()]);
+	}
+	
 	//https://stackoverflow.com/questions/30507653/how-to-check-whether-file-is-gzip-or-not-in-java
 		public  boolean isGZipped(File f) {
 			  int magic = 0;

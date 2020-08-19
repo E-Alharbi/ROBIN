@@ -64,6 +64,24 @@ public class PMBPP {
 
 		}
 		
+		if (args[0].equals("PredictDatasets")) {
+
+			SetTrainedModelPathToDef();
+			if(checkArg(Parm, "Datasets") != null) {
+				Instant start = Instant.now();
+				new PredictDatasets().Predict(checkArg(Parm, "Datasets"));
+				Instant finish = Instant.now();
+				long timeElapsed = Duration.between(start, finish).toMillis();
+
+				new Log().Info(new PMBPP(), "Execution time " + (timeElapsed / 1000) + " seconds");
+				new Log().Info(new PMBPP(), "The results were save to PredictedDatasets.csv. For individual pipeline results were saved in PredictedDatasets folder");
+
+			}
+			
+			else
+			new Log().Info(new PMBPP(), "No datasets are found!. Please use this keyword to set the datasets path Datasets=PathToDatasets/");	
+		}
+		
 		if (args[0].equals("UncompressMLModel")) {
 			new UncompressMLModel().Uncompress();
 		}
@@ -135,13 +153,9 @@ else
 			} else if (checkArg(Parm, "mtz") != null && checkArg(Parm, "TrainedModelsPath") == null
 					&& checkArg(Parm, "Phases") != null) {
 
-				Parameters.setTrainedModelsPath ( "PredictionModels");
-				Parameters.setCompressedModelFolderName ("PredictionModels.zip");
-
-				if (Parameters.getMR().equals("T")) {
-					Parameters.setTrainedModelsPath ( "PredictionModelsMR");
-					Parameters.setCompressedModelFolderName ( "PredictionModelsMR.zip");
-				}
+				
+				
+				SetTrainedModelPathToDef();
 				String[] arg = { checkArg(Parm, "mtz") };
 				Predict Pre = new Predict();
 
@@ -212,9 +226,9 @@ if(Parameters.getPredictionConfidence().equals("T")) {
 			
 			Parameters.setTrainedModelsPath ( "PredictionModels");
 			
-			String[] arg = { checkArg(Temp, "ExcelFolder"),
-					new File(checkArg(Temp, "Datasets")).getAbsolutePath() + "/", "CSV" };
-			new PredictDatasets().Predict(arg);
+			//String[] arg = { checkArg(Temp, "ExcelFolder"),
+			//		new File(checkArg(Temp, "Datasets")).getAbsolutePath() + "/", "CSV" };
+			new PredictDatasets().Predict(checkArg(Temp, "ExcelFolder"),new File(checkArg(Temp, "Datasets")).getAbsolutePath() + "/",true);
 			
 			
 			if(Parameters.getPredictionConfidence().equals("T")) {
@@ -404,5 +418,15 @@ if(Parameters.getPrepareFeatures().equals("T")) {
 		}
 		*/
 		
+	}
+	
+	static void SetTrainedModelPathToDef() {
+		Parameters.setTrainedModelsPath ( "PredictionModels");
+		Parameters.setCompressedModelFolderName ("PredictionModels.zip");
+
+		if (Parameters.getMR().equals("T")) {
+			Parameters.setTrainedModelsPath ( "PredictionModelsMR");
+			Parameters.setCompressedModelFolderName ( "PredictionModelsMR.zip");
+		}
 	}
 }

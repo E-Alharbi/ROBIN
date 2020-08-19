@@ -14,7 +14,7 @@ public class Features {
 		return "Features [RMSD=" + RMSD + ", Skew=" + Skew + ", Min=" + Min + ", Max=" + Max + ", Resolution="
 				+ Resolution + ", SequenceIdentity=" + SequenceIdentity + ", PointsInCell=" + PointsInCell + "]";
 	}
-
+	
 	public double RMSD;
 	public double Skew;
 	public double Min;

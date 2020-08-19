@@ -60,7 +60,7 @@ public class ClassifyDatasets {
 				}
 			}
 			PMBPP.CheckDirAndFile("ClassifedDatasets");
-			new CSVWriter().WriteFromHashMapContainsRepatedRecord(CSV, "ClassifedDatasets/" + csv.getName());
+			new CSVWriter().WriteFromHashMapContainsRepatedRecord(CSV, "ClassifedDatasets/" + csv.getName(),"PDB");
 
 		}
 	}
@@ -86,7 +86,7 @@ public class ClassifyDatasets {
 
 					PMBPP.CheckDirAndFile("CSVToUseInClassificationPlots");
 					new CSVWriter().WriteFromHashMapContainsRepatedRecord(new ModelPerformance().omit(CSV, TestCSV),
-							"CSVToUseInClassificationPlots/" + CSV.getName());
+							"CSVToUseInClassificationPlots/" + CSV.getName(),"PDB");
 
 				}
 			}

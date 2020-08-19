@@ -103,7 +103,7 @@ public class Predict {
 
 					if (Parameters.isUsecfft() == true) {
 						if (instanceValue1 == null) { // no need to re-run cfft because all models use same features in
-														// same order. Only we need to update AttCSV because are differ
+														// same order. Only we need to update AttCSV because is differ
 														// in each model
 							instanceValue1 = new GetFeatures().GetUsingFeatures(Path);
 							Parameters.setInstanceValue1 ( instanceValue1);// to speed up when read
@@ -112,7 +112,7 @@ public class Predict {
 					} else
 						instanceValue1 = Parameters.getInstanceValue1();
 
-					PipelinesPredictions.put(modelName, Pre.Predicte(instanceValue1, Parameters.getAttCSV()));
+					PipelinesPredictions.put(modelName, Pre.Predict(instanceValue1, Parameters.getAttCSV()));
 
 					ThereisAmodel = true;
 

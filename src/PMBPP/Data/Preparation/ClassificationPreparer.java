@@ -108,7 +108,7 @@ public class ClassificationPreparer {
 		PMBPP.CheckDirAndFile(Parameters.getClassificationDatasetsFolderName());
 		new CSVWriter().WriteFromHashMap(CSVContents,
 				Parameters.getClassificationDatasetsFolderName() + "/" + new File(CSVFile).getName()
-						.replaceAll("." + FilenameUtils.getExtension(new File(CSVFile).getName()), "") + ".csv");
+						.replaceAll("." + FilenameUtils.getExtension(new File(CSVFile).getName()), "") + ".csv","PDB");
 	}
 
 }

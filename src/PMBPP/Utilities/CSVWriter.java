@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import PMBPP.Data.Preparation.ExcelContentsWithFeatures;
@@ -20,7 +22,7 @@ public class CSVWriter {
 	public String PathToSaveCSV = "./";
 
 	// Ex HashMap {1o6a,{R-free,0.20,R-work,0.10,Com,20}}
-	public void WriteFromHashMap(HashMap<String, LinkedHashMap<String, String>> CSVContents, String Name)
+	public void WriteFromHashMap(HashMap<String, LinkedHashMap<String, String>> CSVContents, String Name, String FirstColTitle )
 			throws FileNotFoundException {
 		Vector<String> MeasurementUnitsHeaders = new Vector<String>();
 		for (String PDB : CSVContents.keySet()) {
@@ -32,11 +34,12 @@ public class CSVWriter {
 			}
 
 		}
-		String CSV = "PDB";
+		String CSV = FirstColTitle;
 
 		for (int i = 0; i < MeasurementUnitsHeaders.size(); ++i)// add all headers
 			CSV += "," + MeasurementUnitsHeaders.get(i);
 		CSV += "\n";
+		
 		for (String PDB : CSVContents.keySet()) {
 			int HeaderIndex = 0;
 
@@ -62,11 +65,12 @@ public class CSVWriter {
 			out.println(CSV);
 		}
 	}
-
+	  
+	
 	public void WriteFromHashMapContainsRepatedRecord(HashMap<String, Vector<HashMap<String, String>>> CSVContents,
-			String Name) throws IOException {
+			String Name,String FirstColTitle) throws IOException {
 		HashMap<String, LinkedHashMap<String, String>> CSV = ConvertToNoneReaptedRecord(CSVContents);
-		WriteFromHashMap(CSV, Name);
+		WriteFromHashMap(CSV, Name,FirstColTitle);
 	}
 
 	HashMap<String, LinkedHashMap<String, String>> ConvertToNoneReaptedRecord(

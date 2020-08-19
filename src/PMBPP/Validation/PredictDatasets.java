@@ -1,8 +1,15 @@
 package PMBPP.Validation;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
@@ -11,13 +18,17 @@ import org.apache.commons.io.FilenameUtils;
 import Comparison.Analyser.ExcelContents;
 import Comparison.Analyser.ExcelLoader;
 import Comparison.Analyser.ExcelSheet;
+import PMBPP.Data.Preparation.Features;
 import PMBPP.Data.Preparation.PredictionTrainingDataPreparer;
+import PMBPP.Data.Preparation.PrepareFeatures;
 import PMBPP.Log.Log;
 import PMBPP.ML.Model.PMBPP;
 import PMBPP.ML.Model.Parameters;
 import PMBPP.ML.Model.Predict;
 import PMBPP.Utilities.CSVReader;
+import PMBPP.Utilities.CSVWriter;
 import PMBPP.Utilities.FilesUtilities;
+import PMBPP.Utilities.TxtFiles;
 
 /*
  * Predict set of data and save them in CSV
@@ -25,11 +36,18 @@ import PMBPP.Utilities.FilesUtilities;
 public class PredictDatasets {
 
 	public static void main(String[] args) throws Exception {
-		
-		 String [] arg= {"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/noncs3",new File("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS").getAbsolutePath()+"/"};
-		 Parameters.setTrainedModelsPath("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/Parrot/PredictionModels");
-		 new PredictDatasets().Predict(arg);
 
+		Parameters.setPhases("model.HLA,model.HLB,model.HLC,model.HLD");
+		Parameters.setMR("T");
+		 String [] arg= {"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/noncs2",new File("/Users/emadalharbi/Downloads/PMBPP/MRdata").getAbsolutePath()+"/"};
+		 Parameters.setTrainedModelsPath("/Users/emadalharbi/Downloads/PMBPP/PredictionModelsMR");
+		 //new PredictDatasets().Predict(arg[0],args[1]);
+		 
+		 new PredictDatasets().Predict(arg[1]);
+
+
+		 
+		new PredictDatasets().UpdateFeaturesFromCSVAtt("/Users/emadalharbi/Downloads/PMBPP/PredictionModelsMR");
 		/*
 		 * MR String [] arg= {"/Users/emadalharbi/Downloads/PMBPP/noncsMR2",new
 		 * File("/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding/").getAbsolutePath
@@ -39,12 +57,84 @@ public class PredictDatasets {
 		 * Parameters.MR="T"; new PredictDatasets().Predict(arg);
 		 */
 	}
+public void Predict(String PathToDatasets) throws Exception {
+	
+	
+	
+	if(new File("Temp/").exists())
+	FileUtils.cleanDirectory(new File("Temp/")); 
+	if(new File("PredictedDatasets/").exists())
+	FileUtils.cleanDirectory(new File("PredictedDatasets/")); 
+	
+	if(new File(Parameters.getTrainedModelsPath()).exists()) 
+		FileUtils.deleteDirectory(new File(Parameters.getTrainedModelsPath()));
+	
+	
+	new Predict().CopyModelsFromResources();
+	
+	UpdateFeaturesFromCSVAtt(Parameters.getTrainedModelsPath());
+	
+	new PrepareFeatures().Prepare(new File(PathToDatasets).getAbsolutePath());
+	
+	Vector<ExcelContents> excel = new Vector<ExcelContents>();
+	for (File mtz : new FilesUtilities().FilesByExtension(PathToDatasets,".mtz")) {
+		
+		ExcelContents pdb= new ExcelContents();
+		pdb.PDB_ID=mtz.getName().replaceAll("." + FilenameUtils.getExtension(mtz.getName()), "");
+		excel.add(pdb);
+	}
+	PMBPP.CheckDirAndFile("Temp");
+	// loop on all models names. Not necessary all the models are exists in structure evaluation measures   
+Vector<String> modelsNames= new Vector<String>();
+for(File folder : new FilesUtilities().ReadFilesList(Parameters.getTrainedModelsPath())) {
+	if(folder.isDirectory()) {
+		for(File model : new FilesUtilities().FilesByExtension(folder.getAbsolutePath(), ".model")) {
+			String modelname=model.getName().replaceAll("." + FilenameUtils.getExtension(model.getName()), "");
+			if(!modelsNames.contains(modelname)) {
+				modelsNames.add(modelname);
+				if(Parameters.getFilterModels().equals("T") && Parameters.getFilteredModels().contains(modelname))
+				new ExcelSheet().FillInExcel(excel, "Temp/"+modelname);
+				if(Parameters.getFilterModels().equals("F"))
+				new ExcelSheet().FillInExcel(excel, "Temp/"+modelname);
+				
+				if(new File("Temp/").listFiles().length>0) {//at least 1 file. it might be no files when use FilteredModels  
+				Parameters.setLoadAllMLModelsAtOnce("T");
+				Predict(new File("Temp/").getAbsolutePath(),PathToDatasets,false);
+				}
+				FileUtils.cleanDirectory(new File("Temp/")); 
+				Parameters.getPreloadedMLModels().clear();
+			}
+		}
+	}
+}
 
-	public void Predict(String[] args) throws Exception {
+File [] csv = new FilesUtilities().ReadFilesList("PredictedDatasets");
+HashMap<String, LinkedHashMap<String, String>> csvinmap = new HashMap<String, LinkedHashMap<String, String>>();
+int countRecord=1;
+for (File c : csv ) {
+	
+	HashMap<String, HashMap<String, String>> temp =  new CSVReader().ReadIntoHashMapWithnoIDHeader(c.getAbsolutePath());
+
+	for(String key :temp.keySet()) {
+		LinkedHashMap<String, String> HashMapToLinked= new LinkedHashMap<String, String>(temp.get(key));
+		csvinmap.put(String.valueOf(countRecord), HashMapToLinked);
+		countRecord++;
+	}
+	
+    
+}
+		new CSVWriter().WriteFromHashMap(csvinmap, "PredictedDatasets.csv","ID");
+		//FileUtils.deleteDirectory(new File("PredictedDatasets/")); 
+		FileUtils.deleteDirectory(new File("CSVToUseInStatisticalTest/")); 
+		FileUtils.deleteDirectory(new File("Temp/")); 
+	
+		
+}
+	public void Predict(String PathToExcelFolder, String PathToDatasets, boolean Traning) throws Exception {
 		// TODO Auto-generated method stub
 		new Log().TxtInRectangle("Predicting datasets");
-		String PathToExcelFolder = args[0];
-		String PathToDatasets = args[1];
+		//String PathToExcelFolder = args[0];
+		//String PathToDatasets = args[1];
 
 		isValid(PathToExcelFolder, PathToDatasets);
 
@@ -121,6 +211,10 @@ public class PredictDatasets {
 						FeaturesForCSVToUseInStatisticalTest = ""; // empty string
 						Record1 += "," + Results.get(PDB).get(Key);
 						HeaderIndex++;
+						if(Traning==true) {
+							
+						
+						
 						Vector<ExcelContents> TempExcel = new Vector<ExcelContents>();
 						for (int i = 0; i < excel.size(); ++i) { // write temp excel that only contains this PDB
 							if (excel.get(i).PDB_ID.equals(PDB)) {
@@ -177,6 +271,7 @@ public class PredictDatasets {
 						}
 						FileUtils.deleteDirectory(new File("TempExcel"));
 						FileUtils.deleteDirectory(new File("TempCSV"));
+					}
 					} else {// very rare to happen
 						new Log().Error(this, "Can not continue because there is a change in the headers order!  ");
 
@@ -189,6 +284,7 @@ public class PredictDatasets {
 				Record2 += ",F," + ExcelName + "\n";
 
 				CSV += Record1;
+				if(Traning==true)
 				CSV += Record2;
 				// pb.step();
 			}
@@ -226,5 +322,51 @@ public class PredictDatasets {
 
 		}
 
+	}
+	
+	void UpdateFeaturesFromCSVAtt(String Dir) throws IOException, IllegalArgumentException, IllegalAccessException {
+		HashMap<Integer,String> Features= new HashMap<Integer,String>();
+		 File [] csv = new FilesUtilities().FilesByExtensionRecursively(Dir,".csv");
+		 for (Field field : new Features().getClass().getDeclaredFields()) {
+			Vector<Boolean> foundInAll = new Vector<Boolean>();
+			Vector<Integer> FeatureIndexInCSV = new Vector<Integer>();
+		 for(File file : csv ) {
+			 
+			 Vector<String> FeatureFromCSV=new Vector<String>(Arrays.asList(new TxtFiles().readFileAsString(file.getAbsolutePath()).split("\n")[0].split(",")));
+			 if(FeatureFromCSV.contains(field.getName())) {
+				 foundInAll.add(true);
+				 FeatureIndexInCSV.add(FeatureFromCSV.indexOf(field.getName()));
+			 }
+		 
+		 }
+		
+		
+		 if(foundInAll.size()==csv.length) {
+			
+			 if(IsAllSame(FeatureIndexInCSV)==false)
+				 new Log().Error(this, "Features order are not same accroess all CSV attribute files");
+			
+			 Features.put(FeatureIndexInCSV.get(0), field.getName());
+		 }
+			// Features+=field.getName()+",";
+		 
+		 if(foundInAll.size()!=csv.length && foundInAll.size()!=0)// foundInAll.size()!=0 because a feature can be in features class but not used 
+			 new Log().Error(this, "This feature "+field.getName()+" not present in all the models's csv files! ");
+		
+		 }
+		 String Fea="";
+		 SortedSet<Integer> keys = new TreeSet<>(Features.keySet());
+		 for(Integer key : keys) {
+			 Fea+=Features.get(key)+",";
+		 }
+		
+		 Parameters.setFeatures(Fea.substring(0,Fea.lastIndexOf(",")));
+		
+	}
+	boolean IsAllSame(Vector<Integer> Vec) {
+		
+		for(int i =1 ; i < Vec.size(); ++i)
+			if(Vec.get(i)!=Vec.get(0)) return false;
+		return true;
 	}
 }

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import PMBPP.Log.Log;
+import PMBPP.Utilities.FilesUtilities;
 import PMBPP.Utilities.LoadMLModel;
 import PMBPP.Validation.CustomException;
 import weka.classifiers.trees.RandomForest;
@@ -181,11 +182,18 @@ public class Parameters {
 		Vector<File> models = new Vector<File>();
 		for(File model : new File(MLModelsFolder).listFiles()) {
 			if(model.isDirectory()) {
-				
+				if(Parameters.getFilterModels().equals("F"))
 				models.addAll(Arrays.asList(model.listFiles()));
+				
+				if(Parameters.getFilterModels().equals("T"))
+					models.addAll(Arrays.asList(new FilesUtilities().ReadFilteredModels(model.getAbsolutePath())));	
+				
 			}
 			
 		}
+		
+		
+		
 		PreloadedMLModels=new LoadMLModel().LoadSetOfModels(models.toArray(new File[0]));
 		
 	}

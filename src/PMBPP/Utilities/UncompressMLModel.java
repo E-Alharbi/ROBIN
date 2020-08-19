@@ -26,7 +26,7 @@ public class UncompressMLModel {
 	public void Uncompress() throws Exception {
 		
 		
-		if(new File(Parameters.getModelFolderName()).exists()) {
+		
 			
 			Parameters.setTrainedModelsPath ("PredictionModels");
 			Parameters.setCompressedModelFolderName ("PredictionModels.zip");
@@ -35,10 +35,11 @@ public class UncompressMLModel {
 				Parameters.setTrainedModelsPath ("PredictionModelsMR");
 				Parameters.setCompressedModelFolderName ("PredictionModelsMR.zip");
 			}
+			if(new File(Parameters.getTrainedModelsPath()).exists()) {
 			FileUtils.deleteDirectory(new File(Parameters.getTrainedModelsPath()));
-			new Predict().CopyModelsFromResources();
+			
 		}
-		
+			new Predict().CopyModelsFromResources();
 		new Log().Info(this, "Uncompressing ML models...");
 		File [] Dir= new FilesUtilities().ReadFilesList(Parameters.getModelFolderName());
 	    Vector<File> models= new Vector<File>();

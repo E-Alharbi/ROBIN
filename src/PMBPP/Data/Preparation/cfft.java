@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Vector;
 
 import PMBPP.Log.Log;
 import PMBPP.ML.Model.Parameters;
+import PMBPP.Utilities.MTZReader;
 
 // Class to run cfft tool from ccp4
 public class cfft {
@@ -110,6 +112,7 @@ public class cfft {
 
 		}
 		if (Error == true) {
+			
 			new Log().Error(this,
 					"Cfft error: Please fix the above error. Probably, you are using wrong phases or wrong FP,SIGFP! (Example colinfo=FP,SIGFP Phases=HLA,HLB,HLC,HLD) ");
 

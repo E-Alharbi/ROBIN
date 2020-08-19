@@ -82,9 +82,9 @@ public class PrepareFeatures {
 		}
 
 		if (!new File(PathToDatasets).isFile())
-			new CSVWriter().WriteFromHashMap(PDB, "features.csv");
+			new CSVWriter().WriteFromHashMap(PDB, "features.csv","PDB");
 		else {
-			new CSVWriter().WriteFromHashMap(PDB, MTZFileName + "features.csv");
+			new CSVWriter().WriteFromHashMap(PDB, MTZFileName + "features.csv","PDB");
 		}
 	}
 
