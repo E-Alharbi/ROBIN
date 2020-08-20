@@ -60,7 +60,7 @@ java -jar PMBPP-Runnable-(version).jar PredictDatasets Datasets=PathToDatasetsFo
 | Datasets  | path to the datasets folder. The folder should contain the datasets in mtz format  |
 
 
--For MR
+- For MR
 ```
 java -jar PMBPP-Runnable-(version).jar PredictDatasets Datasets=PathToDatasetsFolder Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP MR=T
 ```

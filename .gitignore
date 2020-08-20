@@ -1,5 +1,3 @@
 /target/
-/resources/ClassificationModels.zip
-/resources/ClassificationModelsMR.zip
 /resources/PredictionModels.zip
-/resources/PredictionModelsMR.zip
+resources/PredictionModelsMR.zip
