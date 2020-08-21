@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.Vector;
 
 /*
@@ -44,5 +47,18 @@ public class TxtFiles {
 		for (String line : lines)
 			Vec.add(line);
 		return Vec;
+	}
+	public String ReadResourceAsString (String FileName) throws IOException {
+		String Txt="";
+	InputStream res =Map.class.getResourceAsStream(FileName);
+	BufferedReader reader = new BufferedReader(new InputStreamReader(res));
+	String line = null;
+
+	while ((line = reader.readLine()) != null) {
+
+	Txt+=line +"\n";
+	}
+			    reader.close();
+		return 	  Txt;  
 	}
 }
