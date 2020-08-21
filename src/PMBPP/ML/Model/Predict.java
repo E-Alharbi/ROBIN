@@ -194,7 +194,7 @@ public class Predict {
 
 	public void CopyModelsFromResources() throws Exception {
 		new Log().Info(this, "Uncompressing the models (it takes a bit longer and only needed at the first time of using this tool)");
-		// Files must compress without the main folder (Models) itself for example 
+		// Files must compress without the main folder  itself for example 
 		// zip -r ../zipped_dir.zip *
 		Parameters.setTrainedModelsPath ( new File(Parameters.getCompressedModelFolderName()).getName().replaceAll(
 				"." + FilenameUtils.getExtension(new File(Parameters.getCompressedModelFolderName()).getName()), ""));
