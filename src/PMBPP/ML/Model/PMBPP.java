@@ -26,6 +26,7 @@ import PMBPP.Updater.Update;
 import PMBPP.Utilities.Cluster;
 import PMBPP.Utilities.ExecutionTime;
 import PMBPP.Utilities.FilesUtilities;
+import PMBPP.Utilities.TxtFiles;
 import PMBPP.Utilities.UncompressMLModel;
 import PMBPP.Validation.ClassifyDatasets;
 import PMBPP.Validation.PredictDatasets;
@@ -75,7 +76,7 @@ public class PMBPP {
 
 				new Log().Info(new PMBPP(), "Execution time " + (timeElapsed / 1000) + " seconds");
 				new Log().Info(new PMBPP(), "The results were save to PredictedDatasets.csv. For individual pipeline results were saved in PredictedDatasets folder");
-
+				PrintNotes();
 			}
 			
 			else
@@ -186,6 +187,7 @@ if(Parameters.getPredictionConfidence().equals("T")) {
 			long timeElapsed = Duration.between(start, finish).toMillis();
 
 			new Log().Info(new PMBPP(), "Execution time " + (timeElapsed / 1000) + " seconds");
+			PrintNotes();
 		}
 
 		if (args[0].equals("PrepareDataForClassification")) {
@@ -427,6 +429,16 @@ if(Parameters.getPrepareFeatures().equals("T")) {
 		if (Parameters.getMR().equals("T")) {
 			Parameters.setTrainedModelsPath ( "PredictionModelsMR");
 			Parameters.setCompressedModelFolderName ( "PredictionModelsMR.zip");
+		}
+	}
+	static void PrintNotes() throws IOException {
+		if (Parameters.getMR().equals("F")) {
+			new Log().Info(new PMBPP(), new TxtFiles().ReadResourceAsString("/notesEx.txt"));
+		}
+			
+		if (Parameters.getMR().equals("T")) {
+			new Log().Info(new PMBPP(), new TxtFiles().ReadResourceAsString("/notesMR.txt"));
+	
 		}
 	}
 }
