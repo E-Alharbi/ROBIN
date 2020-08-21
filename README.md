@@ -109,30 +109,30 @@ To get an accurate prediction, use the phases after DM when you predict the perf
 
 
 ## Names of the pipelines to use with FilteredModels keyword 
-1-ARPwARP|Phenix AutoBuild(P)
-2-Buccaneer|Phenix AutoBuild(P)
-3-Phenix AutoBuild
-4-SHELXE
-5-SHELXE(P)
-6-SHELXE|Phenix AutoBuild(P)
-7-Phenix AutoBuild(P)
-8-Buccaneer
-9-SHELXE|ARPwARP
-10-SHELXE(P)|Phenix AutoBuild(P)
-11-Phenix AutoBuild|ARPwARP
-12-ARPwARP
-13-SHELXE(P)|ARPwARP
-14-Phenix AutoBuild|Buccaneer
-15-Buccaneer|Phenix AutoBuild
-16-SHELXE(P)|Buccaneer
-17-Buccaneer|ARPwARP
-18-ARPwARP|Phenix AutoBuild
-19-SHELXE|Buccaneer
-20-Phenix AutoBuild(P)|Buccaneer
-21-SHELXE|Phenix AutoBuild
-22-SHELXE(P)|Phenix AutoBuild
-23-ARPwARP|Buccaneer
-24-Phenix AutoBuild(P)|ARPwARP
+1- ARPwARP|Phenix AutoBuild(P)
+2- Buccaneer|Phenix AutoBuild(P)
+3- Phenix AutoBuild
+4- SHELXE
+5- SHELXE(P)
+6- SHELXE|Phenix AutoBuild(P)
+7- Phenix AutoBuild(P)
+8- Buccaneer
+9- SHELXE|ARPwARP
+10- SHELXE(P)|Phenix AutoBuild(P)
+11- Phenix AutoBuild|ARPwARP
+12- ARPwARP
+13- SHELXE(P)|ARPwARP
+14- Phenix AutoBuild|Buccaneer
+15- Buccaneer|Phenix AutoBuild
+16- SHELXE(P)|Buccaneer
+17- Buccaneer|ARPwARP
+18- ARPwARP|Phenix AutoBuild
+19- SHELXE|Buccaneer
+20- Phenix AutoBuild(P)|Buccaneer
+21- SHELXE|Phenix AutoBuild
+22- SHELXE(P)|Phenix AutoBuild
+23- ARPwARP|Buccaneer
+24- Phenix AutoBuild(P)|ARPwARP
 
 *(P) meaning, this pipeline should be run after Parrot 
 
