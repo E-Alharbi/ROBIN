@@ -32,13 +32,17 @@ public class ModelPerformance {
 		// TODO Auto-generated method stub
 	    Parameters.setMR("T");
 		Parameters.setFeatures ( "RMSD,Skew,Resolution,Max,Min,SequenceIdentity");
+		
+		
+		
 		//Parameters.setHeatmap("F");
 		
 		//new ModelPerformance().SplitOnMeasurementUnitsLevel("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR/CSVToUseInStatisticalTest");
 		//new ModelPerformance().OmitTrainingdata("CSVToUseInStatisticalTestSplitted",
 		//		"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR/TrainAndTestDataPredictionModels"); // CSVToUseInStatisticalTestSplitted will be created by
 														// SplitOnMeasurementUnitsLevel
-		new ModelPerformance().GroupedByResolution("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR/CSVToUseInStatisticalTestFiltered");// CSVToUseInStatisticalTestFiltered
+		
+		new ModelPerformance().GroupedByResolution("/Users/emadalharbi/Downloads/MRWithShelxePhenixNoRebuild/CSVToUseInStatisticalTestFiltered");// CSVToUseInStatisticalTestFiltered
 																						// will be created by
 																						// OmitTrainingdata
 
@@ -497,20 +501,10 @@ public class ModelPerformance {
 			}
 			
 			
-			/*	
-			if(Diff > max) {
-				max=Diff;
-				}
-			if(Diff < min) {
-				min=Diff;
-			}
-			*/	
+			
 			
 			}
-			//MaxAndMin.put("SDMax", max);
-			//MaxAndMin.put("SDMin", min);
-			// max=0;
-			// min = Double.MAX_VALUE;
+			
 			 
 			for(String Val: mean.keySet()) {
 				BigDecimal P=new BigDecimal(mean.get(Val).split("-")[0].replaceAll("\\(P\\)", ""));
@@ -538,18 +532,7 @@ public class ModelPerformance {
 				}
 				
 				
-				/*
-				if(Diff > max) {
-				max=Diff;
 				
-				}
-			if(Diff < min) {
-				
-				min=Diff;
-				
-				
-			}
-			*/
 			
 			}
 			
