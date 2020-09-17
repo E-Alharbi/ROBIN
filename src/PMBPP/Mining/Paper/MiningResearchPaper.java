@@ -4,10 +4,12 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -36,31 +38,117 @@ import org.xml.sax.SAXException;
 
 import PMBPP.Data.Preparation.Features;
 import PMBPP.Log.Log;
+import PMBPP.ML.Model.PMBPP;
 import PMBPP.ML.Model.Parameters;
 import PMBPP.Utilities.CSVReader;
+import PMBPP.Utilities.CSVWriter;
+import PMBPP.Utilities.FilesUtilities;
 import PMBPP.Utilities.TxtFiles;
 
 public class MiningResearchPaper {
+	
+	
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+
 
 		
 		
+new PMBPP().CheckDirAndFile("EvaluationTablesAndPlots");
+new MiningResearchPaper().RemoveDuplicatedPapers("FoundPapers.csv");
+new MiningResearchPaper().RecommendedPipeline("NonDuplicatedPapers.csv", "CSVToUseInStatisticalTest");
+new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
+
 		
-		HashMap<String, Vector<HashMap<String, String>>> paper=	new CSVReader().ReadIntoHashMap("/Users/emadalharbi/Downloads/testp/MRPapersTestDatasets.csv", "PDB");
+	}
+	
+	public void RemoveDuplicatedPapers(String PaperCSV) throws IOException {
+		HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader().ReadIntoHashMap(PaperCSV, "PDB");
+		HashMap<String, Vector<HashMap<String, String>>> RemovedDuplicatedPapers=	new HashMap<String, Vector<HashMap<String, String>>>();
+
+		for(String PDB : Papers.keySet()) {
+			if(Papers.get(PDB).size()==1) {
+				RemovedDuplicatedPapers.put(PDB, Papers.get(PDB));
+			}
+			else {
+				
+				HashMap<String,String> SamePipeline= new HashMap<String,String>();
+				for(int p=0 ; p < Papers.get(PDB).size() ; ++p) {
+					SamePipeline.put(Papers.get(PDB).get(p).get("Pipeline"), "");
+				}
+				if(SamePipeline.size()==1)
+					RemovedDuplicatedPapers.put(PDB, Papers.get(PDB));
+			}
+		}
+		new CSVWriter().WriteFromHashMapContainsRepatedRecord(RemovedDuplicatedPapers, "NonDuplicatedPapers.csv", "PDB");
+	}
+	public void LatexTable(String RecommendedPipelineCSV) throws IOException {
+		HashMap<String, Vector<HashMap<String, String>>> UsedRecommendedPipeline=	new CSVReader().ReadIntoHashMap(RecommendedPipelineCSV, "PDB");
+
+		String LatexTable="";
+		for(String pdb : UsedRecommendedPipeline.keySet()) {
 		
+			String UsedPipeline=UsedRecommendedPipeline.get(pdb).get(0).get("UsedPipeline");
+			String UsedPipelineCompleteness=UsedRecommendedPipeline.get(pdb).get(0).get("AchievedCompleteness");
+			String RecommendedPipeline=UsedRecommendedPipeline.get(pdb).get(0).get("BestPipeline");;
+			String RecommendedPipelineCompleteness="";
+			String RecommendedPipelinePredictedCompleteness="";
+			 Vector<HashMap<String, String>> RealAndPredicted=UsedRecommendedPipeline.get(pdb);
+			 for(int i=0 ;i < RealAndPredicted.size();++i) {
+				 if(RealAndPredicted.get(i).get("Better").equals("T")|| RealAndPredicted.get(i).get("Better").equals("F")) {
+					 RecommendedPipelineCompleteness=RealAndPredicted.get(i).get("BestCompleteness");
+				 } 
+				 if(RealAndPredicted.get(i).get("Better").equals("PT")|| RealAndPredicted.get(i).get("Better").equals("PF")) {
+					 RecommendedPipelinePredictedCompleteness=RealAndPredicted.get(i).get("BestCompleteness");
+				 }
+				 
+			 }
+			 RecommendedPipeline=RecommendedPipeline.replaceAll(".csv", "");
+			 if(!RecommendedPipeline.equals(UsedPipeline)) {
+			 if(new BigDecimal(UsedPipelineCompleteness).compareTo(new BigDecimal(RecommendedPipelineCompleteness)) >0)
+			 LatexTable+="\\cellcolor{red!30} "+pdb.substring(0,4)+"& \\cellcolor{red!30} "+UsedPipeline+"& \\cellcolor{red!30} "+UsedPipelineCompleteness+"& \\cellcolor{red!30} "+RecommendedPipeline+"& \\cellcolor{red!30} "+RecommendedPipelineCompleteness+"& \\cellcolor{red!30} "+RecommendedPipelinePredictedCompleteness+"\\\\ \\hline \n";
+			 else
+				 LatexTable+=" \\cellcolor{green!30} "+pdb.substring(0,4)+"& \\cellcolor{green!30} "+UsedPipeline+"& \\cellcolor{green!30} "+UsedPipelineCompleteness+"& \\cellcolor{green!30} "+RecommendedPipeline+"& \\cellcolor{green!30} "+RecommendedPipelineCompleteness+"& \\cellcolor{green!30} "+RecommendedPipelinePredictedCompleteness+"\\\\ \\hline \n";
+			 }
+			 else {
+				 LatexTable+=""+pdb.substring(0,4)+"&"+UsedPipeline+"&"+UsedPipelineCompleteness+"&"+RecommendedPipeline+"&"+RecommendedPipelineCompleteness+"&"+RecommendedPipelinePredictedCompleteness+"\\\\ \\hline \n";
+ 
+			 }
+		}
+		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/RecommendedPipeline.tex",LatexTable);
 		
+	}
+	public void RecommendedPipeline(String PapersCSV, String CSVFolder) throws IOException {
+		HashMap<String, Vector<HashMap<String, String>>> paper=	new CSVReader().ReadIntoHashMap(PapersCSV, "PDB");
+		HashMap<String, Vector<HashMap<String, String>>> pdb=	new CSVReader().ReadIntoHashMap(new FilesUtilities().ReadFilesList(CSVFolder)[0].getAbsolutePath(), "PDB");// any of the files just to get the list of PDB id
+		HashMap<String, Vector<HashMap<String, String>>> paper2=	new HashMap<String, Vector<HashMap<String, String>>>();
+
+		System.out.println(paper.size());
+		for(String p: pdb.keySet()) {
+			
+			for(String p2: paper.keySet()) {
+				if(p.contains(p2)) {
+					paper2.put(p, paper.get(p2));
+					break;
+				}
+			}
+		}
+		paper.clear();
+		paper=paper2;
 		
 		String CSV="PDB,AchievedCompleteness,UsedPipeline,BestCompleteness,BestPipeline,Better,LinkDirection\n";
 		int LinkDirection=0;
 		for(String PDBID:paper.keySet() ) {
-			HashMap<String, Vector<HashMap<String, String>>> MRdata=	new CSVReader().ReadIntoHashMap("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR/CSVToUseInStatisticalTest/"+paper.get(PDBID).get(0).get("Pipeline")+".csv", "PDB");
+			
+			HashMap<String, Vector<HashMap<String, String>>> MRdata=	new CSVReader().ReadIntoHashMap(CSVFolder+"/"+paper.get(PDBID).get(0).get("Pipeline")+".csv", "PDB");
+			
+			System.out.println(CSVFolder+"/"+paper.get(PDBID).get(0).get("Pipeline")+".csv");
 			String AchievedCompleteness=MRdata.get(PDBID).get(0).get("AchievedCompleteness");
 			
 			System.out.println(MRdata.get(PDBID).get(0).get("AchievedCompleteness"));
 			double BestCom=0;
 			double AchievedCompletenessOfRecommended=0;
 			String Pipeline="";
-			for(File file : new File("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR/CSVToUseInStatisticalTest/").listFiles()) {
+			for(File file : new File(CSVFolder).listFiles()) {
 				//if(!file.getName().equals(paper.get(PDBID).get(0).get("Pipeline")+".csv")) {
 				HashMap<String, Vector<HashMap<String, String>>> pipeline=	new CSVReader().ReadIntoHashMap(file.getAbsolutePath(), "PDB");
 
@@ -83,224 +171,8 @@ public class MiningResearchPaper {
 			LinkDirection++;
 		}
 		
-		new TxtFiles().WriteStringToTxtFile("MRPapersWithBestPipelineAchievedCompleteness.csv", CSV);
+		new TxtFiles().WriteStringToTxtFile("RecommendedPipeline.csv", CSV);
 
-		
 	}
-	
-	public void Fetch(String CSVPath) throws ParserConfigurationException, SAXException, IOException {
-		// TODO Auto-generated method stub
-		/*
-		String CSV="PDB,Pipeline,PaperLink\n";
-		String PaperNotFound="PDB,DOI\n";
-		String PaperFoundButNotUsePipeline="PDB,DOI\n";
-		HashMap<String, Vector<HashMap<String, String>>> map=	new CSVReader().ReadIntoHashMap(CSVPath, "PDB");
-	     System.out.println(map.size());
-		int count=0;
-		int countDOI=0;
-		
-		int countsyndication=0;
-		int countPaper=0;
-		//for(String PDBID: map.keySet()) {
-		//	PDBIDs+=PDBID.substring(0,4)+",";
-		//}
-		//System.out.println(PDBIDs);
-		for(String PDBID: map.keySet()) {
-			countPaper++;
-			System.out.println("Paper: "+countPaper);
-String PDBIDAsFRomTheExcel=	PDBID;
- PDBID=PDBID.substring(0, 4);
-String PDBBankRes= new MiningResearchPaper().GetHttpRequste("https://www.rcsb.org/pdb/rest/customReport.csv?pdbids="+PDBID+"&customReportColumns=pubmedId,doi&primaryOnly=1&service=wsfile&format=csv");
-//System.out.println(new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId"));
-System.out.println(PDBID);
-
-String pubmedId="";
-if(new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId").size()>0) { // in case not data found in PDBBank
-pubmedId=new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId").get(PDBID).get(0).get("pubmedId");
-String PMC= new MiningResearchPaper().GetHttpRequste("https://www.ebi.ac.uk/europepmc/webservices/rest/"+pubmedId+"/fullTextXML");
-if(PMC.trim().length()==0) {
-	PMC=new MiningResearchPaper().GetHttpRequste("https://api.elsevier.com/content/article/doi/"+new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId").get(PDBID).get(0).get("doi")+"?APIKey="+Parameters.getElsevierToken());
-if(PMC.trim().length()==0) {
-	//System.out.println(new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId").get(PDBID).get(0).get("doi"));
-	countDOI++;
-	PMC=new MiningResearchPaper().GetHttpRequste("https://doi.crossref.org/servlet/query?pid="+Parameters.getCrossrefEmail()+"&format=unixref&id="+new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId").get(PDBID).get(0).get("doi"));
-	if(PMC.contains("collection property=")) {
-		System.out.println(PMC.split("collection property=")[1].split("</collection>")[0]);
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document doc = db.parse(new URL("https://doi.crossref.org/servlet/query?pid="+Parameters.getCrossrefEmail()+"&format=unixref&id="+new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId").get(PDBID).get(0).get("doi")).openStream());
-		
-		if(!PMC.contains("syndication")) { // links contain syndication do not work  
-	
-	//System.out.println(doc.getElementsByTagName("resource").item(0).getTextContent());
-	//System.out.println(doc.getElementsByTagName("resource").item(1).getTextContent());
-	if(doc.getElementsByTagName("resource").item(1).getTextContent().toLowerCase().contains("pdf")) {
-		new MiningResearchPaper().Download(doc.getElementsByTagName("resource").item(1).getTextContent().trim(),"pdf");
-
-	
-	File myFile = new File("paper.pdf");
-
-     PDDocument docpdf;
-	try {
-		docpdf = PDDocument.load(myFile);
-		 PDFTextStripper stripper = new PDFTextStripper();
-	        String text = stripper.getText(docpdf);
-	        PMC=text;
-	       // System.out.println("Text size: " + text.length() + " characters:");
-	        docpdf.close();
-	} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-		
-	} 
-
-       
-        //System.out.println(text);
-    }
-	else {
-		//System.out.println("not pdf");
-		new MiningResearchPaper().Download(doc.getElementsByTagName("resource").item(1).getTextContent().trim(),"html");
-		PMC=new TxtFiles().readFileAsString("paper.html");
-	}
-	
-   	
-
-		
-		
-		
-	
-
-}
-else {
-	
-if(doc.getElementsByTagName("resource").item(0).getTextContent().contains("gad")) {
-	System.out.println("GAD");
-	new MiningResearchPaper().Download("http://genesdev.cshlp.org/content/"+doc.getElementsByTagName("item_number").item(0).getTextContent()+".full","html");
-	PMC=new TxtFiles().readFileAsString("paper.html");
-}
-else if(doc.getElementsByTagName("resource").item(0).getTextContent().contains("jbc")) {
-	System.out.println("JBC");
-	String ID=doc.getElementsByTagName("item_number").item(0).getTextContent().replaceAll("/jbc/", "");
-	ID=ID.replaceAll(".atom", "");
-	System.out.println(ID);
-	new MiningResearchPaper().Download("https://www.jbc.org/content/"+doc.getElementsByTagName("item_number").item(0).getTextContent()+".full","html");
-	PMC=new TxtFiles().readFileAsString("paper.html");
-}
-else {
-	
-	System.out.println("CAN");
-	new MiningResearchPaper().Download(doc.getElementsByTagName("resource").item(0).getTextContent().trim(),"html");
-	PMC=new TxtFiles().readFileAsString("paper.html");
-	
-}
-
-
-
-
-
-}
-	
-	}
-}
-}
-//System.out.println(pubmedId);
-//System.out.println(PMC);
-//Vector<String> Tools= new Vector<String>();
-//Tools.add("arp/warp");
-//Tools.add("buccaneer");
-//Tools.add("shelxe");
-///Tools.add("phenix.autobuild");
-//Tools.add("phenix autobuild");
-
-if(PMC.length()==0) {
-	PaperNotFound+=PDBIDAsFRomTheExcel+","+new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId").get(PDBID).get(0).get("doi")+"\n";
-}
-
-HashMap<String,String> Tools= new HashMap<String,String>();
-Tools.put("arp/warp", "ARPwARP");
-Tools.put("buccaneer", "Buccaneeri1I5ModelSeed");
-Tools.put("shelxe", "ShelxeWithTFlag");
-Tools.put("phenix.autobuild", "Phenix");
-Tools.put("phenix autobuild", "Phenix");
-boolean UsePipeline=false;
-if(PMC.trim().length()!=0)
-for(String tool : Tools.keySet() ) {
-	if(PMC.toLowerCase().contains(tool)) {
-		System.out.println("Found "+tool +" PDB "+PDBID);
-		++count;
-		CSV+=PDBIDAsFRomTheExcel+","+Tools.get(tool)+","+new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId").get(PDBID).get(0).get("doi")+"\n";
-		UsePipeline=true;
-	}
-	}
-if(UsePipeline==false && PMC.length()!=0)
-PaperFoundButNotUsePipeline+=PDBIDAsFRomTheExcel+","+new CSVReader().ReadIntoHashMap(PDBBankRes, "structureId").get(PDBID).get(0).get("doi")+"\n";
-	}
-
-		}
-		
-		System.out.println(count);
-		System.out.println(countDOI);
-		System.out.println(countsyndication);
-		new TxtFiles().WriteStringToTxtFile("MRPapers.csv", CSV);
-		new TxtFiles().WriteStringToTxtFile("MRPapersNOTFound.csv", PaperNotFound);
-		new TxtFiles().WriteStringToTxtFile("MRPapersFoundButNotUsePipeline.csv", PaperFoundButNotUsePipeline);
-		
-	}
-	String GetHttpRequste(String urllink) {
-		URL url=null;
-		try {
-			url = new URL(urllink);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		HttpURLConnection conn=null;
-		try {
-			conn = (HttpURLConnection) url.openConnection();
-		} catch (IOException e) {
-			
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		}
-		try {
-			conn.setRequestMethod("GET");
-		} catch (ProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		conn.setRequestProperty("Accept", "application/xml");
-
-		
-		
-
-		BufferedReader br=null;
-		try {
-			br = new BufferedReader(new InputStreamReader(
-				(conn.getInputStream())));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		}
-
-		if(br==null)
-			return"";
-		
-		String output;
-		
-		String Txt="";
-		try {
-			while ((output = br.readLine()) != null) {
-				
-				Txt+=output+"\n";
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		conn.disconnect();
-		return Txt;
-		*/
-	}
-	
 	
 }
