@@ -2,7 +2,7 @@
 
 # Performance prediction of automated crystallographic model-building pipelines
 
-A tool to predict the performance of three crystallographic model building pipelines (ARP/wARP, Buccaneer, PHENIX AutoBuild and SHELXE) as well as their combinations. Structure completeness and R-work/R-free are the measures that the tool can predict.    
+A tool to predict the performance of four crystallographic model-building pipelines (ARP/wARP, Buccaneer, PHENIX AutoBuild and SHELXE) as well as their combinations. Structure completeness and R-work/R-free are the measures that the tool can predict.    
 
 
 
