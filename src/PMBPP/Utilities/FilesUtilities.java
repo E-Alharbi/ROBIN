@@ -88,6 +88,16 @@ public class FilesUtilities {
 		return files;
 	}
 
+	public File[] ReadFilesList(String Dir, String Substring) {
+		File[] files = ReadFilesList(Dir);
+		Vector<File> FilteredFiles= new Vector<File>();
+		for(File file : files) {
+			if(file.getName().contains(Substring))
+				FilteredFiles.add(file);
+		}
+		return  FilteredFiles.toArray(new File[FilteredFiles.size()]);
+	}
+	
 	public File[] FilesByExtension(String Dir, String Extension) {
 		// https://stackoverflow.com/questions/30486404/java-list-files-in-a-folder-avoiding-ds-store/30486678
 		File[] files = new File(Dir).listFiles(new FileFilter() {
