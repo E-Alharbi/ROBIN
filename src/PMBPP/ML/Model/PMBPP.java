@@ -88,19 +88,26 @@ public class PMBPP {
 		}
 		
 		
-		if (args[0].equals("MiningResearchPaper")) {
-if(checkArg(Parm, "CSV") != null)
-			new MiningResearchPaper().Fetch(checkArg(Parm, "CSV"));
-else
-	new Log().Error(new PMBPP(),"Please set the path for the CSV file. Ex CSV=CSVToUseInStatisticalTestFiltered/ARPwARP-Completeness.csv OR CSV=CSVToUseInStatisticalTest/ARPwARP.csv");
 
-		}
 		
 		if (args[0].equals("PrepareDataForPredictionModels")) {
 
 			new PMBPP().PrepareDataForPredictionModels(Parm);
 
 		}
+		
+		
+		if (args[0].equals("MiningResearchPaper")) {
+			new PMBPP().CheckDirAndFile("EvaluationTablesAndPlots"); 
+			if (checkArg(Parm, "Papers") != null || checkArg(Parm, "CSVFolder") != null) {
+				 new Log().Error(new PMBPP(), "Please se these keywords\n Papers=the path for reserach papers in csv file \n CSVFolder= the folder that contains the pipelines csv files (usually called CSVToUseInStatisticalTest) ");
+			 }
+			new MiningResearchPaper().RemoveDuplicatedPapers(checkArg(Parm, "Papers"));
+			new MiningResearchPaper().RecommendedPipeline("NonDuplicatedPapers.csv", checkArg(Parm, "CSVFolder"));
+			new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
+
+		}
+		
 
 		if (args[0].equals("PredictionModels")) {
 
@@ -237,6 +244,7 @@ if(Parameters.getPredictionConfidence().equals("T")) {
 				new PMBPP().PrepareDataForClassification(Temp); // Temp = ExcelFolder and Datasets
 
 			}
+			
 			new ModelPerformance().SplitOnMeasurementUnitsLevel("CSVToUseInStatisticalTest");
 			new ModelPerformance().OmitTrainingdata("CSVToUseInStatisticalTestSplitted",
 					"TrainAndTestDataPredictionModels");
