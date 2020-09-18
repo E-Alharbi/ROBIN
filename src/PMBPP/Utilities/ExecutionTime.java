@@ -69,9 +69,9 @@ if(excelName.equals(csvFileName)) {
 	public void AllWithRecommended() throws IOException {
 		
 		String CSV="PDB,TotalExecutionTime,Best,Size,Fmap,Resolution,Pipeline\n";
-		CSV+=FindFirstBest(Parameters.getExcelFolder(),"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR2/CSVToUseInStatisticalTestFiltered","Completeness",true,0,"",0);
-		CSV+=FindFirstBest(Parameters.getExcelFolder(),"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR2/CSVToUseInStatisticalTestFiltered","R-free",false,0,"",2);
-		CSV+=FindFirstBest(Parameters.getExcelFolder(),"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR2/CSVToUseInStatisticalTestFiltered","R-work",false,0,"",2);
+		CSV+=FindFirstBest(Parameters.getExcelFolder(),"CSVToUseInStatisticalTestFiltered","Completeness",true,0,"",0);
+		CSV+=FindFirstBest(Parameters.getExcelFolder(),"CSVToUseInStatisticalTestFiltered","R-free",false,0,"",2);
+		CSV+=FindFirstBest(Parameters.getExcelFolder(),"CSVToUseInStatisticalTestFiltered","R-work",false,0,"",2);
 		
 		//CSV+=FindFirstBest(Parameters.getExcelFolder(),"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/CSVToUseInStatisticalTestFiltered","Completeness",true,5,"at least 5%",0);
 		//CSV+=FindFirstBest(Parameters.getExcelFolder(),"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/CSVToUseInStatisticalTestFiltered","R-free",false,0.05,"at least 5%",2);
