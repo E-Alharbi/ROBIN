@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
@@ -18,11 +19,14 @@ import PMBPP.Data.Preparation.ClassificationPreparer;
 import PMBPP.Data.Preparation.ClassificationPreparerWithOptimizeClasses;
 import PMBPP.Data.Preparation.PredictionTrainingDataPreparer;
 import PMBPP.Data.Preparation.PrepareFeatures;
+import PMBPP.Data.Preparation.cfft;
+import PMBPP.Data.Preparation.mtzdump;
 import PMBPP.Log.Log;
 import PMBPP.Mining.Paper.MiningResearchPaper;
 import PMBPP.Prediction.Analysis.ModelPerformance;
 import PMBPP.Prediction.Analysis.NumberOfTreesImpact;
 import PMBPP.Updater.Update;
+import PMBPP.Utilities.CSVReader;
 import PMBPP.Utilities.Cluster;
 import PMBPP.Utilities.ExecutionTime;
 import PMBPP.Utilities.FilesUtilities;
@@ -99,11 +103,13 @@ public class PMBPP {
 		
 		if (args[0].equals("MiningResearchPaper")) {
 			new PMBPP().CheckDirAndFile("EvaluationTablesAndPlots"); 
-			if (checkArg(Parm, "Papers") != null || checkArg(Parm, "CSVFolder") != null) {
-				 new Log().Error(new PMBPP(), "Please se these keywords\n Papers=the path for reserach papers in csv file \n CSVFolder= the folder that contains the pipelines csv files (usually called CSVToUseInStatisticalTest) ");
+			if (checkArg(Parm, "Papers") != null || checkArg(Parm, "CSVFolder") != null || checkArg(Parm, "CSVFolderTesting") != null) {
+				 new Log().Error(new PMBPP(), "Please set these keywords\n Papers=the path for reserach papers in csv file (AuthorsInformation.csv) \n CSVFolder= the folder that contains the pipelines csv files (usually called CSVToUseInStatisticalTest) \n CSVFolderTesting=  the folder that contains the pipelines csv files for testing dataset (usually called CSVToUseInStatisticalTestFiltered)");
 			 }
-			new MiningResearchPaper().RemoveDuplicatedPapers(checkArg(Parm, "Papers"));
-			new MiningResearchPaper().RecommendedPipeline("NonDuplicatedPapers.csv", checkArg(Parm, "CSVFolder"));
+			HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader().ReadIntoHashMap(checkArg(Parm, "Papers"),"PDB");
+
+			;
+			new MiningResearchPaper().RecommendedPipeline(new MiningResearchPaper().RemoveDuplicatedPapers(Papers), checkArg(Parm, "CSVFolder"),checkArg(Parm, "CSVFolderTesting"));
 			new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 
 		}
@@ -273,6 +279,12 @@ if(Parameters.getPredictionConfidence().equals("T")) {
 			new ExecutionTime().AllWithRecommended();
 		}
 
+		if (args[0].equals("cfft")) {
+			new cfft().Cfft(checkArg(Parm, "mtz"));
+		}
+		if (args[0].equals("mtzdump")) {
+			new mtzdump().GetReso(checkArg(Parm, "mtz"));
+		}
 		// Checking for updates
 		if(Parameters.getUpdateChecking().equals("T"))
 		new Update().IsUpdateRequired();

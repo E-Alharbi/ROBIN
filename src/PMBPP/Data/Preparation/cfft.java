@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Vector;
 
 import PMBPP.Log.Log;
@@ -16,6 +17,8 @@ public class cfft {
 
 	public static void main(String[] args) throws IOException {
 
+		//cfft does not run from java source code because its need to the ccp4 env variable. You can run from the command line  
+		
 		// Example to run multiple data sets
 		// String Path="/NO-NCS/"; // Path to data sets
 		/*
@@ -28,20 +31,11 @@ public class cfft {
 		 * System.out.println(c.Cfft(M.getAbsolutePath()).Max+"\t");} }
 		 */
 
-		// Example: single data set
-		/*
-		for(int i=0 ; i < 10 ; ++i) {
-		Instant start = Instant.now();
-		Parameters.colinfo="SIGFP.F_sigF.F,SIGFP.F_sigF.sigF";
-		Parameters.Phases="HLA,HLB,HLC,HLD";
-		new cfft().Cfft("/Users/emadalharbi/eclipse-workspaceC++Ph/TestJNI/Debug/final.mtz");
-		Instant finish = Instant.now();
-		long timeElapsed = Duration.between(start, finish).toMillis();
-		System.out.println(timeElapsed);
-		}
-		*/
-		Parameters.setPhases("model.HLA,model.HLB,model,HLC,model.HLD");
-		new cfft().Cfft("/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding/1BD9-2.1-parrot-noncs.mtz");
+		
+		
+		
+		Parameters.setPhases("model.HLA,model.HLB,model.HLC,model.HLD");
+		new cfft().Cfft("1BD9-2.1-parrot-noncs.mtz");
 
 	}
 
@@ -49,8 +43,9 @@ public class cfft {
 
 		
 		String st = null;
-		String PathToCfft = System.getenv("CCP4") + "/share/python/CCP4Dispatchers/cfft.py";
-		String[] callAndArgs = { "python", PathToCfft, "-mtzin", mtzin, "-colin-fo", Parameters.getColinfo(), "-colin-hl",
+		String PathToCfft = "cfft";
+
+		String[] callAndArgs = {PathToCfft, "-mtzin", mtzin, "-colin-fo", Parameters.getColinfo(), "-colin-hl",
 				Parameters.getPhases(), "-stats", };
 
 		Process p = Runtime.getRuntime().exec(callAndArgs);

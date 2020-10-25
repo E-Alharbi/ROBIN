@@ -14,14 +14,17 @@ public class mtzinfo {
 
 	public static void main(String[] args) throws IOException {
 		// Example
+		//mtzdump does not run from java source code because its need to the ccp4 env variable. You can run from the command line  
+
 		new mtzinfo().GetReso("1o6a-1.9-parrot-noncs.mtz");
 	}
 
 	public double GetReso(String mtzin) throws IOException {
 
 		String st = null;
-		String Chltofom = System.getenv("CCP4") + "/share/python/CCP4Dispatchers/mtzinfo.py";
-		String[] callAndArgs = { "python", Chltofom, "HKLIN", mtzin,
+		String info = "mtzinfo";
+
+		String[] callAndArgs = {info, "HKLIN", mtzin,
 
 		};
 

@@ -23,15 +23,15 @@ public class mtzdump {
 	 */
 	public static void main(String[] args) throws IOException, NumberFormatException, ParseException {
 
+		//mtzdump does not run from java source code because its need to the ccp4 env variable. You can run from the command line  
+
 		// Example
-		String[] command = { "/bin/bash", "source", "/ccp4-7.0/setup-scripts/ccp4.setup-sh" };
+		
 
-		Runtime.getRuntime().exec(command);
-
-		new mtzdump().GetReso("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/2awa-2.7-parrot-noncs.mtz");
+		new mtzdump().GetReso("2awa-2.7-parrot-noncs.mtz");
 	/*
-		File [] dataset = new FilesUtilities().ReadMtzList("/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding");
-		//File [] dataset = new FilesUtilities().ReadMtzList("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS");
+		File [] dataset = new FilesUtilities().ReadMtzList("DatasetsForBuilding");
+		//File [] dataset = new FilesUtilities().ReadMtzList("Datasets/NO-NCS");
 
 		Parameters.Log="F";
 		//System.out.println(dataset.length);
@@ -72,8 +72,9 @@ public class mtzdump {
 	public double GetReso(String mtzin) throws IOException {
 
 		String st = null;
-		String Chltofom = System.getenv("CCP4") + "/share/python/CCP4Dispatchers/mtzdump.py";
-		String[] callAndArgs = { "python", Chltofom, "hklin", mtzin };
+		String dump ="mtzdump";
+
+		String[] callAndArgs = {dump, "hklin", mtzin };
 
 		String EOF = "<<< EOF";
 		Process p = new ProcessBuilder(callAndArgs).start();
@@ -96,8 +97,7 @@ public class mtzdump {
 		boolean TableHasStarted = false;
 		while ((st = stdInput.readLine()) != null) {
 			if(TableHasStarted==true) {
-				//System.out.println(st);
-				//System.out.println(SplitLineBySpace(st).size());
+				
 				if(SplitLineBySpace(st).size()>=3) { // at least three columns 
 					Vector<String> LineVal=	SplitLineBySpace(st);
 					HashMap<String,Double> TypeAndReso= new HashMap<String,Double>();
@@ -110,7 +110,7 @@ public class mtzdump {
 				
 			}
 			if(st.contains(" label ")) {
-			//System.out.println(st);
+			
 			TableHasStarted=true;
 			}
 			if (st.contains("*  Resolution Range :"))
