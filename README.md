@@ -49,7 +49,7 @@ The output of the above command is a table that contains the following:
 
 
 ## Predicting multiple datasets  
-PMBPP is able to predict the performance of the pipeline for multiple datasets using one command line. This helps when you have multiple datasets, and you want to find out which of these datasets is the best to build a protein model. 
+PMBPP is able to predict the performance of the pipeline for multiple datasets using one command line. This helps when you have multiple initial phases set, and you want to find out which of these initial phases is the best to build a protein model. For example, in case of MR and you have multiple search models.  
 
 - To start from experimental phasing <br />
 ```
