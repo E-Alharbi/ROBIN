@@ -106,7 +106,7 @@ public class PMBPP {
 			if (checkArg(Parm, "Papers") != null || checkArg(Parm, "CSVFolder") != null || checkArg(Parm, "CSVFolderTesting") != null) {
 				 new Log().Error(new PMBPP(), "Please set these keywords\n Papers=the path for reserach papers in csv file (AuthorsInformation.csv) \n CSVFolder= the folder that contains the pipelines csv files (usually called CSVToUseInStatisticalTest) \n CSVFolderTesting=  the folder that contains the pipelines csv files for testing dataset (usually called CSVToUseInStatisticalTestFiltered)");
 			 }
-			HashMap<String, Vector<HashMap<String, String>>> Papers=(HashMap<String, Vector<HashMap<String, String>>>)new CSVReader().ReadIntoHashMap(checkArg(Parm, "Papers"),"PDB");
+			HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader().ReadIntoHashMap(checkArg(Parm, "Papers"),"PDB");
 
 			;
 			new MiningResearchPaper().RecommendedPipeline(new MiningResearchPaper().RemoveDuplicatedPapers(Papers), checkArg(Parm, "CSVFolder"),checkArg(Parm, "CSVFolderTesting"));

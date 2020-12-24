@@ -68,11 +68,42 @@ public class CSVWriter {
 	  
 	
 	public void WriteFromHashMapContainsRepatedRecord(HashMap<String, Vector<HashMap<String, String>>> CSVContents,
-			String Name,String FirstColTitle) throws IOException {
+			String Name,String FirstColTitle, boolean IgnoreReaptedRecord) throws IOException {
+		if(IgnoreReaptedRecord==true) {
 		HashMap<String, LinkedHashMap<String, String>> CSV = ConvertToNoneReaptedRecord(CSVContents);
 		WriteFromHashMap(CSV, Name,FirstColTitle);
+		}
+		else {
+			Vector<String> Headers= new Vector<String>();
+			for(String p : CSVContents.keySet()) {
+				for(int i=0; i < CSVContents.get(p).size();++i) {
+					for(String k : CSVContents.get(p).get(i).keySet()) {
+						if(!Headers.contains(k)) {
+							Headers.add(k);
+						}
+					}
+				}
+			}
+			
+			
+			String CSV=FirstColTitle;
+			for(int i=0  ; i < Headers.size();++i) {
+				CSV+=","+Headers.get(i);
+			}
+			CSV+="\n";
+			for(String p : CSVContents.keySet()) {
+				for(int i=0; i < CSVContents.get(p).size();++i) {
+					CSV+=p;
+					for(int h=0 ; h < Headers.size(); ++h) {
+						CSV+=","+CSVContents.get(p).get(i).get(Headers.get(h));
+					}
+					CSV+="\n";
+				}
+			}
+			new TxtFiles().WriteStringToTxtFile(Name, CSV);
+		}
 	}
-
+    
 	HashMap<String, LinkedHashMap<String, String>> ConvertToNoneReaptedRecord(
 			HashMap<String, Vector<HashMap<String, String>>> CSVContentswithMultipleRecords) throws IOException {
 		HashMap<String, LinkedHashMap<String, String>> CSVContents = new HashMap<String, LinkedHashMap<String, String>>();

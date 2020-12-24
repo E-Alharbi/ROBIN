@@ -124,8 +124,11 @@ public class Parameters {
 	private static HashMap<String,Object>PreloadedMLModels = new HashMap<String,Object>(); // it can be used to load ML models and use when predict large data sets. It should speed up the prediction  
 	private static String LoadAllMLModelsAtOnce = "F";
 	private static String Pipelines="";
-	private static String AllExcelFolder=""; // we need it in ExecutionTime class when the recommended is  a combination. It uses with  Pipelines="";
+	private static String AllExcelFolder=""; // we need it in ExecutionTime class when the recommended is  a combination. It uses with  Pipelines="". For example, when run ARP/wARP no Rfree and with R-free in combination, you need to set the path for folder which contains ARP/wARP with R-free here 
 	private static String ExcelFolder="";
+	
+	
+	
 	public static String getCrossrefEmail() {
 		return CrossrefEmail;
 	}
@@ -611,9 +614,11 @@ public static String getMeasurementUnitsToPredict() {
 		PearsonsCorrelation = pearsonsCorrelation;
 	}
 	public static void setPhases(String phases) {
+		
 		if (phases.split(",").length != 4)
 			new Log().Error(new Parameters(), "Phases are wrong! (for Example Phases=HLA,HLB,HLC,HLD)");
 
+		
 		Phases = phases;
 	}
 

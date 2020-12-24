@@ -66,7 +66,7 @@ public class ModelPerformance {
 					HashMap<String, Vector<HashMap<String, String>>> filteredCSV = new CSVReader()
 							.ReadIntoHashMapWithFilterdHeaders(CSV.getAbsolutePath(), "PDB", Headers);
 					new CSVWriter().WriteFromHashMapContainsRepatedRecord(filteredCSV,
-							"CSVToUseInStatisticalTestSplitted/" + CSVName + "-" + unit + ".csv","PDB");
+							"CSVToUseInStatisticalTestSplitted/" + CSVName + "-" + unit + ".csv","PDB",true);
 
 				}
 			}
@@ -82,7 +82,7 @@ public class ModelPerformance {
 
 					PMBPP.CheckDirAndFile("CSVToUseInStatisticalTestFiltered");
 					new CSVWriter().WriteFromHashMapContainsRepatedRecord(omit(CSV, TestCSV),
-							"CSVToUseInStatisticalTestFiltered/" + CSV.getName(),"PDB");
+							"CSVToUseInStatisticalTestFiltered/" + CSV.getName(),"PDB",true);
 
 				}
 			}

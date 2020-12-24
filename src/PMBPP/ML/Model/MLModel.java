@@ -45,7 +45,9 @@ import weka.filters.unsupervised.attribute.Remove;
 
 /*
  * contains methods to train a model, split data for training and testing, and evaluation  
+ * RandomForest use default seed 1 
  */
+
 public class MLModel {
 
 	public RandomForest MLPredictor;
@@ -82,6 +84,7 @@ public class MLModel {
 
 	void init() {
 		MLPredictor = new RandomForest();
+		
 		MLPredictor.setNumIterations(Integer.parseInt(Parameters.getNumberOfTrees()));
 		MLPredictor.setNumExecutionSlots(Runtime.getRuntime().availableProcessors());
 	}
