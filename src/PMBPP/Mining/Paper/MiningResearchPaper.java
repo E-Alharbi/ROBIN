@@ -49,20 +49,23 @@ public class MiningResearchPaper {
 	
 	
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-
-
 		
+		//input AuthorsInformation.csv because NonDuplicatedPubid.csv contains combined PDB ID. However, the code here will remove duplicated papers   
 		
+		HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader().ReadIntoHashMap("AuthorsInformation.csv","PDB");
+		
+
+		//inputs AuthorsInformation.csv, CSVToUseInStatisticalTest and CSVToUseInStatisticalTestFiltered
+
 new PMBPP().CheckDirAndFile("EvaluationTablesAndPlots");
-new MiningResearchPaper().RemoveDuplicatedPapers("FoundPapers.csv");
-new MiningResearchPaper().RecommendedPipeline("NonDuplicatedPapers.csv", "CSVToUseInStatisticalTest");
+new MiningResearchPaper().RecommendedPipeline(new MiningResearchPaper().RemoveDuplicatedPapers(Papers), "CSVToUseInStatisticalTest","CSVToUseInStatisticalTestFiltered");
 new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 
 		
 	}
 	
-	public void RemoveDuplicatedPapers(String PaperCSV) throws IOException {
-		HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader().ReadIntoHashMap(PaperCSV, "PDB");
+	public HashMap<String, Vector<HashMap<String, String>>> RemoveDuplicatedPapers(HashMap<String, Vector<HashMap<String, String>>> Papers) throws IOException {
+		//HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader().ReadIntoHashMap(PaperCSV, "PDB");
 		HashMap<String, Vector<HashMap<String, String>>> RemovedDuplicatedPapers=	new HashMap<String, Vector<HashMap<String, String>>>();
 
 		for(String PDB : Papers.keySet()) {
@@ -73,13 +76,15 @@ new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 				
 				HashMap<String,String> SamePipeline= new HashMap<String,String>();
 				for(int p=0 ; p < Papers.get(PDB).size() ; ++p) {
-					SamePipeline.put(Papers.get(PDB).get(p).get("Pipeline"), "");
+					SamePipeline.put(Papers.get(PDB).get(p).get("Tool"), "");
 				}
 				if(SamePipeline.size()==1)
 					RemovedDuplicatedPapers.put(PDB, Papers.get(PDB));
 			}
 		}
-		new CSVWriter().WriteFromHashMapContainsRepatedRecord(RemovedDuplicatedPapers, "NonDuplicatedPapers.csv", "PDB");
+		//new CSVWriter().WriteFromHashMapContainsRepatedRecord(RemovedDuplicatedPapers, "NonDuplicatedPapers.csv", "PDB");
+		//System.out.println(RemovedDuplicatedPapers);
+		return RemovedDuplicatedPapers;
 	}
 	public void LatexTable(String RecommendedPipelineCSV) throws IOException {
 		HashMap<String, Vector<HashMap<String, String>>> UsedRecommendedPipeline=	new CSVReader().ReadIntoHashMap(RecommendedPipelineCSV, "PDB");
@@ -117,16 +122,20 @@ new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/RecommendedPipeline.tex",LatexTable);
 		
 	}
-	public void RecommendedPipeline(String PapersCSV, String CSVFolder) throws IOException {
-		HashMap<String, Vector<HashMap<String, String>>> paper=	new CSVReader().ReadIntoHashMap(PapersCSV, "PDB");
-		HashMap<String, Vector<HashMap<String, String>>> pdb=	new CSVReader().ReadIntoHashMap(new FilesUtilities().ReadFilesList(CSVFolder)[0].getAbsolutePath(), "PDB");// any of the files just to get the list of PDB id
+	public void RecommendedPipeline(HashMap<String, Vector<HashMap<String, String>>> paper, String CSVFolder, String CSVFolderTesting) throws IOException {
+		//HashMap<String, Vector<HashMap<String, String>>> paper=	new CSVReader().ReadIntoHashMap(PapersCSV, "PDB");
+		HashMap<String, Vector<HashMap<String, String>>> pdb=	new CSVReader().ReadIntoHashMap(new FilesUtilities().ReadFilesList(CSVFolderTesting)[0].getAbsolutePath(), "PDB");// any of the files just to get the list of PDB id
 		HashMap<String, Vector<HashMap<String, String>>> paper2=	new HashMap<String, Vector<HashMap<String, String>>>();
 
 		System.out.println(paper.size());
+		System.out.println(pdb.size());
+		//remove PDB from training dataset
 		for(String p: pdb.keySet()) {
 			
 			for(String p2: paper.keySet()) {
+				
 				if(p.contains(p2)) {
+					
 					paper2.put(p, paper.get(p2));
 					break;
 				}
@@ -139,9 +148,9 @@ new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 		int LinkDirection=0;
 		for(String PDBID:paper.keySet() ) {
 			
-			HashMap<String, Vector<HashMap<String, String>>> MRdata=	new CSVReader().ReadIntoHashMap(CSVFolder+"/"+paper.get(PDBID).get(0).get("Pipeline")+".csv", "PDB");
+			HashMap<String, Vector<HashMap<String, String>>> MRdata=	new CSVReader().ReadIntoHashMap(CSVFolder+"/"+paper.get(PDBID).get(0).get("Tool")+".csv", "PDB");
 			
-			System.out.println(CSVFolder+"/"+paper.get(PDBID).get(0).get("Pipeline")+".csv");
+			System.out.println(CSVFolder+"/"+paper.get(PDBID).get(0).get("Tool")+".csv");
 			String AchievedCompleteness=MRdata.get(PDBID).get(0).get("AchievedCompleteness");
 			
 			System.out.println(MRdata.get(PDBID).get(0).get("AchievedCompleteness"));
@@ -149,7 +158,7 @@ new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 			double AchievedCompletenessOfRecommended=0;
 			String Pipeline="";
 			for(File file : new File(CSVFolder).listFiles()) {
-				//if(!file.getName().equals(paper.get(PDBID).get(0).get("Pipeline")+".csv")) {
+				//if(!file.getName().equals(paper.get(PDBID).get(0).get("Tool")+".csv")) {
 				HashMap<String, Vector<HashMap<String, String>>> pipeline=	new CSVReader().ReadIntoHashMap(file.getAbsolutePath(), "PDB");
 
 				if(Double.parseDouble(pipeline.get(PDBID).get(0).get("Completeness")) > BestCom) {
@@ -160,12 +169,12 @@ new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 				//}
 			}
 			if( (AchievedCompletenessOfRecommended - Double.parseDouble(AchievedCompleteness) )  > 0 ) {
-			CSV+=PDBID+","+AchievedCompleteness+","+paper.get(PDBID).get(0).get("Pipeline")+","+AchievedCompletenessOfRecommended+","+Pipeline+",T,"+LinkDirection+"\n";
-			CSV+=PDBID+","+AchievedCompleteness+","+paper.get(PDBID).get(0).get("Pipeline")+","+BestCom+","+Pipeline+",PT,"+LinkDirection+"\n";
+			CSV+=PDBID+","+AchievedCompleteness+","+paper.get(PDBID).get(0).get("Tool")+","+AchievedCompletenessOfRecommended+","+Pipeline+",T,"+LinkDirection+"\n";
+			CSV+=PDBID+","+AchievedCompleteness+","+paper.get(PDBID).get(0).get("Tool")+","+BestCom+","+Pipeline+",PT,"+LinkDirection+"\n";
 
 			}else {
-				CSV+=PDBID+","+AchievedCompleteness+","+paper.get(PDBID).get(0).get("Pipeline")+","+AchievedCompletenessOfRecommended+","+Pipeline+",F,"+LinkDirection+"\n";
-				CSV+=PDBID+","+AchievedCompleteness+","+paper.get(PDBID).get(0).get("Pipeline")+","+BestCom+","+Pipeline+",PF,"+LinkDirection+"\n";
+				CSV+=PDBID+","+AchievedCompleteness+","+paper.get(PDBID).get(0).get("Tool")+","+AchievedCompletenessOfRecommended+","+Pipeline+",F,"+LinkDirection+"\n";
+				CSV+=PDBID+","+AchievedCompleteness+","+paper.get(PDBID).get(0).get("Tool")+","+BestCom+","+Pipeline+",PF,"+LinkDirection+"\n";
 
 			}
 			LinkDirection++;
