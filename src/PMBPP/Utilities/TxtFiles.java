@@ -50,7 +50,7 @@ public class TxtFiles {
 	}
 	public String ReadResourceAsString (String FileName) throws IOException {
 		String Txt="";
-	InputStream res =Map.class.getResourceAsStream(FileName);
+	InputStream res =this.getClass().getResourceAsStream(FileName);
 	BufferedReader reader = new BufferedReader(new InputStreamReader(res));
 	String line = null;
 
