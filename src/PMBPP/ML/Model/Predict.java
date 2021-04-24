@@ -178,8 +178,10 @@ public class Predict {
 		System.out.println(tableString);
 		PredictionTable = tableString;
 		if(Parameters.getHTMLTable().equals("T")) {
-			String html = new Log().CreateHTMLTable(headersList, rowsList);
+			String html = new Log().HTMLTable(headersList, rowsList);
 			System.out.println("HTML: \n"+html);
+			html = new Log().HTMLPlot(headersList, rowsList);
+			System.out.println("Plot: \n"+html);
 		}
 
 		// convert to array for GUI
