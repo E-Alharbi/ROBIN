@@ -1,3 +1,4 @@
 /target/
 /resources/PredictionModels.zip
 /resources/PredictionModelsMR.zip
+.DS_Store
