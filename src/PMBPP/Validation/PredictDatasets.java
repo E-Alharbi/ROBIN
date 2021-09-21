@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -37,17 +38,19 @@ public class PredictDatasets {
 
 	public static void main(String[] args) throws Exception {
 
-		Parameters.setPhases("model.HLA,model.HLB,model.HLC,model.HLD");
-		Parameters.setMR("T");
-		 String [] arg= {"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/noncs2",new File("/Users/emadalharbi/Downloads/PMBPP/MRdata").getAbsolutePath()+"/"};
-		 Parameters.setTrainedModelsPath("/Users/emadalharbi/Downloads/PMBPP/PredictionModelsMR");
+		//Parameters.setPhases("model.HLA,model.HLB,model.HLC,model.HLD");
+		//Parameters.setMR("T");
+		// String [] arg= {"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/noncs2",new File("/Users/emadalharbi/Downloads/PMBPP/MRdata").getAbsolutePath()+"/"};
+		 //Parameters.setTrainedModelsPath("/Users/emadalharbi/Downloads/PMBPP/PredictionModelsMR");
 		 //new PredictDatasets().Predict(arg[0],args[1]);
 		 
-		 new PredictDatasets().Predict(arg[1]);
+		Parameters.setFilteredModels("ARPwARP");
+		Parameters.setFilterModels("T");
+		new PredictDatasets().Predict("DatasetsParrot");
 
 
 		 
-		new PredictDatasets().UpdateFeaturesFromCSVAtt("/Users/emadalharbi/Downloads/PMBPP/PredictionModelsMR");
+		new PredictDatasets().UpdateFeaturesFromCSVAtt("PredictionModelsMR");
 		/*
 		 * MR String [] arg= {"/Users/emadalharbi/Downloads/PMBPP/noncsMR2",new
 		 * File("/Volumes/PhDHardDrive/MRDatasets/DatasetsForBuilding/").getAbsolutePath
@@ -66,14 +69,15 @@ public void Predict(String PathToDatasets) throws Exception {
 	if(new File("PredictedDatasets/").exists())
 	FileUtils.cleanDirectory(new File("PredictedDatasets/")); 
 	
-	if(new File(Parameters.getTrainedModelsPath()).exists()) 
-		FileUtils.deleteDirectory(new File(Parameters.getTrainedModelsPath()));
+	//if(new File(Parameters.getTrainedModelsPath()).exists()) 
+	//	FileUtils.deleteDirectory(new File(Parameters.getTrainedModelsPath()));
 	
-	
+	if(!new File(Parameters.getTrainedModelsPath()).exists()) 
 	new Predict().CopyModelsFromResources();
 	
 	UpdateFeaturesFromCSVAtt(Parameters.getTrainedModelsPath());
 	
+	if(Parameters.getParrotPhases()==null)// if parrot phases not set, then prepare all features and save them into csv 
 	new PrepareFeatures().Prepare(new File(PathToDatasets).getAbsolutePath());
 	
 	Vector<ExcelContents> excel = new Vector<ExcelContents>();
@@ -98,8 +102,11 @@ for(File folder : new FilesUtilities().ReadFilesList(Parameters.getTrainedModels
 				new ExcelSheet().FillInExcel(excel, "Temp/"+modelname);
 				
 				if(new File("Temp/").listFiles().length>0) {//at least 1 file. it might be no files when use FilteredModels  
-				Parameters.setLoadAllMLModelsAtOnce("T");
+				//Parameters.setLoadAllMLModelsAtOnce("T");
+				//Parameters.setPreloadedMLModels( Parameters.getTrainedModelsPath());// we loading the ML models here because if loaded in Predict.java will affect on the inference times for the first data set will be predicted 
 				Predict(new File("Temp/").getAbsolutePath(),PathToDatasets,false);
+				//Predict(new File("Temp/").getAbsolutePath(),PathToDatasets,false); do it twice when you  need an accurate inference time because first data set to be predicted, its inference time will include Weka warm up time.    
+
 				}
 				FileUtils.cleanDirectory(new File("Temp/")); 
 				Parameters.getPreloadedMLModels().clear();
@@ -148,7 +155,12 @@ for (File c : csv ) {
 			Vector<ExcelContents> excel = new Vector<ExcelContents>();
 			HashMap<String, HashMap<String, String>> Results = new HashMap<String, HashMap<String, String>>();
 			excel = f.ReadExcel(Excel.getAbsolutePath());
-
+			
+			Parameters.setFilterModels ( "T");
+			Parameters.getFilteredModels().add(ExcelName); // remove the others models. Only keep the model that
+														// match this excel
+			Parameters.setPreloadedMLModels( Parameters.getTrainedModelsPath());// we loading the ML models here because if loaded in Predict.java will affect on the inference times for the first data set will be predicted 
+			Parameters.getFilteredModels().clear();// clear because will add the ExcelName again in for loop below
 			for (int i = 0; i < excel.size(); ++i) {// read the excel records
 				for (File mtz : new FilesUtilities().ReadFilesList(PathToDatasets)) {// find the mtz
 					String MTZName = mtz.getName().replaceAll("." + FilenameUtils.getExtension(mtz.getName()), "");
@@ -158,19 +170,39 @@ for (File c : csv ) {
 						String[] arg = { mtz.getAbsolutePath() };
 
 						Parameters.setUsecfft ( true);
-						Predict Pre = new Predict();
+						Predict Pre = new Predict(); // will return setFilterModels to F and clear  getFilteredModels 
 						Parameters.setFilterModels ( "T");
 						Parameters.getFilteredModels().add(ExcelName); // remove the others models. Only keep the model that
 																	// match this excel
-
-						Pre.PredictMultipleModles(arg);
+						//https://stackoverflow.com/questions/180158/how-do-i-time-a-methods-execution-in-java
+						long startTime = System.nanoTime();
+						Pre.PredictMultipleModles(arg,false);
+						long endTime   = System.nanoTime();
+						long inferencetimes = (endTime - startTime)/1000000;//divide by 1000000 to get milliseconds.
+						
 						// Pre.Print(Pre.PipelinesPredictions);
 						HashMap<String, String> PipelineResults = new HashMap<String, String>();
 						for (String Key : Pre.PipelinesPredictions.keySet()) { // save into a map >> R-free, 0.2 and so
 																				// on
 							// System.out.println(MTZName);
-							PipelineResults.put(Key, Pre.PipelinesPredictions.get(Key).get(ExcelName));
+							if( Pre.PipelinesPredictions.get(Key).get(ExcelName)!=null) {// in case R-free ML model not found 
+							PipelineResults.put(Key, Pre.PipelinesPredictions.get(Key).get(ExcelName)[0]);
+							if(Traning==false) {
+							PipelineResults.put(Key+" prediction interval low", Pre.PipelinesPredictions.get(Key).get(ExcelName)[1]);
+							PipelineResults.put(Key+" prediction interval high", Pre.PipelinesPredictions.get(Key).get(ExcelName)[2]);
+
+							}
+							}
+							else {
+								PipelineResults.put(Key, "-");
+								PipelineResults.put(Key+" prediction interval low", "-");
+								PipelineResults.put(Key+" prediction interval high", "-");
+
+							}
+
 						}
+						PipelineResults.put("inference times", String.valueOf(inferencetimes));
+
 						Results.put(excel.get(i).PDB_ID, PipelineResults); // A map {PDB1, {R-free,0.2 }} {PDB2,
 																			// {R-free,0.2 }}
 					}
