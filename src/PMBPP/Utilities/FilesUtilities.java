@@ -27,47 +27,54 @@ public class FilesUtilities {
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-
+		//Example 
+		new FilesUtilities().RenameMLModelNames("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MRRBDPI/PredictionModelsMR", ".csv");
 	}
 
-	public void UpdateMLModelNames(String Dir, String Extension) throws IOException {
+	public HashMap<String,String> PipelinesNames(){
+		HashMap<String,String> names = new HashMap<String,String>();
+		names.put("ARPwARP#Buccaneeri1I5", "ARPwARP|Buccaneer");
+		names.put("ARPwARP#Phenix", "ARPwARP|Phenix AutoBuild(P)");
+		names.put("ARPwARP#PhenixHLA", "ARPwARP|Phenix AutoBuild");
+		names.put("ARPwARP", "ARPwARP");
+		names.put("Buccaneeri1I5#ARPwARP", "Buccaneer|ARPwARP");
+		names.put("Buccaneeri1I5#Phenix", "Buccaneer|Phenix AutoBuild(P)");
+		names.put("Buccaneeri1I5#PhenixHLA", "Buccaneer|Phenix AutoBuild");
+		names.put("Buccaneeri1I5", "Buccaneer");
+		names.put("Phenix#ARPwARP", "Phenix AutoBuild(P)|ARPwARP");
+		names.put("Phenix#Buccaneeri1I5", "Phenix AutoBuild(P)|Buccaneer");
+		names.put("Phenix", "Phenix AutoBuild(P)");
+		names.put("PhenixHAL#ARPwARP", "Phenix AutoBuild|ARPwARP");
+		names.put("PhenixHAL#Buccaneeri1I5", "Phenix AutoBuild|Buccaneer");
+		names.put("PhenixHAL", "Phenix AutoBuild");
+		names.put("ShelxeWithTFlag#Arp", "SHELXE|ARPwARP");
+		names.put("ShelxeWithTFlag#Buccaneeri1I5", "SHELXE|Buccaneer");
+		names.put("ShelxeWithTFlag#Phenix", "SHELXE|Phenix AutoBuild(P)");
+		names.put("ShelxeWithTFlag#PhenixHLA", "SHELXE|Phenix AutoBuild");
+		names.put("ShelxeWithTFlag", "SHELXE");
+		names.put("ShelxeWithTFlagChFomPhi#Arp", "SHELXE(P)|ARPwARP");
+		names.put("ShelxeWithTFlagChFomPhi#Buccaneeri1I5", "SHELXE(P)|Buccaneer");
+		names.put("ShelxeWithTFlagChFomPhi#Phenix", "SHELXE(P)|Phenix AutoBuild(P)");
+		names.put("ShelxeWithTFlagChFomPhi#PhenixHLA", "SHELXE(P)|Phenix AutoBuild");
+		names.put("ShelxeWithTFlagChFomPhi", "SHELXE(P)");
 		
-		File [] files = new FilesUtilities().FilesByExtensionRecursively(Dir, Extension);
-	HashMap<String,String> names = new HashMap<String,String>();
-	names.put("ARPwARP#Buccaneeri1I5", "ARPwARP|Buccaneer");
-	names.put("ARPwARP#Phenix", "ARPwARP|Phenix AutoBuild(P)");
-	names.put("ARPwARP#PhenixHLA", "ARPwARP|Phenix AutoBuild");
-	names.put("ARPwARP", "ARPwARP");
-	names.put("Buccaneeri1I5#ARPwARP", "Buccaneer|ARPwARP");
-	names.put("Buccaneeri1I5#Phenix", "Buccaneer|Phenix AutoBuild(P)");
-	names.put("Buccaneeri1I5#PhenixHLA", "Buccaneer|Phenix AutoBuild");
-	names.put("Buccaneeri1I5", "Buccaneer");
-	names.put("Phenix#ARPwARP", "Phenix AutoBuild(P)|ARPwARP");
-	names.put("Phenix#Buccaneeri1I5", "Phenix AutoBuild(P)|Buccaneer");
-	names.put("Phenix", "Phenix AutoBuild(P)");
-	names.put("PhenixHAL#ARPwARP", "Phenix AutoBuild|ARPwARP");
-	names.put("PhenixHAL#Buccaneeri1I5", "Phenix AutoBuild|Buccaneer");
-	names.put("PhenixHAL", "Phenix AutoBuild");
-	names.put("ShelxeWithTFlag#Arp", "SHELXE|ARPwARP");
-	names.put("ShelxeWithTFlag#Buccaneeri1I5", "SHELXE|Buccaneer");
-	names.put("ShelxeWithTFlag#Phenix", "SHELXE|Phenix AutoBuild(P)");
-	names.put("ShelxeWithTFlag#PhenixHLA", "SHELXE|Phenix AutoBuild");
-	names.put("ShelxeWithTFlag", "SHELXE");
-	names.put("ShelxeWithTFlagChFomPhi#Arp", "SHELXE(P)|ARPwARP");
-	names.put("ShelxeWithTFlagChFomPhi#Buccaneeri1I5", "SHELXE(P)|Buccaneer");
-	names.put("ShelxeWithTFlagChFomPhi#Phenix", "SHELXE(P)|Phenix AutoBuild(P)");
-	names.put("ShelxeWithTFlagChFomPhi#PhenixHLA", "SHELXE(P)|Phenix AutoBuild");
-	names.put("ShelxeWithTFlagChFomPhi", "SHELXE(P)");
+		names.put("Buccaneeri1I5ModelSeed", "Buccaneer");
+		
+		return names;
+	}
 	
-	names.put("Buccaneeri1I5ModelSeed", "Buccaneer");
+	public void RenameMLModelNames(String Dir, String Extension) throws IOException {
+		
+	File [] files = new FilesUtilities().FilesByExtensionRecursively(Dir, Extension);
+	
 	
 	
 	for(File f : files) {
 		
 		String FileName = f.getName().replaceAll("." + FilenameUtils.getExtension(f.getName()), "");
-		
-		String NewName=names.get(FileName);
-		
+		System.out.println(FileName);
+		String NewName=PipelinesNames().get(FileName);
+		System.out.println(NewName);
 		f.renameTo(new File(f.getParent()+"/"+NewName+Extension));
 		
 	}
