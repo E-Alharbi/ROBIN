@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/E-Alharbi/PMBPP.svg?token=z92wc12inrqPgG6Faxv2&branch=master)](https://travis-ci.com/E-Alharbi/ProteinModelBuildingPipelinePredictor)
+[![Build Status](https://app.travis-ci.com/E-Alharbi/ROBIN.svg?token=z92wc12inrqPgG6Faxv2&branch=master)](https://app.travis-ci.com/E-Alharbi/ROBIN)
 
 # Performance prediction of automated crystallographic model-building pipelines
 
