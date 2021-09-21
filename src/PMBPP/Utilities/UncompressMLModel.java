@@ -34,6 +34,7 @@ public class UncompressMLModel {
 			if (Parameters.getMR().equals("T")) {
 				Parameters.setTrainedModelsPath ("PredictionModelsMR");
 				Parameters.setCompressedModelFolderName ("PredictionModelsMR.zip");
+				Parameters.setModelFolderName("PredictionModelsMR");
 			}
 			if(new File(Parameters.getTrainedModelsPath()).exists()) {
 			FileUtils.deleteDirectory(new File(Parameters.getTrainedModelsPath()));
