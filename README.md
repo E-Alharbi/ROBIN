@@ -52,9 +52,11 @@ The output of the above command is a table that contains the following:
 You can predict the performance of the pipeline for multiple data sets using one command line. This helps when you have multiple initial phases set, and you want to find out which of these initial phases is the best to build a protein model. For example, in case of MR and you have multiple search models.  
 
 - To start from experimental phasing <br />
+
 ```
 java -jar Robin-Runnable-(version).jar PredictDatasets Datasets=PathToDatasetsFolder Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP
 ```
+
 | Keyword | Explanation |
 | ------------- | ------------- |
 | Datasets | path to the datasets folder. The folder should contain the datasets in mtz format |
