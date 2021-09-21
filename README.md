@@ -28,6 +28,14 @@ java -jar Robin-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,H
 | Phases | the phases (Hendrickson-Lattman coefficients) as in the mtz file  |
 | Colinfo | column labels for the observed amplitudes  |
 
+To get an accurate prediction, use the phases after DM when you predict the performance of ARP/wARP, Buccaneer, Phenix AutoBuild(P) and SHELXE(P). 
+
+```
+java -jar Robin-Runnable-(version).jar PredictDatasets Datasets=PathToDatasetsFolder Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP ParrotPhases=parrot.ABCD.A,parrot.ABCD.B,parrot.ABCD.C,parrot.ABCD.D
+```
+
+The above command will use Parrot phases for the pipelines that should be predicted using these phases. 
+
 
 - For MR <br />
 ```
@@ -45,7 +53,7 @@ The output of the above command is a table that contains the following:
 | ------------- | ------------- | ------------- | ------------- |------------- |------------- |------------- |
 
 *Completeness: is the percentage of residues in the deposited model whose C alpha atoms have the same residue type as, and coordinates within 1.0 A ̊ of, the corresponding residue in the built model.  
-* R-free, R-work completeness and  prediction group: it is an uncertainty estimation. A lower number means that more accurate prediction.
+*R-free, R-work completeness and  prediction group: it is an uncertainty estimation. A lower number means that more accurate prediction.
 
 
 ## Predicting multiple datasets  
@@ -61,14 +69,6 @@ java -jar Robin-Runnable-(version).jar PredictDatasets Datasets=PathToDatasetsFo
 | ------------- | ------------- |
 | Datasets | path to the datasets folder. The folder should contain the datasets in mtz format |
 
-
-To get an accurate prediction, use the phases after DM when you predict the performance of ARP/wARP, Buccaneer, Phenix AutoBuild(P) and SHELXE(P). 
-
-```
-java -jar Robin-Runnable-(version).jar PredictDatasets Datasets=PathToDatasetsFolder Phases=HLA,HLB,HLC,HLD Colinfo=FP,SIGFP ParrotPhases=parrot.ABCD.A,parrot.ABCD.B,parrot.ABCD.C,parrot.ABCD.D
-```
-
-The above command will use Parrot phases for the pipelines that should be predicted using these phases. 
 
 
 - For MR
