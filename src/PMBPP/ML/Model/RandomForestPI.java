@@ -1,4 +1,4 @@
-package ROBIN.ML.Model;
+package PMBPP.ML.Model;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -8,6 +8,9 @@ import weka.classifiers.meta.RegressionByDiscretization;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Instance;
 
+/*
+ * This class was serialized under this package PMBPP.ML.Model. Changing the package name will lead  java.lang.ClassNotFoundException: Unable to find class PMBPP.ML.Model.RandomForestPI when read it.  
+ */
 //public class RandomForestPI extends  RandomForest{
 public class RandomForestPI implements Serializable{
 	
