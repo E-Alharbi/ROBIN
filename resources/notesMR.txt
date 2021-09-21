@@ -1,3 +1,4 @@
+A small confidence score means a more confident prediction.
 Please note that when you run the pipelines  
 1- ARP/wARP alone should be ran with no R-free.
 2- SHELXE should be run with -t 20 
