@@ -2,8 +2,10 @@ package PMBPP.Utilities;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,19 +21,37 @@ import PMBPP.Log.Log;
 import PMBPP.ML.Model.Parameters;
 
 public class MTZReader {
-
+	static String readFile(String path, Charset encoding)
+			  throws IOException
+			{
+			  byte[] encoded = Files.readAllBytes(Paths.get(path));
+			  return new String(encoded, encoding);
+			}
 	public static void main(String[] args) throws IOException, NumberFormatException, IllegalArgumentException,
 			IllegalAccessException, ParseException {
 		// TODO Auto-generated method stub
 
 		
-		  MTZReader mtz= new MTZReader("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1o6a-1.9-parrot-noncs.mtz");
-		  mtz.GetColLabels();
+				  MTZReader mtz= new MTZReader("/Volumes/PhDHardDrive/EditorsRevision-2/Datasets/NO-NCS/1o6a-1.9-parrot-noncs.mtz");
+
+				  System.out.println(mtz.GetColLabels());
+				  System.out.println(mtz.Spacegroup());
+				  System.out.println(mtz.Cell());
 		
 		
 		
-		
-		
+		/*
+		  String content = new MTZReader().readFile("/Volumes/PhDHardDrive/EPData/phasesPHIB/failures", StandardCharsets.US_ASCII);
+		  System.out.println(content);
+		String [] lines = content.split("\n");
+		String script="";
+		for (int i=0 ; i < lines.length;++i) {
+			script+="rm -r "+lines[i]+" \n";
+		}
+		try (PrintWriter out = new PrintWriter("/Volumes/PhDHardDrive/EPData/phasesPHIB/ToRemove.sh")) {
+		    out.println(script);
+		}
+		*/
 		/*
 		 * long startTime = System.currentTimeMillis();
 		 * 
@@ -117,6 +137,39 @@ public class MTZReader {
 		}
 		return -1;
 	}
+	
+	int GetStartOfSYMINFRecord() {
+
+		// Start reading from bottom is faster because header information are stored
+		// after reflections data which is the big part of the file. Test on MAC and
+		// reading from top take around 600 milliseconds compared to 67 milliseconds
+		/*
+		for (int b = 0; b < mtzbytes.length;  b++) {
+			byte[] subarray = Arrays.copyOfRange(mtzbytes, b , b+6);
+			String str = new String(subarray, StandardCharsets.UTF_8);
+			 System.out.println("str "+str);
+			 System.out.println("b "+b);
+			if (str.equals("SYMINF")) {
+
+				return b;
+			}
+		}
+		return -1;
+		*/
+		
+		for (int b = mtzbytes.length; b >= 6; b--) {
+			byte[] subarray = Arrays.copyOfRange(mtzbytes, b - 6, b);
+			String str = new String(subarray, StandardCharsets.UTF_8);
+			 //System.out.println("str "+str);
+			// System.out.println("b "+b);
+			if (str.equals("SYMINF")) {
+
+				return b;
+			}
+		}
+		return -1;
+		
+	}
 
 	public String GetResolution() {
 		byte[] subarray2 = Arrays.copyOfRange(mtzbytes, StartOfHeaderRecord + 22, StartOfHeaderRecord + 36);
@@ -128,8 +181,48 @@ public class MTZReader {
 		return BigDecimal.valueOf(pomAsInt).setScale(2, RoundingMode.HALF_UP).toString();
 
 	}
+	public String Cell() {
+		for (int b = StartOfHeaderRecord; b<mtzbytes.length; b++) {
+			byte[] subarray = Arrays.copyOfRange(mtzbytes, b,b + 6);
+			String str = new String(subarray, StandardCharsets.UTF_8);
+			
+			if(str.trim().equals("DCELL")) {
+				byte[] subarray1 = Arrays.copyOfRange(mtzbytes, b+20,b + 80);
+				String str1 = new String(subarray1, StandardCharsets.UTF_8);
+				
+				return str1;
+				
+			}
+		}
+		return "";
+	}
+	public String Spacegroup() {
+		
+		int SYMINCol=GetStartOfSYMINFRecord();
+		boolean startsp=false;
+		String SP="";
+		for(int i=SYMINCol; i < mtzbytes.length ;++i) {
+			byte[] subarray = Arrays.copyOfRange(mtzbytes,i,i + 1);
+			
+			if(new String(subarray, StandardCharsets.UTF_8).equals("'") && startsp==true) {
+				break;
+			}
+			if(startsp==true) {
+				SP+=new String(subarray, StandardCharsets.UTF_8);
+				
+			}
+			if(new String(subarray, StandardCharsets.UTF_8).equals("'")) {
+				startsp=true;
+			}
+		}
+		
+		
+		return SP;
+		
+	}
 	
 	public HashMap<String,Vector<String >> GetColLabels() {
+		
 		
 		int StartByte=0;
 		for (int b = StartOfHeaderRecord; b<mtzbytes.length; b++) {
@@ -137,7 +230,7 @@ public class MTZReader {
 			String str = new String(subarray, StandardCharsets.UTF_8);
 			if (str.equals("COL")) {
 				StartByte=b;
-				//System.out.println("StartByte "+StartByte);
+				
 				break;
 			}
 		}
@@ -202,7 +295,7 @@ public class MTZReader {
 				
 		}
 		}
-		//System.out.println(ColLabels);
+		
 		return ColLabels;
 	}
 	
