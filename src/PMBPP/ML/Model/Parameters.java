@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.apache.commons.io.FilenameUtils;
+
 import PMBPP.Log.Log;
 import PMBPP.Utilities.FilesUtilities;
 import PMBPP.Utilities.LoadMLModel;
@@ -19,7 +21,7 @@ public class Parameters {
 	 */
 
 	private static String AttCSV = "None";
-
+	
 	private static String ClassificationDatasetsFolderName = "ClassificationDatasets";
 
 	private static double ClassLevelForCompleteness = 15;
@@ -51,6 +53,14 @@ public class Parameters {
 	private static String IncreaseNumberOfTrees = "-1";
 
 	private static double[] instanceValue1 = null;
+	private static double[] instanceValueParrot = null;
+
+	public static double[] getInstanceValueParrot() {
+		return instanceValueParrot;
+	}
+	public static void setInstanceValueParrot(double[] instanceValueParrot) {
+		Parameters.instanceValueParrot = instanceValueParrot;
+	}
 
 	private static String Log = "T";
 
@@ -68,7 +78,7 @@ public class Parameters {
 
 	// public static String Featuers="Skew,Resolution,Max"; // features used  
 	private static String MeasurementUnitsToPredict = "Completeness,R-free,R-work";
-
+	
 	private static double Min=-1;
 
 	private static double MinClassLevelForCompleteness = -1;
@@ -126,9 +136,41 @@ public class Parameters {
 	private static String Pipelines="";
 	private static String AllExcelFolder=""; // we need it in ExecutionTime class when the recommended is  a combination. It uses with  Pipelines="". For example, when run ARP/wARP no Rfree and with R-free in combination, you need to set the path for folder which contains ARP/wARP with R-free here 
 	private static String ExcelFolder="";
+	private static String ReflectionFile="";
+	private static String ParrotPhases=null;
+	private static String GenerateScript="F";
+	private static String PickFirstMatchCol="F";
 	
 	
 	
+	public static String getPickFirstMatchCol() {
+		return PickFirstMatchCol;
+	}
+	public static void setPickFirstMatchCol(String pickFirstMatchCol) {
+		PickFirstMatchCol = pickFirstMatchCol;
+	}
+	public static String getGenerateScript() {
+		return GenerateScript;
+	}
+	public static void setGenerateScript(String generateScript) {
+		GenerateScript = generateScript;
+	}
+	public static String getParrotPhases() {
+		return ParrotPhases;
+	}
+	public static void setParrotPhases(String parrotPhases) {
+		ParrotPhases = parrotPhases;
+	}
+	public static String getReflectionFile() {
+		return ReflectionFile;
+	}
+	public static String getReflectionFileName() {
+
+		return new File(ReflectionFile).getName().replaceAll("."+FilenameUtils.getExtension(new File(ReflectionFile).getName()),"");
+	}
+	public static void setReflectionFile(String reflectionFile) {
+		ReflectionFile = reflectionFile;
+	}
 	public static String getCrossrefEmail() {
 		return CrossrefEmail;
 	}
@@ -142,8 +184,8 @@ public class Parameters {
 		ElsevierToken = elsevierToken;
 	}
 
-	private static String CrossrefEmail="emad.alharbi@york.ac.uk";
-	private static String ElsevierToken="4d183688e707af0fbc667d2e6ce722d1";
+	private static String CrossrefEmail="";
+	private static String ElsevierToken="";
 	public static String getExcelFolder() {
 		return ExcelFolder;
 	}
