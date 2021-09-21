@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.json.simple.parser.ParseException;
 
+
 import PMBPP.Data.Preparation.ClassificationPreparer;
 import PMBPP.Data.Preparation.ClassificationPreparerWithOptimizeClasses;
 import PMBPP.Data.Preparation.PredictionTrainingDataPreparer;
@@ -49,7 +50,7 @@ public class PMBPP {
 		 * will be increased in every time the project is built Ex
 		 * PMBPP-Runnable-1.0.(10) is the built number
 		 */
-		new Log().PseudoText("PMBPP");
+		new Log().PseudoText("ROBIN");
 
 		
 
@@ -122,7 +123,7 @@ public class PMBPP {
 
 		if (args[0].equals("Predict")) {
 			Instant start = Instant.now();
-			
+			Parameters.setReflectionFile(new File(checkArg(Parm, "mtz")).getAbsolutePath());
 			
 			if (new File("features.csv").exists())
 				FileUtils.deleteQuietly(new File("features.csv")); // if not removed, then will cause to read the
@@ -147,7 +148,7 @@ public class PMBPP {
 				Parameters.setUsecfft(false);
 				String[] arg = { "" };
 				Predict Pre = new Predict();
-				Pre.PredictMultipleModles(arg);
+				Pre.PredictMultipleModles(arg,true);
 				Pre.Print(Pre.PipelinesPredictions);
 			}
 			
@@ -161,7 +162,7 @@ public class PMBPP {
 
 				}
 
-				Pre.PredictMultipleModles(arg);
+				Pre.PredictMultipleModles(arg,true);
 				Pre.Print(Pre.PipelinesPredictions);
 
 			} else if (checkArg(Parm, "mtz") != null && checkArg(Parm, "TrainedModelsPath") == null
@@ -173,7 +174,7 @@ public class PMBPP {
 				String[] arg = { checkArg(Parm, "mtz") };
 				Predict Pre = new Predict();
 
-				Pre.PredictMultipleModles(arg);
+				Pre.PredictMultipleModles(arg,true);
 
 				new Log().Info(new PMBPP(), "Predictions");
 				Pre.Print(Pre.PipelinesPredictions);
@@ -188,7 +189,7 @@ if(Parameters.getPredictionConfidence().equals("T")) {
 				}
 				Parameters.setUsecfft ( false);
 
-				Pre.PredictMultipleModles(arg);
+				Pre.PredictMultipleModles(arg,true);
 				new Log().Info(new PMBPP(), "Predictions confidence");
 				Pre.Print(Pre.PipelinesPredictions);
 }
@@ -201,6 +202,7 @@ if(Parameters.getPredictionConfidence().equals("T")) {
 
 			new Log().Info(new PMBPP(), "Execution time " + (timeElapsed / 1000) + " seconds");
 			PrintNotes();
+			//new Generate().generatescript();
 		}
 
 		if (args[0].equals("PrepareDataForClassification")) {
@@ -362,7 +364,7 @@ if(Parameters.getPrepareFeatures().equals("T")) {
 
 			String[] arg = { checkArg(Parm, "CSV") };
 			Parameters.setModelFolderName ( "PredictionModels");
-			new CreateModels().Models(arg);
+			new MLModelTraining().Models(arg);
 
 		} else {
 			System.out.println("One of the required parameters is missing ");
@@ -395,7 +397,7 @@ if(Parameters.getPrepareFeatures().equals("T")) {
 			
 			String[] arg2 = { new File(Parameters.getClassificationDatasetsFolderName()).getAbsolutePath() };
 			Parameters.setModelFolderName ("ClassificationModels");
-			new CreateModels().Models(arg2);
+			new MLModelTraining().Models(arg2);
 
 		} else {
 			System.out.println("One of the required parameters is missing ");

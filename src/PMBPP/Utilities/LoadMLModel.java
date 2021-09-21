@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
 
 import PMBPP.Log.Log;
 import PMBPP.ML.Model.MLModel;
+import PMBPP.ML.Model.RandomForestPI;
+import weka.classifiers.meta.FilteredClassifier;
+import weka.classifiers.meta.RegressionByDiscretization;
 import weka.classifiers.trees.RandomForest;
 
 class ReadingMLModel implements Runnable {
@@ -46,7 +49,7 @@ class ReadingMLModel implements Runnable {
 public class LoadMLModel {
 
 	static Stack<File> ModelsStack = new Stack<File>();
-	static HashMap<String, RandomForest> AllModels = new HashMap<String, RandomForest>();
+	static HashMap<String, RandomForestPI> AllModels = new HashMap<String, RandomForestPI>();
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
@@ -71,7 +74,7 @@ public class LoadMLModel {
 		return null;
 	}
 
-	static synchronized void AddReadModel(String ModelName, RandomForest model) {
+	static synchronized void AddReadModel(String ModelName, RandomForestPI model) {
 		AllModels.put(ModelName, model);
 
 	}

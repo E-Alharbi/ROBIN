@@ -45,12 +45,12 @@ public class ClassifyDatasets {
 						Parameters.setFilterModels ( "T");
 						Parameters.getFilteredModels()
 								.add(csv.getName().replaceAll("." + FilenameUtils.getExtension(csv.getName()), ""));
-						Pre.PredictMultipleModles(arg);
+						Pre.PredictMultipleModles(arg,true);
 						HashMap<String, String> temp = CSV.get(PDB).get(0);
 						for (String Key : Pre.PipelinesPredictions.keySet()) { // save into a map >> R-free, 0.2 and so
 																				// on
 							temp.put(Key + "Classifying", Pre.PipelinesPredictions.get(Key).get(
-									csv.getName().replaceAll("." + FilenameUtils.getExtension(csv.getName()), "")));
+									csv.getName().replaceAll("." + FilenameUtils.getExtension(csv.getName()), ""))[0]);
 
 						}
 						Vector<HashMap<String, String>> TempVec = new Vector<HashMap<String, String>>();

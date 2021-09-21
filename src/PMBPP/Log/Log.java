@@ -1,5 +1,6 @@
 package PMBPP.Log;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.indvd00m.ascii.render.Render;
@@ -11,6 +12,7 @@ import com.indvd00m.ascii.render.elements.PseudoText;
 import com.indvd00m.ascii.render.elements.Rectangle;
 import com.jakewharton.fliptables.FlipTable;
 
+import PMBPP.AutoScript.ScriptGenerator;
 import PMBPP.ML.Model.Parameters;
 
 /*
@@ -45,7 +47,7 @@ public class Log {
 	}
 
 	public String CreateTable(List<String> headersList, List<List<String>> rowsList) {
-
+		
 		String[] headers = new String[headersList.size()];
 		headers = headersList.toArray(headers);
 		String[][] data = new String[rowsList.size()][];
@@ -53,7 +55,7 @@ public class Log {
 		for (int i = 0; i < rowsList.size(); i++) {
 			data[i] = rowsList.get(i).toArray(blankArray);
 		}
-
+		
 		return FlipTable.of(headers, data);
 
 	}
@@ -68,21 +70,25 @@ public String HTMLTable(List<String> headersList, List<List<String>> rowsList) {
 		for(int r=0 ; r < rowsList.get(i).size();++r) {
 			Table+="<td>"+rowsList.get(i).get(r)+"</td>";
 		}
+		
 		Table+="</tr>";
 	}
 	
 	return Table;
 }
-public String HTMLPlot(List<String> headersList, List<List<String>> rowsList) {
+public String HTMLPlot(List<String> headersList, List<List<String>> rowsList) throws IOException {
+	
+	
 	
 	String Table="<table id=\"datatable\">\n"
 			+ "	<thead> <tr>";
 	for(int i=0 ; i < headersList.size() ; ++i) {
-		if(i==0)
-		Table+="<th>"+headersList.get(i)+"</th>";
-		else
+		if(!headersList.get(i).contains("Pipeline") && !headersList.get(i).contains("group"))
 			Table+="<th>"+headersList.get(i)+"(%)</th>";
+		else
+			Table+="<th>"+headersList.get(i)+"</th>";	
 	}
+	Table+="<th>Script to run the pipeline</th>";
 	Table+="</tr> </thead> <tbody>";
 	for(int i=0 ; i < rowsList.size(); ++i) {
 		Table+="<tr>";
@@ -92,6 +98,8 @@ public String HTMLPlot(List<String> headersList, List<List<String>> rowsList) {
 				String Val=rowsList.get(i).get(r).trim();
 				if(headersList.get(r).trim().equals("R-free") || headersList.get(r).trim().equals("R-work")) {
 					Val=Val.substring(2);
+					if(Val.length()==1)// if 0.3 then becomes 30
+						Val=Val+"0";
 					
 			}
 				Table+="<td>"+Val+"</td>";
@@ -100,6 +108,13 @@ public String HTMLPlot(List<String> headersList, List<List<String>> rowsList) {
 			Table+="<td>"+rowsList.get(i).get(r)+"</td>";
 			}
 		}
+		
+		
+		
+		Table+="<td><textarea id=\""+rowsList.get(i).get(0).replace(" ", "").replace("(", "").replace(")", "").replace("|", "")+"\" style=\"display:none;\">"+new ScriptGenerator().generatescript(rowsList.get(i).get(0))+"</textarea><button onclick=saveTextAsFile("+rowsList.get(i).get(0).replace(" ", "").replace("(", "").replace(")", "").replace("|", "")+".value,'"+rowsList.get(i).get(0).replace(" ", "").replace("(", "").replace(")", "").replace("|", "")+".sh')>Download</button></td>";
+
+		
+		
 		Table+="</tr>";
 	}
 	Table+="</tbody> </table>";
