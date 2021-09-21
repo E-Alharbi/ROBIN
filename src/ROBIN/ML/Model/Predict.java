@@ -1,4 +1,4 @@
-package PMBPP.ML.Model;
+package ROBIN.ML.Model;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import PMBPP.AutoScript.ScriptGenerator;
-import PMBPP.Data.Preparation.GetFeatures;
-import PMBPP.Log.Log;
-import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Utilities.Phases;
-import PMBPP.Utilities.TxtFiles;
+import ROBIN.AutoScript.ScriptGenerator;
+import ROBIN.Data.Preparation.GetFeatures;
+import ROBIN.Log.Log;
+import ROBIN.Utilities.FilesUtilities;
+import ROBIN.Utilities.Phases;
+import ROBIN.Utilities.TxtFiles;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -289,7 +289,7 @@ public class Predict {
 		Parameters.setTrainedModelsPath ( new File(Parameters.getCompressedModelFolderName()).getName().replaceAll(
 				"." + FilenameUtils.getExtension(new File(Parameters.getCompressedModelFolderName()).getName()), ""));
 		FileUtils.deleteDirectory(new File(Parameters.getTrainedModelsPath()));
-		PMBPP.CheckDirAndFile(Parameters.getTrainedModelsPath());
+		ROBIN.CheckDirAndFile(Parameters.getTrainedModelsPath());
 
 		InputStream in = this.getClass().getResourceAsStream("/" + Parameters.getCompressedModelFolderName());
 		Files.copy(in, Paths.get(System.getProperty("user.dir") + "/" + Parameters.getTrainedModelsPath() + "/"

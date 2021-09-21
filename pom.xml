@@ -78,7 +78,7 @@
     <descriptorRefs>
       <descriptorRef>jar-with-dependencies</descriptorRef>
     </descriptorRefs>
-    <finalName>ROBIN-Runnable-${project.version}.${buildNumber}</finalName> <!-- Runnable JAR name -->
+    <finalName>Robin-Runnable-${project.version}.${buildNumber}</finalName> <!-- Runnable JAR name -->
     <appendAssemblyId>false</appendAssemblyId>
   </configuration>
   <executions>

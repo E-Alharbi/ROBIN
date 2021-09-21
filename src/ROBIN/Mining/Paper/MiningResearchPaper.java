@@ -1,4 +1,4 @@
-package PMBPP.Mining.Paper;
+package ROBIN.Mining.Paper;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -36,14 +36,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import PMBPP.Data.Preparation.Features;
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.PMBPP;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.Utilities.CSVReader;
-import PMBPP.Utilities.CSVWriter;
-import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Utilities.TxtFiles;
+import ROBIN.Data.Preparation.Features;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.ROBIN;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.Utilities.CSVReader;
+import ROBIN.Utilities.CSVWriter;
+import ROBIN.Utilities.FilesUtilities;
+import ROBIN.Utilities.TxtFiles;
 
 public class MiningResearchPaper {
 	
@@ -57,7 +57,7 @@ public class MiningResearchPaper {
 
 		//inputs AuthorsInformation.csv, CSVToUseInStatisticalTest and CSVToUseInStatisticalTestFiltered
 
-new PMBPP().CheckDirAndFile("EvaluationTablesAndPlots");
+new ROBIN().CheckDirAndFile("EvaluationTablesAndPlots");
 new MiningResearchPaper().RecommendedPipeline(new MiningResearchPaper().RemoveDuplicatedPapers(Papers), "CSVToUseInStatisticalTest","CSVToUseInStatisticalTestFiltered");
 new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 

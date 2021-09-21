@@ -1,4 +1,4 @@
-package PMBPP.Data.Preparation;
+package ROBIN.Data.Preparation;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,11 +10,11 @@ import org.json.simple.parser.ParseException;
 
 import Comparison.Analyser.ExcelContents;
 import Comparison.Analyser.ExcelLoader;
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.PMBPP;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.Utilities.CSVWriter;
-import PMBPP.Utilities.FilesUtilities;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.ROBIN;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.Utilities.CSVWriter;
+import ROBIN.Utilities.FilesUtilities;
 
 /*
  * Reading the data from excel and save what we need in CSV
@@ -77,7 +77,7 @@ public class PredictionTrainingDataPreparer {
 			if (args.length > 2) {
 				CW.PathToSaveCSV = args[2];
 
-				PMBPP.CheckDirAndFile(CW.PathToSaveCSV);
+				ROBIN.CheckDirAndFile(CW.PathToSaveCSV);
 			}
 			CW.WriteToCSV(Excel2, e.getName());
 		}

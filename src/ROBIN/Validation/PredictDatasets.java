@@ -1,4 +1,4 @@
-package PMBPP.Validation;
+package ROBIN.Validation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,17 +19,17 @@ import org.apache.commons.io.FilenameUtils;
 import Comparison.Analyser.ExcelContents;
 import Comparison.Analyser.ExcelLoader;
 import Comparison.Analyser.ExcelSheet;
-import PMBPP.Data.Preparation.Features;
-import PMBPP.Data.Preparation.PredictionTrainingDataPreparer;
-import PMBPP.Data.Preparation.PrepareFeatures;
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.PMBPP;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.ML.Model.Predict;
-import PMBPP.Utilities.CSVReader;
-import PMBPP.Utilities.CSVWriter;
-import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Utilities.TxtFiles;
+import ROBIN.Data.Preparation.Features;
+import ROBIN.Data.Preparation.PredictionTrainingDataPreparer;
+import ROBIN.Data.Preparation.PrepareFeatures;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.ROBIN;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.ML.Model.Predict;
+import ROBIN.Utilities.CSVReader;
+import ROBIN.Utilities.CSVWriter;
+import ROBIN.Utilities.FilesUtilities;
+import ROBIN.Utilities.TxtFiles;
 
 /*
  * Predict set of data and save them in CSV
@@ -87,7 +87,7 @@ public void Predict(String PathToDatasets) throws Exception {
 		pdb.PDB_ID=mtz.getName().replaceAll("." + FilenameUtils.getExtension(mtz.getName()), "");
 		excel.add(pdb);
 	}
-	PMBPP.CheckDirAndFile("Temp");
+	ROBIN.CheckDirAndFile("Temp");
 	// loop on all models names. Not necessary all the models are exists in structure evaluation measures   
 Vector<String> modelsNames= new Vector<String>();
 for(File folder : new FilesUtilities().ReadFilesList(Parameters.getTrainedModelsPath())) {
@@ -255,9 +255,9 @@ for (File c : csv ) {
 							}
 						}
 
-						PMBPP.CheckDirAndFile("TempExcel");
+						ROBIN.CheckDirAndFile("TempExcel");
 						new ExcelSheet().FillInExcel(TempExcel, "TempExcel/Temp");
-						PMBPP.CheckDirAndFile("TempCSV");
+						ROBIN.CheckDirAndFile("TempCSV");
 						String[] arg = { "TempExcel", new File(PathToDatasets).getAbsolutePath() + "/", "TempCSV" };
 						new PredictionTrainingDataPreparer().Prepare(arg); // create a csv that only contains this only
 																			// PDB in the excel
@@ -330,11 +330,11 @@ for (File c : csv ) {
 						ExcelName + ".csv has found in CSVToUseInStatisticalTest and deleted to create a new ");
 				FileUtils.deleteQuietly(new File("CSVToUseInStatisticalTest/" + ExcelName + ".csv"));
 			}
-			PMBPP.CheckDirAndFile("PredictedDatasets");
+			ROBIN.CheckDirAndFile("PredictedDatasets");
 			try (PrintWriter out = new PrintWriter("PredictedDatasets/" + ExcelName + ".csv")) {
 				out.println(CSV);
 			}
-			PMBPP.CheckDirAndFile("CSVToUseInStatisticalTest");
+			ROBIN.CheckDirAndFile("CSVToUseInStatisticalTest");
 			try (PrintWriter out = new PrintWriter("CSVToUseInStatisticalTest/" + ExcelName + ".csv")) {
 				out.println(CSVToUseInStatisticalTest);
 			}

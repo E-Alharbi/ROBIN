@@ -1,11 +1,11 @@
-package PMBPP.Data.Preparation;
+package ROBIN.Data.Preparation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
-import PMBPP.Log.Log;
+import ROBIN.Log.Log;
 
 /*
  * Parsing resolution from ccp4 mtzinfo tool

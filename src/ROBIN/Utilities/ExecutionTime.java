@@ -1,4 +1,4 @@
-package PMBPP.Utilities;
+package ROBIN.Utilities;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,11 +14,9 @@ import org.apache.commons.io.FilenameUtils;
 
 import Comparison.Analyser.ExcelContents;
 import Comparison.Analyser.ExcelLoader;
-import PMBPP.Data.Preparation.ExcelContentsWithFeatures;
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.Parameters;
-
-
+import ROBIN.Data.Preparation.ExcelContentsWithFeatures;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.Parameters;
 
 import java.util.Comparator;
 
@@ -33,35 +31,11 @@ public class ExecutionTime {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 	
-		Parameters.setAllExcelFolder("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR2/noncs");
-		Parameters.setExcelFolder("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MR2/noncs");
-		//String CSV="PDB,TotalExecutionTime,Best,Size,Fmap,Resolution,Pipeline\n";
-		//CSV+=new ExecutionTime().FindFirstBest("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/noncs3","/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/CSVToUseInStatisticalTestFiltered","Completeness",true);
-		//CSV+=new ExecutionTime().FindFirstBest("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/noncs3","/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/CSVToUseInStatisticalTestFiltered","R-free",false);
-		//CSV+=new ExecutionTime().FindFirstBest("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/noncs3","/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/CSVToUseInStatisticalTestFiltered","R-work",false);
-
-		//new TxtFiles().WriteStringToTxtFile("ExecutionTime.csv", CSV);
+		Parameters.setAllExcelFolder("noncs");
+		Parameters.setExcelFolder("noncs");
 		
 		new ExecutionTime().AllWithRecommended();
-		/*
-		File [] Excel = new FilesUtilities().ReadFilesList("/Volumes/PhDHardDrive/FinalTraining/FinalTraining/Experimental/noncs");
-		File [] CSVFiles = new FilesUtilities().ReadFilesList("/Volumes/PhDHardDrive/FinalTraining/FinalTraining/Experimental/CSVToUseInStatisticalTestFiltered");
-int count=0;
-		for(File excel : Excel) {
-			String excelName=excel.getName().substring(0,excel.getName().indexOf('.'));
-			boolean found=false;
-			for(File csvFile : CSVFiles) {
-				String csvFileName=csvFile.getName().substring(0,csvFile.getName().indexOf('-'));
-if(excelName.equals(csvFileName)) {
-	found=true;
-}
-			}
-			if(found==true)
-				count++;
-
-		}
-		System.out.println(count);
-		*/
+		
 	}
 	
 	
@@ -73,10 +47,7 @@ if(excelName.equals(csvFileName)) {
 		CSV+=FindFirstBest(Parameters.getExcelFolder(),"CSVToUseInStatisticalTestFiltered","R-free",false,0,"",2);
 		CSV+=FindFirstBest(Parameters.getExcelFolder(),"CSVToUseInStatisticalTestFiltered","R-work",false,0,"",2);
 		
-		//CSV+=FindFirstBest(Parameters.getExcelFolder(),"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/CSVToUseInStatisticalTestFiltered","Completeness",true,5,"at least 5%",0);
-		//CSV+=FindFirstBest(Parameters.getExcelFolder(),"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/CSVToUseInStatisticalTestFiltered","R-free",false,0.05,"at least 5%",2);
-		//CSV+=FindFirstBest(Parameters.getExcelFolder(),"/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/Experimental/HLAandParrot/CSVToUseInStatisticalTestFiltered","R-work",false,0.05,"at least 5%",2);
-
+		
 		new TxtFiles().WriteStringToTxtFile("ExecutionTime.csv", CSV);
 	}
 	

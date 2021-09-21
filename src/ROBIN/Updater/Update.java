@@ -1,4 +1,4 @@
-package PMBPP.Updater;
+package ROBIN.Updater;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -12,7 +12,7 @@ import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
-import PMBPP.Log.Log;
+import ROBIN.Log.Log;
 
 /*
  * Checking for new version

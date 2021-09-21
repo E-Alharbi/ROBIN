@@ -1,4 +1,4 @@
-package PMBPP.ML.Model;
+package ROBIN.ML.Model;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -14,10 +14,10 @@ import java.util.Vector;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Element;
 
-import PMBPP.Log.Log;
-import PMBPP.Utilities.CSVReader;
-import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Utilities.XML;
+import ROBIN.Log.Log;
+import ROBIN.Utilities.CSVReader;
+import ROBIN.Utilities.FilesUtilities;
+import ROBIN.Utilities.XML;
 import weka.attributeSelection.Ranker;
 import weka.classifiers.Evaluation;
 import weka.classifiers.evaluation.Prediction;
@@ -89,8 +89,8 @@ public class MLModelTraining {
 
 			if (Parameters.getMeasurementUnitsToPredict().contains(F)) {
 
-				PMBPP.CheckDirAndFile(Parameters.getModelFolderName());
-				PMBPP.CheckDirAndFile(Parameters.getModelFolderName() + "/" + F);
+				ROBIN.CheckDirAndFile(Parameters.getModelFolderName());
+				ROBIN.CheckDirAndFile(Parameters.getModelFolderName() + "/" + F);
 				for (File CSV : files) {
 					new Log().Info(this, "Model: " + F + "-" + CSV.getName());
 					Set<String> temp = new HashSet<String>(measurements.keySet());

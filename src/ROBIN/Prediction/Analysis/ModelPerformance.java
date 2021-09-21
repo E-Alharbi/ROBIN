@@ -1,4 +1,4 @@
-package PMBPP.Prediction.Analysis;
+package ROBIN.Prediction.Analysis;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,14 +13,14 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.PMBPP;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.Utilities.CSVReader;
-import PMBPP.Utilities.CSVWriter;
-import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Utilities.StatisticalTests;
-import PMBPP.Utilities.TxtFiles;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.ROBIN;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.Utilities.CSVReader;
+import ROBIN.Utilities.CSVWriter;
+import ROBIN.Utilities.FilesUtilities;
+import ROBIN.Utilities.StatisticalTests;
+import ROBIN.Utilities.TxtFiles;
 
 /*
  * Generating latex tables for Statistical Tests. Oneway Anova and T-test. Also mean and SD
@@ -62,7 +62,7 @@ public class ModelPerformance {
 					Headers.add(unit);
 					Headers.add("Achieved" + unit);
 					String CSVName = CSV.getName().replaceAll("." + FilenameUtils.getExtension(CSV.getName()), "");
-					PMBPP.CheckDirAndFile("CSVToUseInStatisticalTestSplitted");
+					ROBIN.CheckDirAndFile("CSVToUseInStatisticalTestSplitted");
 					HashMap<String, Vector<HashMap<String, String>>> filteredCSV = new CSVReader()
 							.ReadIntoHashMapWithFilterdHeaders(CSV.getAbsolutePath(), "PDB", Headers);
 					new CSVWriter().WriteFromHashMapContainsRepatedRecord(filteredCSV,
@@ -80,7 +80,7 @@ public class ModelPerformance {
 			for (File TestCSV : new FilesUtilities().ReadFilesList(PathToTestCSV)) {
 				if ((CSVName + "-test.csv").equals(TestCSV.getName())) {
 
-					PMBPP.CheckDirAndFile("CSVToUseInStatisticalTestFiltered");
+					ROBIN.CheckDirAndFile("CSVToUseInStatisticalTestFiltered");
 					new CSVWriter().WriteFromHashMapContainsRepatedRecord(omit(CSV, TestCSV),
 							"CSVToUseInStatisticalTestFiltered/" + CSV.getName(),"PDB",true);
 
@@ -370,7 +370,7 @@ public class ModelPerformance {
 		}
 		Table += "\\end{tabular}}\n" + "\n" + "\n" + "\\end{table}";
 
-		PMBPP.CheckDirAndFile("EvaluationTablesAndPlots");
+		ROBIN.CheckDirAndFile("EvaluationTablesAndPlots");
 
 		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/StatisticalMeasures.tex", Table);
 
@@ -741,7 +741,7 @@ public class ModelPerformance {
 				"\n" + HeatMapLegend+
 				"\n" + NormMsg+"\n"+
 				"\\end{table*}";
-		PMBPP.CheckDirAndFile("EvaluationTablesAndPlots");
+		ROBIN.CheckDirAndFile("EvaluationTablesAndPlots");
 		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/MeanAndSD.tex", Table);
 		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/MeanAndSDCSV.csv", CSV);
 		

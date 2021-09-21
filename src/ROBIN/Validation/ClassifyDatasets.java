@@ -1,4 +1,4 @@
-package PMBPP.Validation;
+package ROBIN.Validation;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,13 +7,13 @@ import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
 
-import PMBPP.ML.Model.PMBPP;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.ML.Model.Predict;
-import PMBPP.Prediction.Analysis.ModelPerformance;
-import PMBPP.Utilities.CSVReader;
-import PMBPP.Utilities.CSVWriter;
-import PMBPP.Utilities.FilesUtilities;
+import ROBIN.ML.Model.ROBIN;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.ML.Model.Predict;
+import ROBIN.Prediction.Analysis.ModelPerformance;
+import ROBIN.Utilities.CSVReader;
+import ROBIN.Utilities.CSVWriter;
+import ROBIN.Utilities.FilesUtilities;
 
 /*
  * Classify set of data and save them in CSV
@@ -59,7 +59,7 @@ public class ClassifyDatasets {
 					}
 				}
 			}
-			PMBPP.CheckDirAndFile("ClassifedDatasets");
+			ROBIN.CheckDirAndFile("ClassifedDatasets");
 			new CSVWriter().WriteFromHashMapContainsRepatedRecord(CSV, "ClassifedDatasets/" + csv.getName(),"PDB",true);
 
 		}
@@ -84,7 +84,7 @@ public class ClassifyDatasets {
 
 				if ((CSVName + "-test.csv").equals(TestFile)) {
 
-					PMBPP.CheckDirAndFile("CSVToUseInClassificationPlots");
+					ROBIN.CheckDirAndFile("CSVToUseInClassificationPlots");
 					new CSVWriter().WriteFromHashMapContainsRepatedRecord(new ModelPerformance().omit(CSV, TestCSV),
 							"CSVToUseInClassificationPlots/" + CSV.getName(),"PDB",true);
 

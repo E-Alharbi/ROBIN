@@ -1,4 +1,4 @@
-package PMBPP.Utilities;
+package ROBIN.Utilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,8 +7,8 @@ import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.PMBPP;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.ROBIN;
 
 /*
  * Splitting the job into small jobs. A one for each pipeline when we run on cluster server. 
@@ -49,21 +49,21 @@ public class Cluster {
 			new Log().Error(this, "We did not find ExcelFolder= in the shell script.");
 
 		String ExcelFolder = shcontent.split("ExcelFolder=")[1].split(" ")[0];
-		PMBPP.CheckDirAndFile("ExcelFolder");
+		ROBIN.CheckDirAndFile("ExcelFolder");
 		HashMap<String, String> ExcelAndTheirFolders = new HashMap<String, String>();
 		for (File Excel : new FilesUtilities().ReadFilesList(ExcelFolder)) {
 
 			String ExcelName = Excel.getName().replaceAll("." + FilenameUtils.getExtension(Excel.getName()), "");
 
 			// Create a folder for each
-			PMBPP.CheckDirAndFile("ExcelFolder/" + ExcelName);
+			ROBIN.CheckDirAndFile("ExcelFolder/" + ExcelName);
 			FileUtils.copyFileToDirectory(Excel, new File("ExcelFolder/" + ExcelName));
 			ExcelAndTheirFolders.put(ExcelName, new File("ExcelFolder/" + ExcelName).getAbsolutePath());
 		}
 
 		// Now create a shell script for each
 		for (String Excel : ExcelAndTheirFolders.keySet()) {
-			PMBPP.CheckDirAndFile(Excel);
+			ROBIN.CheckDirAndFile(Excel);
 
 			new TxtFiles().WriteStringToTxtFile(Excel + "/" + Excel + ".sh",
 					shcontent.replace("ExcelFolder=" + ExcelFolder, "ExcelFolder=" + ExcelAndTheirFolders.get(Excel)));

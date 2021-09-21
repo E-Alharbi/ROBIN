@@ -1,4 +1,4 @@
-package PMBPP.Data.Preparation;
+package ROBIN.Data.Preparation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Vector;
 
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.Utilities.MTZReader;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.Utilities.MTZReader;
 
 // Class to run cfft tool from ccp4
 public class cfft {
@@ -112,7 +112,7 @@ public class cfft {
 					"Cfft error: Please fix the above error. Probably, you are using wrong phases or wrong FP,SIGFP! (Example colinfo=FP,SIGFP Phases=HLA,HLB,HLC,HLD) ");
 
 		}
-
+		//CM.RMSD=CM.Skew/(Math.pow(CM.RMSD, 3));
 		new Log().Info(this, "RMSD " + CM.RMSD + " Skew " + CM.Skew + " Max " + CM.Max + " Min " + CM.Min);
 
 		return CM;

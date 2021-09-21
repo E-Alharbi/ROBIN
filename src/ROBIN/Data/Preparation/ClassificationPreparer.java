@@ -1,4 +1,4 @@
-package PMBPP.Data.Preparation;
+package ROBIN.Data.Preparation;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,13 +10,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.simple.parser.ParseException;
 
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.PMBPP;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.Utilities.CSVReader;
-import PMBPP.Utilities.CSVWriter;
-import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Validation.CustomException;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.ROBIN;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.Utilities.CSVReader;
+import ROBIN.Utilities.CSVWriter;
+import ROBIN.Utilities.FilesUtilities;
+import ROBIN.Validation.CustomException;
 
 /*
  * Preparing data for classification by rounding the error in the prediction to fixed value    
@@ -105,7 +105,7 @@ public class ClassificationPreparer {
 
 		}
 		
-		PMBPP.CheckDirAndFile(Parameters.getClassificationDatasetsFolderName());
+		ROBIN.CheckDirAndFile(Parameters.getClassificationDatasetsFolderName());
 		new CSVWriter().WriteFromHashMap(CSVContents,
 				Parameters.getClassificationDatasetsFolderName() + "/" + new File(CSVFile).getName()
 						.replaceAll("." + FilenameUtils.getExtension(new File(CSVFile).getName()), "") + ".csv","PDB");

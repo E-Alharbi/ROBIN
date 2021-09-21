@@ -1,4 +1,4 @@
-package PMBPP.Data.Preparation;
+package ROBIN.Data.Preparation;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,11 +12,11 @@ import java.util.Vector;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.parser.ParseException;
 
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.Utilities.CSVReader;
-import PMBPP.Utilities.StatisticalTests;
-import PMBPP.Validation.CustomException;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.Utilities.CSVReader;
+import ROBIN.Utilities.StatisticalTests;
+import ROBIN.Validation.CustomException;
 
 /*
  * Preparing data for classification by finding the best value to use in splitting the data into two equal groups   

@@ -1,4 +1,4 @@
-package PMBPP.Prediction.Analysis;
+package ROBIN.Prediction.Analysis;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,17 +20,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.PMBPP;
-import PMBPP.Utilities.CSVReader;
-import PMBPP.Utilities.CSVWriter;
-import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Utilities.Normalize;
-import PMBPP.Utilities.TxtFiles;
-import PMBPP.ML.Model.Parameters;
-/*
- * Generating latex tables for ML evaluation metrics. MAE, RMSD and others
- */
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.ROBIN;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.Utilities.CSVReader;
+import ROBIN.Utilities.CSVWriter;
+import ROBIN.Utilities.FilesUtilities;
+import ROBIN.Utilities.Normalize;
+import ROBIN.Utilities.TxtFiles;
 
 public class NumberOfTreesImpact {
 
@@ -265,7 +262,7 @@ new NumberOfTreesImpact().NumberOfTreesTable("ClassificationModelsPerformance.xm
 		}
 		Table += "\\end{tabular}}\n" + "\n" + "\n" + "\\end{table}";
 
-		PMBPP.CheckDirAndFile("EvaluationTablesAndPlots");
+		ROBIN.CheckDirAndFile("EvaluationTablesAndPlots");
 		String XMLName = new File(PathToXML).getName().replaceAll("." + FilenameUtils.getExtension(new File(PathToXML).getName()), "");
 
 		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/"+XMLName+"ErrorTableByNumberOfTrees.tex", Table);

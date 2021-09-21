@@ -1,4 +1,4 @@
-package PMBPP.AutoScript;
+package ROBIN.AutoScript;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.Utilities.MTZReader;
-import PMBPP.Utilities.TxtFiles;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.Utilities.MTZReader;
+import ROBIN.Utilities.TxtFiles;
 
 public class ScriptGenerator {
 	

@@ -1,4 +1,4 @@
-package PMBPP.Data.Preparation;
+package ROBIN.Data.Preparation;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,11 +14,11 @@ import java.util.Vector;
 import org.apache.commons.io.FilenameUtils;
 import org.json.simple.parser.ParseException;
 
-import PMBPP.Log.Log;
-import PMBPP.ML.Model.Parameters;
-import PMBPP.Utilities.CSVReader;
-import PMBPP.Utilities.FilesUtilities;
-import PMBPP.Utilities.MTZReader;
+import ROBIN.Log.Log;
+import ROBIN.ML.Model.Parameters;
+import ROBIN.Utilities.CSVReader;
+import ROBIN.Utilities.FilesUtilities;
+import ROBIN.Utilities.MTZReader;
 
 /*
  * Reading features into features object 
@@ -180,7 +180,7 @@ public class GetFeatures {
 
 		if (Parameters.getSequenceIdentity().equals("-1")) {
 			if (new File(new File(mtz).getParent() + "/" + mtzName + ".json").exists()) {
-				features.SequenceIdentity = Double.parseDouble(new PMBPP.Utilities.JSONReader()
+				features.SequenceIdentity = Double.parseDouble(new ROBIN.Utilities.JSONReader()
 						.JSONToHashMap(new File(mtz).getParent() + "/" + mtzName + ".json").get("gesamt_seqid"));
 			} else {
 
