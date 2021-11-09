@@ -16,7 +16,7 @@ source ccp4.setup-sh
 
 ## How to use Robin predictor? 
 
-You need to download the jar file from here <a href="https://github.com/E-Alharbi/ROBIN/releases"> Robin </a> 
+You need to download the jar file from here <a href="https://github.com/E-Alharbi/ROBIN/releases"> Robin </a> or you can use Robin from the web application <a href="http://www.robin-predictor.org"> http://www.robin-predictor.org </a>
 
 - To start from experimental phasing <br />
 ```
@@ -158,9 +158,5 @@ GenerateScript=T
 ## Authors
 
 Emad Alharbi, Paul Bond, Kevin Cowtan and Radu Calinescu
-
-
-## Acknowledgments
-
 
 
