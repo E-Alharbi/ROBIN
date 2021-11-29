@@ -159,4 +159,8 @@ GenerateScript=T
 
 Emad Alharbi, Paul Bond, Kevin Cowtan and Radu Calinescu
 
+## Citing
 
+```
+Alharbi, E., Bond, P., Calinescu, R., & Cowtan, K. (2021). Predicting the performance of Automated Crystallographic Model-building pipelines. Acta Crystallographica Section D Structural Biology, 77(12). https://doi.org/10.1107/s2059798321010500
+```
