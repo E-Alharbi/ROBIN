@@ -30,7 +30,7 @@ public class Update {
 			GitHub github = GitHub.connectAnonymously();
 
 			try {
-				GHRepository repo = github.getRepository("E-Alharbi/ProteinModelBuildingPipelinePredictor");
+				GHRepository repo = github.getRepository("E-Alharbi/ROBIN");
 				GHRelease re = repo.getLatestRelease();
 
 				if (VersionCompare(re.getTagName(), version()) == 1) {
