@@ -41,11 +41,20 @@ public class cfft {
 
 	public Features Cfft(String mtzin) throws IOException {
 
+		String cfft_phases_keyword="-colin-hl";
+		if(Parameters.getPhases().split(",").length<4) { // no need to do parrot phases as the parrot phases will set in Parameters.getPhases()
+			cfft_phases_keyword="-colin-phifom";
+			MTZReader mtzcol= new MTZReader(mtzin);
+			if(!mtzcol.GetColLabels().get("P").contains(Parameters.getPhases().split(",")[0]))
+				new Log().Warning(this, Parameters.getPhases().split(",")[0]+" is not phase!");
+			if(!mtzcol.GetColLabels().get("W").contains(Parameters.getPhases().split(",")[1]))
+				new Log().Warning(this, Parameters.getPhases().split(",")[1]+" is not figures of merit!");	
+		}
 		
 		String st = null;
 		String PathToCfft = "cfft";
 
-		String[] callAndArgs = {PathToCfft, "-mtzin", mtzin, "-colin-fo", Parameters.getColinfo(), "-colin-hl",
+		String[] callAndArgs = {PathToCfft, "-mtzin", mtzin, "-colin-fo", Parameters.getColinfo(), cfft_phases_keyword,
 				Parameters.getPhases(), "-stats", };
 
 		Process p = Runtime.getRuntime().exec(callAndArgs);

@@ -657,8 +657,8 @@ public static String getMeasurementUnitsToPredict() {
 	}
 	public static void setPhases(String phases) {
 		
-		if (phases.split(",").length != 4)
-			new Log().Error(new Parameters(), "Phases are wrong! (for Example Phases=HLA,HLB,HLC,HLD)");
+		if (phases.split(",").length != 4 && phases.split(",").length != 2)
+			new Log().Error(new Parameters(), "Phases are wrong! (for Example, Phases=HLA,HLB,HLC,HLD or Phases=PHIB,FOM)");
 
 		
 		Phases = phases;
