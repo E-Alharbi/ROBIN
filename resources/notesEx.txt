@@ -1,4 +1,4 @@
-A small confidence score means a more confident prediction.
+A small confidence group means a more confident prediction.
 Please note that when you run the pipelines  
 1- ARP/wARP, Buccaneer, Phenix AutoBuild(P) and SHELXE(P) should run after density modification  by Parrot. 
 2- ARP/wARP alone should be run with no R-free.
