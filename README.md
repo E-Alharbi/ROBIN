@@ -25,7 +25,7 @@ java -jar Robin-Runnable-(version).jar Predict mtz=1o6a.mtz Phases=HLA,HLB,HLC,H
 | Keyword | Explanation |
 | ------------- | ------------- |
 | mtz | reflection data in MTZ format |
-| Phases | the phases (Hendrickson-Lattman coefficients) as in the mtz file  |
+| Phases | the phases (Hendrickson-Lattman coefficients, e.g. HLA,HLB,HLC,HLD,  or Phi and figure of merit, e.g. PHIB,FOM) as in the mtz file  |
 | Colinfo | column labels for the observed amplitudes  |
 
 To get an accurate prediction, use the phases after DM when you predict the performance of ARP/wARP, Buccaneer, Phenix AutoBuild(P) and SHELXE(P). 
