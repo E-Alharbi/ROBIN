@@ -112,7 +112,7 @@ public class ExecutionTime {
 				
 				if(StructureEvaluation.equals(StrectureMeasure)) {
 					
-					HashMap<String, Vector<HashMap<String, String>>> map=	new CSVReader().ReadIntoHashMap(file.getAbsolutePath(), "PDB");
+					HashMap<String, Vector<HashMap<String, String>>> map=	new CSVReader(file.getAbsolutePath()).ReadIntoHashMap( "PDB");
 					
 					for(String PDB: map.keySet()) {	
 						
