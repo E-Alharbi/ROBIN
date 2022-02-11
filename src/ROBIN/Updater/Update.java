@@ -13,6 +13,8 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
 import ROBIN.Log.Log;
+import ROBIN.ML.Model.ROBIN;
+import ROBIN.Utilities.TxtFiles;
 
 /*
  * Checking for new version
@@ -73,7 +75,6 @@ public class Update {
 	String version() throws IOException {
 		final Properties properties = new Properties();
 		properties.load(this.getClass().getResourceAsStream("/project.properties"));
-
 		return properties.getProperty("version");
 	}
 

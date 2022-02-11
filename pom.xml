@@ -40,6 +40,21 @@
         </excludes>
       </resource>
       
+       <resource>
+      <directory>resources</directory>
+      <filtering>true</filtering>
+      <includes>
+        <include>**/project.properties</include>
+      </includes>
+    </resource>
+    <resource>
+      <directory>resources</directory>
+      <filtering>false</filtering>
+      <excludes>
+        <exclude>**/project.properties</exclude>
+      </excludes>
+    </resource>
+      
       
     </resources>
     <plugins>
