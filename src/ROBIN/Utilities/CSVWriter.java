@@ -61,9 +61,10 @@ public class CSVWriter {
 			CSV += "\n";
 
 		}
-		try (PrintWriter out = new PrintWriter(Name)) {
-			out.println(CSV);
-		}
+		//try (PrintWriter out = new PrintWriter(Parameters.getPrefix()+Name)) {
+	//		out.println(CSV);
+	//	}
+		new TxtFiles().WriteStringToTxtFile(Name, CSV);
 	}
 	  
 	
@@ -151,10 +152,11 @@ public class CSVWriter {
 			CSV += "," + E.PDB_ID + "\n";
 			// CSV+=E.CM.RMSD+","+E.CM.Skew+","+E.Resolution+","+E.CM.Max+","+E.CM.Min+","+E.Completeness+","+E.R_free0Cycle+","+E.R_factor0Cycle+"\n";
 		}
-		try (PrintWriter out = new PrintWriter(
-				PathToSaveCSV + "/" + Pipeline.substring(0, Pipeline.indexOf(".")) + ".csv")) {
-			out.println(CSV);
-		}
+		//try (PrintWriter out = new PrintWriter(
+		//		PathToSaveCSV + "/" + Parameters.getPrefix()+Pipeline.substring(0, Pipeline.indexOf(".")) + ".csv")) {
+		//	out.println(CSV);
+		//}
+		new TxtFiles().WriteStringToTxtFile(PathToSaveCSV + "/" + Pipeline.substring(0, Pipeline.indexOf(".")) + ".csv", CSV);
 
 	}
 
@@ -193,8 +195,9 @@ public class CSVWriter {
 			}
 			CSV += Record + "\n";
 		}
-		try (PrintWriter out = new PrintWriter(Name + ".csv")) {
-			out.println(CSV);
-		}
+		//try (PrintWriter out = new PrintWriter(Parameters.getPrefix()+Name + ".csv")) {
+		//	out.println(CSV);
+		//}
+		new TxtFiles().WriteStringToTxtFile(Name, CSV);
 	}
 }
