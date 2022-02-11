@@ -44,11 +44,11 @@ public class cfft {
 		String cfft_phases_keyword="-colin-hl";
 		if(Parameters.getPhases().split(",").length<4) { // no need to do parrot phases as the parrot phases will set in Parameters.getPhases()
 			cfft_phases_keyword="-colin-phifom";
-			MTZReader mtzcol= new MTZReader(mtzin);
-			if(!mtzcol.GetColLabels().get("P").contains(Parameters.getPhases().split(",")[0]))
-				new Log().Warning(this, Parameters.getPhases().split(",")[0]+" is not phase!");
-			if(!mtzcol.GetColLabels().get("W").contains(Parameters.getPhases().split(",")[1]))
-				new Log().Warning(this, Parameters.getPhases().split(",")[1]+" is not figures of merit!");	
+			//MTZReader mtzcol= new MTZReader(mtzin);
+			//if(!mtzcol.GetColLabels().get("P").contains(Parameters.getPhases().split(",")[0]))
+			//	new Log().Warning(this, Parameters.getPhases().split(",")[0]+" is not phase!");
+			//if(!mtzcol.GetColLabels().get("W").contains(Parameters.getPhases().split(",")[1]))
+				//new Log().Warning(this, Parameters.getPhases().split(",")[1]+" is not figures of merit!");	
 		}
 		
 		String st = null;
@@ -114,6 +114,9 @@ public class cfft {
 			System.out.println(st);
 			Error = true;
 
+		}
+		if(Error == true && Parameters.getIgnoreCfftError().equals("T")) {
+			return CM;// will return empty
 		}
 		if (Error == true) {
 			
