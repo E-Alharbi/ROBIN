@@ -79,7 +79,7 @@ public class ROBIN {
 				long timeElapsed = Duration.between(start, finish).toMillis();
 
 				new Log().Info(new ROBIN(), "Execution time " + (timeElapsed / 1000) + " seconds");
-				new Log().Info(new ROBIN(), "The results were save to PredictedDatasets.csv. For individual pipeline results were saved in PredictedDatasets folder");
+				new Log().Info(new ROBIN(), "The results were save to Predicted_datasets.csv. For individual pipeline results were saved in PredictedDatasets folder");
 				PrintNotes();
 			}
 			
@@ -106,7 +106,7 @@ public class ROBIN {
 			if (checkArg(Parm, "Papers") != null || checkArg(Parm, "CSVFolder") != null || checkArg(Parm, "CSVFolderTesting") != null) {
 				 new Log().Error(new ROBIN(), "Please set these keywords\n Papers=the path for reserach papers in csv file (AuthorsInformation.csv) \n CSVFolder= the folder that contains the pipelines csv files (usually called CSVToUseInStatisticalTest) \n CSVFolderTesting=  the folder that contains the pipelines csv files for testing dataset (usually called CSVToUseInStatisticalTestFiltered)");
 			 }
-			HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader().ReadIntoHashMap(checkArg(Parm, "Papers"),"PDB");
+			HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader(checkArg(Parm, "Papers")).ReadIntoHashMap("PDB");
 
 			;
 			new MiningResearchPaper().RecommendedPipeline(new MiningResearchPaper().RemoveDuplicatedPapers(Papers), checkArg(Parm, "CSVFolder"),checkArg(Parm, "CSVFolderTesting"));
@@ -124,8 +124,8 @@ public class ROBIN {
 			Instant start = Instant.now();
 			Parameters.setReflectionFile(new File(checkArg(Parm, "mtz")).getAbsolutePath());
 			
-			if (new File("features.csv").exists())
-				FileUtils.deleteQuietly(new File("features.csv")); // if not removed, then will cause to read the
+			if (new File(Parameters.getFeaturesInCSV()).exists())
+				FileUtils.deleteQuietly(new File(Parameters.getFeaturesInCSV())); // if not removed, then will cause to read the
 																	// features from csv
 
 			if( Parameters.getRMSD()!=-1 || Parameters.getResolution()!=-1 || Parameters.getMax()!=-1 || Parameters.getMin()!=-1 || Parameters.getSkew()!=-1) {
