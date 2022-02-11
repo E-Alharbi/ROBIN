@@ -28,9 +28,23 @@ public class FilesUtilities {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		//Example 
-		new FilesUtilities().RenameMLModelNames("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MRRBDPI/PredictionModelsMR", ".csv");
+		//new FilesUtilities().RenameMLModelNames("/Volumes/PhDHardDrive/PMBPP/FinalTraining/PMBPPResults/MRRBDPI/PredictionModelsMR", ".csv");
+		
 	}
 
+	public String AddPrefixToFileName(String File) {
+		
+		if(!new File(File).getName().startsWith(Parameters.getPrefix())) {
+		String File_path="";
+		if(new File(File).getParent()!=null)
+		File_path=new File(File).getParent()+"/"+Parameters.getPrefix()+new File(File).getName();
+		else
+		File_path=Parameters.getPrefix()+new File(File).getName();
+		
+		return File_path;
+		}
+		return File;
+	}
 	public HashMap<String,String> PipelinesNames(){
 		HashMap<String,String> names = new HashMap<String,String>();
 		names.put("ARPwARP#Buccaneeri1I5", "ARPwARP|Buccaneer");
