@@ -23,7 +23,7 @@ public class CSVReader {
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		HashMap<String, Boolean> a = new CSVReader().Headers("/PMBPP/CSV/");
+		HashMap<String, Boolean> a = new CSVReader("/PMBPP/CSV/").Headers();
 
 		for (String key : a.keySet()) {
 			System.out.println("key " + key + " " + a.get(key));
@@ -35,7 +35,13 @@ public class CSVReader {
 		 * }
 		 */
 	}
-
+	String CSV="";
+	public CSVReader(String csvpath) {
+		
+		
+		CSV=new FilesUtilities().AddPrefixToFileName(csvpath);
+	}
+	
 	public HashMap<String, Boolean> IdentifyFeatures(Reader in) throws IOException {
 		HashMap<String, Boolean> Features = new HashMap<String, Boolean>();
 		
@@ -52,7 +58,7 @@ public class CSVReader {
 		}
 		return Features;
 	}
-	public HashMap<String, Boolean> Headers(String CSV) throws IOException {
+	public HashMap<String, Boolean> Headers() throws IOException {
 		
 		if(!new File(CSV).exists()) { //if not exists, meaning it is the CSV contents in a string 
 			return IdentifyFeatures(new StringReader(CSV));
@@ -75,8 +81,8 @@ public class CSVReader {
 		return Features;
 	}
 
-	public HashMap<String, Boolean> FilterByFeatures(String CSV, boolean ByFeatures) throws IOException {
-		HashMap<String, Boolean> Temp = Headers(CSV);
+	public HashMap<String, Boolean> FilterByFeatures( boolean ByFeatures) throws IOException {
+		HashMap<String, Boolean> Temp = Headers();
 		HashMap<String, Boolean> Features = new HashMap<String, Boolean>();
 		for (String K : Temp.keySet()) {
 			if (Temp.get(K) == ByFeatures)
@@ -87,7 +93,7 @@ public class CSVReader {
 		return Features;
 	}
 
-	public String GetRecordByHeaderName(String CSV, String Header, int Index) throws IOException {
+	public String GetRecordByHeaderName( String Header, int Index) throws IOException {
 		Reader in = new FileReader(CSV);
 
 		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(in);
@@ -101,12 +107,12 @@ public class CSVReader {
 		return null;
 	}
 
-	public HashMap<String, HashMap<String, String>> ReadIntoHashMapWithnoIDHeader(String CSV) throws IOException {
+	public HashMap<String, HashMap<String, String>> ReadIntoHashMapWithnoIDHeader() throws IOException {
 
 		Reader in = new FileReader(CSV);
 
 		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(in);
-		HashMap<String, Boolean> Headers = Headers(CSV);
+		HashMap<String, Boolean> Headers = Headers();
 		HashMap<String, HashMap<String, String>> CSVInTable = new HashMap<String, HashMap<String, String>>();
 		int ID = 1;
 		for (CSVRecord record : records) {
@@ -120,7 +126,7 @@ public class CSVReader {
 		return CSVInTable;
 	}
 
-	public HashMap<String, Vector<HashMap<String, String>>> ReadIntoHashMap(String CSV, String IDHeader)
+	public HashMap<String, Vector<HashMap<String, String>>> ReadIntoHashMap( String IDHeader)
 			throws IOException {
 		Reader in;
 		if(new File(CSV).exists())
@@ -130,7 +136,7 @@ public class CSVReader {
 		
 		
 		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(in);
-		HashMap<String, Boolean> Headers = Headers(CSV);
+		HashMap<String, Boolean> Headers = Headers();
 		HashMap<String, Vector<HashMap<String, String>>> CSVInTable = new HashMap<String, Vector<HashMap<String, String>>>();
 		for (CSVRecord record : records) {
 
@@ -155,9 +161,9 @@ public class CSVReader {
 		return CSVInTable;
 	}
 
-	public HashMap<String, Vector<HashMap<String, String>>> ReadIntoHashMapWithFilterdHeaders(String CSV,
+	public HashMap<String, Vector<HashMap<String, String>>> ReadIntoHashMapWithFilterdHeaders(
 			String IDHeader, Vector<String> Headers) throws IOException {
-		HashMap<String, Vector<HashMap<String, String>>> map = ReadIntoHashMap(CSV, IDHeader);
+		HashMap<String, Vector<HashMap<String, String>>> map = ReadIntoHashMap( IDHeader);
 		HashMap<String, Vector<HashMap<String, String>>> FilterdMap = new HashMap<String, Vector<HashMap<String, String>>>();
 
 		for (String ID : map.keySet()) {
