@@ -57,5 +57,11 @@ public class Features {
 
 		return false;
 	}
+	boolean isCfttFeaturesNotSet() {
+		if(RMSD==0 && Skew==0 && Min==0 && Max==0)
+			return true;
+		
+		return false;
+	}
 
 }
