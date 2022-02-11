@@ -49,6 +49,14 @@ public class Parameters {
 	private static String HTMLTable="F";
 
 	private static String IgnoreCCP4Env="F";
+	private static String IgnoreCfftError="F";
+
+	public static String getIgnoreCfftError() {
+		return IgnoreCfftError;
+	}
+	public static void setIgnoreCfftError(String ignoreCfftError) {
+		IgnoreCfftError = ignoreCfftError;
+	}
 
 	private static String IncreaseNumberOfTrees = "-1";
 
@@ -140,9 +148,25 @@ public class Parameters {
 	private static String ParrotPhases=null;
 	private static String GenerateScript="F";
 	private static String PickFirstMatchCol="F";
+	private static String Prefix="";
+	
+	public static String getFeaturesInCSV() {
+		return FeaturesInCSV;
+	}
+	public static void setFeaturesInCSV(String featuresInCSV) {
+		FeaturesInCSV = featuresInCSV;
+	}
+
+	private static String FeaturesInCSV="features.csv";
 	
 	
 	
+	public static String getPrefix() {
+		return Prefix;
+	}
+	public static void setPrefix(String prefix) {
+		Prefix = prefix;
+	}
 	public static String getPickFirstMatchCol() {
 		return PickFirstMatchCol;
 	}
