@@ -44,8 +44,8 @@ public class GetFeatures {
 		String mtzName = new File(mtz).getName().replaceAll("." + FilenameUtils.getExtension(new File(mtz).getName()),
 				"");
 		boolean ReadFromCSV = true;
-		if (new File("features.csv").exists()) {
-			HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader().ReadIntoHashMap("features.csv",
+		if (new File(Parameters.getFeaturesInCSV()).exists()) {
+			HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader(Parameters.getFeaturesInCSV()).ReadIntoHashMap(
 					"PDB");
 			for (String PDB : map.keySet()) {
 				if (PDB.equals(mtzName)) {
@@ -58,7 +58,7 @@ public class GetFeatures {
 				}
 			}
 		}
-		if (!new File("features.csv").exists() || features.isEmpty()) { // empty when the mtz not in the csv file
+		if (!new File(Parameters.getFeaturesInCSV()).exists() || features.isEmpty()) { // empty when the mtz not in the csv file
 			ReadFromCSV = false;
 			
 			features = new cfft().Cfft(new File(mtz).getAbsolutePath());
@@ -84,7 +84,7 @@ public class GetFeatures {
 			throws IOException, NumberFormatException, IllegalArgumentException, IllegalAccessException {
 		Features features = new Features();
 		String MTZ = new File(mtz).getName().replaceAll("." + FilenameUtils.getExtension(new File(mtz).getName()), "");
-		HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader().ReadIntoHashMap(MTZ + "features.csv",
+		HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader(MTZ + Parameters.getFeaturesInCSV()).ReadIntoHashMap(
 				"PDB");
 		for (int i = 0; i < map.get(MTZ).size(); ++i) {
 			for (String Col : map.get(MTZ).get(i).keySet()) {
@@ -104,7 +104,10 @@ public class GetFeatures {
 		// check used features from AttCSV
 		updatefromAttCSV();
 
+		if(features.isCfttFeaturesNotSet()==false)// false if cfft cause an error and IgnoreCfftError=T  
 		return FeaturesToarray(features);
+		
+		return null;
 
 	}
 
