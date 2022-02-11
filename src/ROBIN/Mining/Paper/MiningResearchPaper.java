@@ -48,7 +48,7 @@ public class MiningResearchPaper {
 		
 		//input AuthorsInformation.csv because NonDuplicatedPubid.csv contains combined PDB ID. However, the code here will remove duplicated papers   
 		
-		HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader().ReadIntoHashMap("AuthorsInformation.csv","PDB");
+		HashMap<String, Vector<HashMap<String, String>>> Papers=	new CSVReader("AuthorsInformation.csv").ReadIntoHashMap("PDB");
 		
 
 		//inputs AuthorsInformation.csv, CSVToUseInStatisticalTest and CSVToUseInStatisticalTestFiltered
@@ -83,7 +83,7 @@ new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 		return RemovedDuplicatedPapers;
 	}
 	public void LatexTable(String RecommendedPipelineCSV) throws IOException {
-		HashMap<String, Vector<HashMap<String, String>>> UsedRecommendedPipeline=	new CSVReader().ReadIntoHashMap(RecommendedPipelineCSV, "PDB");
+		HashMap<String, Vector<HashMap<String, String>>> UsedRecommendedPipeline=	new CSVReader(RecommendedPipelineCSV).ReadIntoHashMap( "PDB");
 
 		String LatexTable="";
 		for(String pdb : UsedRecommendedPipeline.keySet()) {
@@ -120,7 +120,7 @@ new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 	}
 	public void RecommendedPipeline(HashMap<String, Vector<HashMap<String, String>>> paper, String CSVFolder, String CSVFolderTesting) throws IOException {
 		//HashMap<String, Vector<HashMap<String, String>>> paper=	new CSVReader().ReadIntoHashMap(PapersCSV, "PDB");
-		HashMap<String, Vector<HashMap<String, String>>> pdb=	new CSVReader().ReadIntoHashMap(new FilesUtilities().ReadFilesList(CSVFolderTesting)[0].getAbsolutePath(), "PDB");// any of the files just to get the list of PDB id
+		HashMap<String, Vector<HashMap<String, String>>> pdb=	new CSVReader(new FilesUtilities().ReadFilesList(CSVFolderTesting)[0].getAbsolutePath()).ReadIntoHashMap( "PDB");// any of the files just to get the list of PDB id
 		HashMap<String, Vector<HashMap<String, String>>> paper2=	new HashMap<String, Vector<HashMap<String, String>>>();
 
 		System.out.println(paper.size());
@@ -144,7 +144,7 @@ new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 		int LinkDirection=0;
 		for(String PDBID:paper.keySet() ) {
 			
-			HashMap<String, Vector<HashMap<String, String>>> MRdata=	new CSVReader().ReadIntoHashMap(CSVFolder+"/"+paper.get(PDBID).get(0).get("Tool")+".csv", "PDB");
+			HashMap<String, Vector<HashMap<String, String>>> MRdata=	new CSVReader(CSVFolder+"/"+paper.get(PDBID).get(0).get("Tool")+".csv").ReadIntoHashMap( "PDB");
 			
 			System.out.println(CSVFolder+"/"+paper.get(PDBID).get(0).get("Tool")+".csv");
 			String AchievedCompleteness=MRdata.get(PDBID).get(0).get("AchievedCompleteness");
@@ -155,7 +155,7 @@ new MiningResearchPaper().LatexTable("RecommendedPipeline.csv");
 			String Pipeline="";
 			for(File file : new File(CSVFolder).listFiles()) {
 				//if(!file.getName().equals(paper.get(PDBID).get(0).get("Tool")+".csv")) {
-				HashMap<String, Vector<HashMap<String, String>>> pipeline=	new CSVReader().ReadIntoHashMap(file.getAbsolutePath(), "PDB");
+				HashMap<String, Vector<HashMap<String, String>>> pipeline=	new CSVReader(file.getAbsolutePath()).ReadIntoHashMap( "PDB");
 
 				if(Double.parseDouble(pipeline.get(PDBID).get(0).get("Completeness")) > BestCom) {
 					BestCom=Double.parseDouble(pipeline.get(PDBID).get(0).get("Completeness"));

@@ -272,7 +272,7 @@ new NumberOfTreesImpact().NumberOfTreesTable("ClassificationModelsPerformance.xm
 		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/"+XMLName+"ErrorTrainTest.csv", ErrorTrainTest);
 		new TxtFiles().WriteStringToTxtFile("EvaluationTablesAndPlots/"+XMLName+"featureImportance.csv", featureImportance);
 
-		HashMap<String, Vector<HashMap<String, String>>> traintesterror=	new CSVReader().ReadIntoHashMap("EvaluationTablesAndPlots/"+XMLName+"ErrorTrainTest.csv", "Pipeline");
+		HashMap<String, Vector<HashMap<String, String>>> traintesterror=	new CSVReader("EvaluationTablesAndPlots/"+XMLName+"ErrorTrainTest.csv").ReadIntoHashMap( "Pipeline");
 		
 		for (String Pipeline : traintesterror.keySet()) {
 			for (int i =0 ; i < traintesterror.get(Pipeline).size();++i) {
@@ -291,8 +291,8 @@ new NumberOfTreesImpact().NumberOfTreesTable("ClassificationModelsPerformance.xm
 		new CSVWriter().WriteFromHashMapContainsRepatedRecord(traintesterror, "EvaluationTablesAndPlots/"+XMLName+"ErrorTrainTest.csv", "Pipeline", false);
 		
 		
-		HashMap<String, Vector<HashMap<String, String>>> featureImportanceFromCSV=	new CSVReader().ReadIntoHashMap("EvaluationTablesAndPlots/"+XMLName+"featureImportance.csv", "Pipeline");
-		HashMap<String, Vector<HashMap<String, String>>> BaselineModel=	new CSVReader().ReadIntoHashMap("EvaluationTablesAndPlots/"+XMLName+"ErrorTrainTest.csv", "Pipeline");
+		HashMap<String, Vector<HashMap<String, String>>> featureImportanceFromCSV=	new CSVReader("EvaluationTablesAndPlots/"+XMLName+"featureImportance.csv").ReadIntoHashMap( "Pipeline");
+		HashMap<String, Vector<HashMap<String, String>>> BaselineModel=	new CSVReader("EvaluationTablesAndPlots/"+XMLName+"ErrorTrainTest.csv").ReadIntoHashMap( "Pipeline");
 		
 		for (String Pipeline : featureImportanceFromCSV.keySet()) {
 			for (int i =0 ; i < featureImportanceFromCSV.get(Pipeline).size();++i) {

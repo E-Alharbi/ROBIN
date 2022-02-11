@@ -407,20 +407,27 @@ else {
 
 	public void ReadModel(String Name) throws Exception {
 		
+		
 		if (!Name.contains(".model"))
 			Name = Name + ".model";
 		
 		
 		if(Parameters.getPreloadedMLModels().containsKey(Name)) {
+			
 			MLPredictor = (RandomForestPI)Parameters.getPreloadedMLModels().get(Name);
 			
 			return;// stop here
 		}
 		if(new FilesUtilities().isGZipped(new File(Name)) ==false) {
+			
+			
 				MLPredictor = (RandomForestPI) weka.core.SerializationHelper.read(Name);
+			
+				
 		}
 		
 		if(new FilesUtilities().isGZipped(new File(Name)) ==true) {
+			
 		File f = new File(Name);
         FileInputStream fileInputStream = new FileInputStream(f);
         GZIPInputStream gzipInputStream = new GZIPInputStream(fileInputStream);
@@ -429,7 +436,7 @@ else {
         objectOutputStream.close();
         gzipInputStream.close();
         fileInputStream.close();
-       
+        
 		}
 	}
 
@@ -481,12 +488,12 @@ else {
 		
 		if (Prediction[0].contains("±")) {
 			Parameters.setLog ( "F");// no need for the log here only tables are needed
-			HashMap<String, Boolean> MeasurementUnitsToPredict = new CSVReader().FilterByFeatures(Parameters.getAttCSV(),
+			HashMap<String, Boolean> MeasurementUnitsToPredict = new CSVReader(Parameters.getAttCSV()).FilterByFeatures(
 					false);
 			Vector<String> Headers = new Vector<String>();
 			Headers.add(String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]));
-			HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader().ReadIntoHashMapWithFilterdHeaders(
-					Parameters.getAttCSV(), String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]), Headers);
+			HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader(Parameters.getAttCSV()).ReadIntoHashMapWithFilterdHeaders(
+					 String.valueOf(MeasurementUnitsToPredict.keySet().toArray()[0]), Headers);
 			if (map.keySet().size() == 2) { // if it binary classification
 				List<String> classes = new ArrayList<>(map.keySet());
 				Collections.sort(classes, new SortedByIntKeys());
@@ -559,9 +566,10 @@ else {
 			}
 		}
 
-		try (PrintWriter out = new PrintWriter(Name + "csv")) {
-			out.println(CSV);
-		}
+		//try (PrintWriter out = new PrintWriter(Name + "csv")) {
+		//	out.println(CSV);
+		//}
+		new TxtFiles().WriteStringToTxtFile(Name, CSV);
 	}
 
 	Ranker RankAttributes() throws Exception {

@@ -82,7 +82,7 @@ public class MLModelTraining {
 
 		}
 
-		HashMap<String, Boolean> measurements = new CSVReader().FilterByFeatures(PathToCSV, false);
+		HashMap<String, Boolean> measurements = new CSVReader(PathToCSV).FilterByFeatures( false);
 
 		MLModelTraining CM = new MLModelTraining();
 		for (String F : measurements.keySet()) {

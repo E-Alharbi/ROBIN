@@ -54,8 +54,8 @@ public class ModelPerformance {
 	public void SplitOnMeasurementUnitsLevel(String PathToCSV) throws IOException {
 
 		for (File CSV : new FilesUtilities().ReadFilesList(PathToCSV)) {
-			HashMap<String, Boolean> features = new CSVReader().FilterByFeatures(CSV.getAbsolutePath(), true);
-			HashMap<String, Boolean> MeasurementsUnits = new CSVReader().FilterByFeatures(CSV.getAbsolutePath(), false);
+			HashMap<String, Boolean> features = new CSVReader(CSV.getAbsolutePath()).FilterByFeatures( true);
+			HashMap<String, Boolean> MeasurementsUnits = new CSVReader(CSV.getAbsolutePath()).FilterByFeatures( false);
 			for (String unit : MeasurementsUnits.keySet()) {
 				Vector<String> Headers = new Vector<String>(features.keySet());
 				if (Parameters.getMeasurementUnitsToPredict().contains(unit)) {
@@ -63,8 +63,8 @@ public class ModelPerformance {
 					Headers.add("Achieved" + unit);
 					String CSVName = CSV.getName().replaceAll("." + FilenameUtils.getExtension(CSV.getName()), "");
 					ROBIN.CheckDirAndFile("CSVToUseInStatisticalTestSplitted");
-					HashMap<String, Vector<HashMap<String, String>>> filteredCSV = new CSVReader()
-							.ReadIntoHashMapWithFilterdHeaders(CSV.getAbsolutePath(), "PDB", Headers);
+					HashMap<String, Vector<HashMap<String, String>>> filteredCSV = new CSVReader(CSV.getAbsolutePath())
+							.ReadIntoHashMapWithFilterdHeaders( "PDB", Headers);
 					new CSVWriter().WriteFromHashMapContainsRepatedRecord(filteredCSV,
 							"CSVToUseInStatisticalTestSplitted/" + CSVName + "-" + unit + ".csv","PDB",true);
 
@@ -92,10 +92,10 @@ public class ModelPerformance {
 
 	public HashMap<String, Vector<HashMap<String, String>>> omit(File CSV, File TestCSV) throws IOException {
 
-		HashMap<String, HashMap<String, String>> Testdata = new CSVReader()
-				.ReadIntoHashMapWithnoIDHeader(TestCSV.getAbsolutePath());
-		HashMap<String, Vector<HashMap<String, String>>> StatisticalTestdata = new CSVReader()
-				.ReadIntoHashMap(CSV.getAbsolutePath(), "PDB");
+		HashMap<String, HashMap<String, String>> Testdata = new CSVReader(TestCSV.getAbsolutePath())
+				.ReadIntoHashMapWithnoIDHeader();
+		HashMap<String, Vector<HashMap<String, String>>> StatisticalTestdata = new CSVReader(CSV.getAbsolutePath())
+				.ReadIntoHashMap( "PDB");
 		HashMap<String, Vector<HashMap<String, String>>> FilteredStatisticalTestdata = new HashMap<String, Vector<HashMap<String, String>>>();
 		int count = 0;
 
@@ -143,8 +143,8 @@ public class ModelPerformance {
 		TreeMap<String, String> ResoHeaders = new TreeMap<String, String>();
 		TreeMap<String, TreeMap<String, TreeMap<String, String>>> Pipelines = new TreeMap<String, TreeMap<String, TreeMap<String, String>>>();
 		for (File file : new FilesUtilities().ReadFilesList(PathToCSV)) {
-			HashMap<String, Vector<HashMap<String, String>>> CSV = new CSVReader()
-					.ReadIntoHashMap(file.getAbsolutePath(), "PDB");
+			HashMap<String, Vector<HashMap<String, String>>> CSV = new CSVReader(file.getAbsolutePath())
+					.ReadIntoHashMap( "PDB");
 			HashMap<String, HashMap<String, Vector<HashMap<String, String>>>> Groups = new HashMap<String, HashMap<String, Vector<HashMap<String, String>>>>();
 			for (String PDB : CSV.keySet()) {
 				if (CSV.get(PDB).size() > 1) {
@@ -189,7 +189,7 @@ public class ModelPerformance {
 																													// of
 																													// datasets
 
-				HashMap<String, Boolean> MeasurementsUnits = new CSVReader().FilterByFeatures(file.getAbsolutePath(),
+				HashMap<String, Boolean> MeasurementsUnits = new CSVReader(file.getAbsolutePath()).FilterByFeatures(
 						false);
 
 				for (String Measure : MeasurementsUnits.keySet()) {
