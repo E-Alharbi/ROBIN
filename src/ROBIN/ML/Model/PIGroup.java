@@ -17,7 +17,7 @@ public class PIGroup {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		Parameters.setPrefix("2320617411910776024");
-		new PIGroup().PIToGroupFromCSV("/Users/emadalharbi/eclipse/jee-2020-12/Eclipse.app/Contents/MacOS/Predicted_datasets.csv");
+		new PIGroup().PIToGroupFromCSV("Predicted_datasets.csv");
 	}
    public  void PIToGroupFromCSV(String CSVPath) throws IOException {
     	
