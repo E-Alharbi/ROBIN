@@ -50,10 +50,10 @@ public class PrepareFeatures {
 			MTZFileName = new File(PathToDatasets).getName()
 					.replaceAll("." + FilenameUtils.getExtension(new File(PathToDatasets).getName()), "");
 
-			if (new File(MTZFileName + "features.csv").exists()) {
+			if (new File(MTZFileName + Parameters.getFeaturesInCSV()).exists()) {
 
-				new Log().Warning(this, MTZFileName + "features.csv" + " has found and deleted to create new one");
-				FileUtils.deleteQuietly(new File(MTZFileName + "features.csv"));
+				new Log().Warning(this, MTZFileName + Parameters.getFeaturesInCSV() + " has found and deleted to create new one");
+				FileUtils.deleteQuietly(new File(MTZFileName + Parameters.getFeaturesInCSV()));
 			}
 		}
 
@@ -82,7 +82,7 @@ public class PrepareFeatures {
 		}
 
 		if (!new File(PathToDatasets).isFile())
-			new CSVWriter().WriteFromHashMap(PDB, "features.csv","PDB");
+			new CSVWriter().WriteFromHashMap(PDB, "features.csv","PDB");// do not use Parameters.getFeaturesInCSV() here because csv writer will add the prefix to csv name
 		else {
 			new CSVWriter().WriteFromHashMap(PDB, MTZFileName + "features.csv","PDB");
 		}
@@ -113,10 +113,10 @@ public class PrepareFeatures {
 			}
 		}
 
-		if (new File("features.csv").exists()) {
+		if (new File(Parameters.getFeaturesInCSV()).exists()) {
 
-			new Log().Warning(this, "features.csv has found and deleted to create new one");
-			FileUtils.deleteQuietly(new File("features.csv"));
+			new Log().Warning(this, Parameters.getFeaturesInCSV()+"features.csv has found and deleted to create new one");
+			FileUtils.deleteQuietly(new File(Parameters.getFeaturesInCSV()));
 		}
 		return true;
 	}
