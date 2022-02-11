@@ -49,7 +49,7 @@ public class ClassificationPreparer {
 		// Do not assign the value directly to Parameters.ClassLevelForRFactors
 
 		new Log().TxtInRectangle("Classification data preparer");
-		HashMap<String, Vector<HashMap<String, String>>> csv = new CSVReader().ReadIntoHashMap(CSVFile, "PDB");
+		HashMap<String, Vector<HashMap<String, String>>> csv = new CSVReader(CSVFile).ReadIntoHashMap("PDB");
 		HashMap<String, LinkedHashMap<String, String>> CSVContents = new HashMap<String, LinkedHashMap<String, String>>();
 
 		for (String CSVID : csv.keySet()) { // id in csv. For ex PDB code

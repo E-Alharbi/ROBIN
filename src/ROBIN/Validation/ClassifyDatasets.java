@@ -31,8 +31,8 @@ public class ClassifyDatasets {
 	public void Classify(String PathToCSV, String Datasets) throws Exception {
 
 		for (File csv : new FilesUtilities().ReadFilesList(PathToCSV)) {
-			HashMap<String, Vector<HashMap<String, String>>> CSV = new CSVReader()
-					.ReadIntoHashMap(csv.getAbsolutePath(), "PDB");
+			HashMap<String, Vector<HashMap<String, String>>> CSV = new CSVReader(csv.getAbsolutePath())
+					.ReadIntoHashMap( "PDB");
 
 			for (String PDB : CSV.keySet()) {
 

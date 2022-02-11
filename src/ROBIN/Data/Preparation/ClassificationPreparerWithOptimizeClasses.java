@@ -92,8 +92,8 @@ public class ClassificationPreparerWithOptimizeClasses {
 			Vector<String> headers = new Vector<String>();
 			headers.add(Header);
 
-			HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader().ReadIntoHashMapWithFilterdHeaders(
-					Parameters.getClassificationDatasetsFolderName() + "/" + new File(CSV).getName(), "PDB", headers);
+			HashMap<String, Vector<HashMap<String, String>>> map = new CSVReader(Parameters.getClassificationDatasetsFolderName() + "/" + new File(CSV).getName()).ReadIntoHashMapWithFilterdHeaders(
+					 "PDB", headers);
 
 			HashMap<String, Integer> counted = CountInstanceInClasses(map);
 
@@ -217,8 +217,8 @@ public class ClassificationPreparerWithOptimizeClasses {
 		Vector<String> HeadersWanted = new Vector<String>();
 		HeadersWanted.add(Header);
 		HeadersWanted.add("Prediction");
-		HashMap<String, Vector<HashMap<String, String>>> Prediction = new CSVReader()
-				.ReadIntoHashMapWithFilterdHeaders(PredcitedDatasetsCSV, "PDB", HeadersWanted);
+		HashMap<String, Vector<HashMap<String, String>>> Prediction = new CSVReader(PredcitedDatasetsCSV)
+				.ReadIntoHashMapWithFilterdHeaders( "PDB", HeadersWanted);
 
 		Vector<String> Actual = new Vector<String>();
 		Vector<String> Predicted = new Vector<String>();
