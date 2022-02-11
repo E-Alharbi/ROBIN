@@ -24,6 +24,7 @@ import ROBIN.Data.Preparation.PredictionTrainingDataPreparer;
 import ROBIN.Data.Preparation.PrepareFeatures;
 import ROBIN.Log.Log;
 import ROBIN.ML.Model.ROBIN;
+import ROBIN.ML.Model.PIGroup;
 import ROBIN.ML.Model.Parameters;
 import ROBIN.ML.Model.Predict;
 import ROBIN.Utilities.CSVReader;
@@ -63,9 +64,9 @@ public class PredictDatasets {
 public void Predict(String PathToDatasets) throws Exception {
 	
 	
-	
-	if(new File("Temp/").exists())
-	FileUtils.cleanDirectory(new File("Temp/")); 
+	String tmp_folder=File.createTempFile("tmp","").getName();
+	if(new File(tmp_folder+"/").exists())
+	FileUtils.cleanDirectory(new File(tmp_folder+"/")); 
 	if(new File("PredictedDatasets/").exists())
 	FileUtils.cleanDirectory(new File("PredictedDatasets/")); 
 	
@@ -77,7 +78,7 @@ public void Predict(String PathToDatasets) throws Exception {
 	
 	UpdateFeaturesFromCSVAtt(Parameters.getTrainedModelsPath());
 	
-	if(Parameters.getParrotPhases()==null)// if parrot phases not set, then prepare all features and save them into csv 
+	if(Parameters.getParrotPhases()==null && Parameters.getPrepareFeatures().equals("T"))// if parrot phases not set, then prepare all features and save them into csv 
 	new PrepareFeatures().Prepare(new File(PathToDatasets).getAbsolutePath());
 	
 	Vector<ExcelContents> excel = new Vector<ExcelContents>();
@@ -87,7 +88,7 @@ public void Predict(String PathToDatasets) throws Exception {
 		pdb.PDB_ID=mtz.getName().replaceAll("." + FilenameUtils.getExtension(mtz.getName()), "");
 		excel.add(pdb);
 	}
-	ROBIN.CheckDirAndFile("Temp");
+	ROBIN.CheckDirAndFile(tmp_folder);
 	// loop on all models names. Not necessary all the models are exists in structure evaluation measures   
 Vector<String> modelsNames= new Vector<String>();
 for(File folder : new FilesUtilities().ReadFilesList(Parameters.getTrainedModelsPath())) {
@@ -97,18 +98,18 @@ for(File folder : new FilesUtilities().ReadFilesList(Parameters.getTrainedModels
 			if(!modelsNames.contains(modelname)) {
 				modelsNames.add(modelname);
 				if(Parameters.getFilterModels().equals("T") && Parameters.getFilteredModels().contains(modelname))
-				new ExcelSheet().FillInExcel(excel, "Temp/"+modelname);
+				new ExcelSheet().FillInExcel(excel, tmp_folder+"/"+modelname);
 				if(Parameters.getFilterModels().equals("F"))
-				new ExcelSheet().FillInExcel(excel, "Temp/"+modelname);
+				new ExcelSheet().FillInExcel(excel, tmp_folder+"/"+modelname);
 				
-				if(new File("Temp/").listFiles().length>0) {//at least 1 file. it might be no files when use FilteredModels  
+				if(new File(tmp_folder+"/").listFiles().length>0) {//at least 1 file. it might be no files when use FilteredModels  
 				//Parameters.setLoadAllMLModelsAtOnce("T");
 				//Parameters.setPreloadedMLModels( Parameters.getTrainedModelsPath());// we loading the ML models here because if loaded in Predict.java will affect on the inference times for the first data set will be predicted 
-				Predict(new File("Temp/").getAbsolutePath(),PathToDatasets,false);
+				Predict(new File(tmp_folder+"/").getAbsolutePath(),PathToDatasets,false);
 				//Predict(new File("Temp/").getAbsolutePath(),PathToDatasets,false); do it twice when you  need an accurate inference time because first data set to be predicted, its inference time will include Weka warm up time.    
 
 				}
-				FileUtils.cleanDirectory(new File("Temp/")); 
+				FileUtils.cleanDirectory(new File(tmp_folder+"/")); 
 				Parameters.getPreloadedMLModels().clear();
 			}
 		}
@@ -120,7 +121,7 @@ HashMap<String, LinkedHashMap<String, String>> csvinmap = new HashMap<String, Li
 int countRecord=1;
 for (File c : csv ) {
 	
-	HashMap<String, HashMap<String, String>> temp =  new CSVReader().ReadIntoHashMapWithnoIDHeader(c.getAbsolutePath());
+	HashMap<String, HashMap<String, String>> temp =  new CSVReader(c.getAbsolutePath()).ReadIntoHashMapWithnoIDHeader();
 
 	for(String key :temp.keySet()) {
 		LinkedHashMap<String, String> HashMapToLinked= new LinkedHashMap<String, String>(temp.get(key));
@@ -130,11 +131,16 @@ for (File c : csv ) {
 	
     
 }
-		new CSVWriter().WriteFromHashMap(csvinmap, "PredictedDatasets.csv","ID");
+		
+		new CSVWriter().WriteFromHashMap(csvinmap, "Predicted_datasets.csv","ID");
+		new PIGroup().PIToGroupFromCSV("Predicted_datasets.csv");
+		
 		//FileUtils.deleteDirectory(new File("PredictedDatasets/")); 
 		FileUtils.deleteDirectory(new File("CSVToUseInStatisticalTest/")); 
-		FileUtils.deleteDirectory(new File("Temp/")); 
-	
+		FileUtils.deleteDirectory(new File(tmp_folder+"/")); 
+		if (new File(Parameters.getFeaturesInCSV()).exists()) {
+			FileUtils.deleteQuietly(new File(Parameters.getFeaturesInCSV()));
+		}
 		
 }
 	public void Predict(String PathToExcelFolder, String PathToDatasets, boolean Traning) throws Exception {
@@ -261,7 +267,7 @@ for (File c : csv ) {
 						String[] arg = { "TempExcel", new File(PathToDatasets).getAbsolutePath() + "/", "TempCSV" };
 						new PredictionTrainingDataPreparer().Prepare(arg); // create a csv that only contains this only
 																			// PDB in the excel
-						String Val = new CSVReader().GetRecordByHeaderName("TempCSV/Temp.csv", Key, 0); // now get the
+						String Val = new CSVReader("TempCSV/Temp.csv").GetRecordByHeaderName( Key, 0); // now get the
 																										// value
 
 						Record2 += "," + Val;
@@ -269,7 +275,7 @@ for (File c : csv ) {
 						for (int p = 0; p < Parameters.getFeatures().split(",").length; ++p) { // Features will be updated
 																							// from model's header CSV
 																							// when we predict
-							Val = new CSVReader().GetRecordByHeaderName("TempCSV/Temp.csv",
+							Val = new CSVReader("TempCSV/Temp.csv").GetRecordByHeaderName(
 									Parameters.getFeatures().split(",")[p], 0); // now get the value
 							if (p + 1 < Parameters.getFeatures().split(",").length) {
 								FeaturesForCSVToUseInStatisticalTest += Val + ",";
@@ -321,23 +327,25 @@ for (File c : csv ) {
 				// pb.step();
 			}
 
-			if (new File("PredictedDatasets/" + ExcelName + ".csv").exists()) {
-				new Log().Warning(this, ExcelName + ".csv has found in PredictedDatasets and deleted to create a new ");
-				FileUtils.deleteQuietly(new File("PredictedDatasets/" + ExcelName + ".csv"));
+			if (new File("PredictedDatasets/" + Parameters.getPrefix()+ExcelName + ".csv").exists()) {
+				new Log().Warning(this, Parameters.getPrefix()+ExcelName + ".csv has found in PredictedDatasets and deleted to create a new ");
+				FileUtils.deleteQuietly(new File("PredictedDatasets/" + Parameters.getPrefix()+ExcelName + ".csv"));
 			}
-			if (new File("CSVToUseInStatisticalTest/" + ExcelName + ".csv").exists()) {
+			if (new File("CSVToUseInStatisticalTest/" +  Parameters.getPrefix()+ExcelName + ".csv").exists()) {
 				new Log().Warning(this,
-						ExcelName + ".csv has found in CSVToUseInStatisticalTest and deleted to create a new ");
-				FileUtils.deleteQuietly(new File("CSVToUseInStatisticalTest/" + ExcelName + ".csv"));
+						Parameters.getPrefix()+ExcelName + ".csv has found in CSVToUseInStatisticalTest and deleted to create a new ");
+				FileUtils.deleteQuietly(new File("CSVToUseInStatisticalTest/" + Parameters.getPrefix()+ExcelName + ".csv"));
 			}
 			ROBIN.CheckDirAndFile("PredictedDatasets");
-			try (PrintWriter out = new PrintWriter("PredictedDatasets/" + ExcelName + ".csv")) {
-				out.println(CSV);
-			}
+			//try (PrintWriter out = new PrintWriter("PredictedDatasets/" + ExcelName + ".csv")) {
+			//	out.println(CSV);
+			//}
+			new TxtFiles().WriteStringToTxtFile("PredictedDatasets/" + ExcelName + ".csv", CSV);
 			ROBIN.CheckDirAndFile("CSVToUseInStatisticalTest");
-			try (PrintWriter out = new PrintWriter("CSVToUseInStatisticalTest/" + ExcelName + ".csv")) {
-				out.println(CSVToUseInStatisticalTest);
-			}
+			//try (PrintWriter out = new PrintWriter("CSVToUseInStatisticalTest/" + ExcelName + ".csv")) {
+			//	out.println(CSVToUseInStatisticalTest);
+			//}
+			new TxtFiles().WriteStringToTxtFile("CSVToUseInStatisticalTest/" + ExcelName + ".csv", CSV);
 
 		}
 
