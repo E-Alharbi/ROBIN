@@ -1,6 +1,7 @@
 package ROBIN.Utilities;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,15 +11,29 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Vector;
 
+import ROBIN.ML.Model.Parameters;
+
 /*
  * Write and read txt file from or to string
  */
 public class TxtFiles {
 
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		
+		new TxtFiles().WriteStringToTxtFile("1345132131978605401Predicted_datasets.csv", "ddd");
+		
+	}
+	
 	public void WriteStringToTxtFile(String File, String Txt) throws FileNotFoundException {
+		
+		File=new FilesUtilities().AddPrefixToFileName(File);
+		
+
 		try (PrintWriter out = new PrintWriter(File)) {
 			out.println(Txt);
 		}
+		
 	}
 
 	public void WriteVectorToTxtFile(String File , Vector<String> Vec  ) throws FileNotFoundException {
