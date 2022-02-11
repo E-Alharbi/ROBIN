@@ -135,7 +135,7 @@ public class Predict {
 						instanceValue1 = Parameters.getInstanceValueParrot();
 					}
 					
-
+					if(instanceValue1!=null)// null if we set to IgnoreCfftError=T 
 					PipelinesPredictions.put(modelName, Pre.Predict(instanceValue1, Parameters.getAttCSV()));
 
 					ThereisAmodel = true;
@@ -145,7 +145,7 @@ public class Predict {
 			String Margin="0.05";
 			if(Folder.equals("Completeness"))Margin="5";
 			if(PIToGroup==true)
-			Predictions.put(Folder, PIScore(PipelinesPredictions,Margin));
+			Predictions.put(Folder, new PIGroup().PIScoreToGroup(PipelinesPredictions,Margin));
 			else {
 				Predictions.put(Folder, PipelinesPredictions);
 			}
@@ -163,51 +163,7 @@ public class Predict {
 		Parameters.getFilteredModels().clear();// return to default
 		Parameters.setFilterModels ( "F");// return to default
 	}
-	HashMap<String,String[]> PIScore( HashMap<String,String[]> PI, String Margin ){
-		LinkedHashMap<String,BigDecimal> Score = new LinkedHashMap<String,BigDecimal>();// LinkedHashMap sorts by value 
-		for(String Pipeline : PI.keySet()) {
-			BigDecimal diff = new BigDecimal(PI.get(Pipeline)[2]).subtract(new BigDecimal(PI.get(Pipeline)[1])).abs();
-			Score.put(Pipeline, diff);
-		}
-		
-		
-		Score = Score.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 	
-		String PreviousPipeline="";
-		double PipeScore =1;
-		HashMap<String,String[]> Groups = new HashMap<String,String[]>();// LinkedHashMap sorts by value 
-
-		for(String Pipeline : Score.keySet()) {
-			String [] predction= PI.get(Pipeline);
-			predction[1]=String.valueOf(PipeScore);
-			predction[2]=String.valueOf(PipeScore);
-			if(PreviousPipeline.equals("")) {
-				Groups.put(Pipeline, predction);
-				
-			}
-			else {
-				BigDecimal diff = Score.get(Pipeline).subtract(Score.get(PreviousPipeline)).abs();
-				
-			
-				if(diff.compareTo(new BigDecimal(Margin))<=0) {
-					Groups.put(Pipeline, predction);
-					
-				}
-				else {
-					PipeScore++;
-					predction[1]=String.valueOf(PipeScore);
-					predction[2]=String.valueOf(PipeScore);
-					Groups.put(Pipeline, predction);
-				}
-			}
-			PreviousPipeline=Pipeline;
-		}
-		
-		return Groups;
-	}
 	public void Print(HashMap<String, HashMap<String, String[]>> Measures) throws IOException {
 		
 		List<String> headersList = new ArrayList<String>();
@@ -260,10 +216,13 @@ public class Predict {
 		if(Parameters.getParrotPhases()==null)
 			Parameters.setParrotPhases(Parameters.getPhases());
 		if(Parameters.getHTMLTable().equals("T")) {
-			String html = new Log().HTMLTable(headersList, rowsList);
-			System.out.println("HTML: \n"+html);
-			html = new Log().HTMLPlot(headersList, rowsList);
-			System.out.println("Plot: \n"+html);
+			//String html = new Log().HTMLTable(headersList, rowsList);
+			new TxtFiles().WriteStringToTxtFile("HTMLTable.txt",new Log().HTMLTable(headersList, rowsList));
+			new TxtFiles().WriteStringToTxtFile("HTMLPlot.txt", new Log().HTMLPlot(headersList, rowsList));
+
+			//System.out.println("HTML: \n"+html);
+			//html = new Log().HTMLPlot(headersList, rowsList);
+			//System.out.println("Plot: \n"+html);
 		}
 		
 		if(Parameters.getGenerateScript().equals("T")) {
