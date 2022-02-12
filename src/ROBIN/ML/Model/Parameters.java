@@ -151,7 +151,7 @@ public class Parameters {
 	private static String Prefix="";
 	
 	public static String getFeaturesInCSV() {
-		return FeaturesInCSV;
+		return getPrefix()+FeaturesInCSV;
 	}
 	public static void setFeaturesInCSV(String featuresInCSV) {
 		FeaturesInCSV = featuresInCSV;
@@ -565,6 +565,7 @@ public static String getMeasurementUnitsToPredict() {
 		}
 		
 	}
+	
 	public static void setFilterModels(String filterModels) {
 		FilterModels = filterModels;
 	}
