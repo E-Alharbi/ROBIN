@@ -153,6 +153,9 @@ for (File c : csv ) {
 
 		//Parameters.setPreloadedMLModels( Parameters.getTrainedModelsPath());
 		
+		Vector<String> FilteredModelsCopy=new Vector<String>(Parameters.getFilteredModels()); //take a copy of the models names because this parameter value will be changed in the below loop.
+		String FilterModelsCopy=Parameters.getFilterModels();
+		
 		for (File Excel : new FilesUtilities().ReadFilesList(PathToExcelFolder)) { // loop on all excel files
 
 			String ExcelName = Excel.getName().replaceAll("." + FilenameUtils.getExtension(Excel.getName()), "");
@@ -163,8 +166,9 @@ for (File c : csv ) {
 			excel = f.ReadExcel(Excel.getAbsolutePath());
 			
 			Parameters.setFilterModels ( "T");
+			Parameters.getFilteredModels().clear();// clear here in case of using FilteredModels keyword in command line to pass models names. Clear here will effect of using the keyword
 			Parameters.getFilteredModels().add(ExcelName); // remove the others models. Only keep the model that
-														// match this excel
+														  // match this excel
 			Parameters.setPreloadedMLModels( Parameters.getTrainedModelsPath());// we loading the ML models here because if loaded in Predict.java will affect on the inference times for the first data set will be predicted 
 			Parameters.getFilteredModels().clear();// clear because will add the ExcelName again in for loop below
 			for (int i = 0; i < excel.size(); ++i) {// read the excel records
@@ -348,7 +352,15 @@ for (File c : csv ) {
 			new TxtFiles().WriteStringToTxtFile("CSVToUseInStatisticalTest/" + ExcelName + ".csv", CSV);
 
 		}
+		
+		Parameters.getFilteredModels().clear();
+		for(int m=0;m < FilteredModelsCopy.size();++m)
+		Parameters.setFilteredModels(FilteredModelsCopy.get(m)); // return the copy to FilteredModels
 
+		Parameters.setFilterModels (FilterModelsCopy);// this will change to F in PredictMultipleModles. We need to get the value back. 
+	
+		Parameters.getPreloadedMLModels().clear();// clear to save memory
+	
 	}
 
 	void isValid(String files, String PathToDatasets) {
