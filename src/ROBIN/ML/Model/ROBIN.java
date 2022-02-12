@@ -44,6 +44,10 @@ public class ROBIN {
 		      
 		   
 		/*
+		 * Build from the command line to avoid the problem of not updating the version number in resources/project.properties
+		 * mvn clean
+		 * mvn verify
+		 * 
 		 * To build the project in Eclipse 1- right click on the project > maven > build
 		 * maven 2- A runnable JAR will be built in target folder 3- The build number
 		 * will be increased in every time the project is built Ex
